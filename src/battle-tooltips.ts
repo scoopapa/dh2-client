@@ -201,12 +201,10 @@ class BattleTooltips {
 		$elem.on('touchstart', '.has-tooltip', e => {
 			e.preventDefault();
 			this.holdLockTooltipEvent(e);
-			if (!BattleTooltips.parentElem) {
-				// should never happen, but in case there's a bug in the tooltip handler
-				BattleTooltips.parentElem = e.currentTarget;
+			if (e.currentTarget === BattleTooltips.parentElem && BattleTooltips.parentElem!.tagName === 'BUTTON') {
+				$(BattleTooltips.parentElem!).addClass('pressed');
+				BattleTooltips.isPressed = true;
 			}
-			$(BattleTooltips.parentElem!).addClass('pressed');
-			BattleTooltips.isPressed = true;
 		});
 		$elem.on('touchend', '.has-tooltip', e => {
 			e.preventDefault();
@@ -1011,6 +1009,12 @@ class BattleTooltips {
 
 			if (this.battle.gen > 2 && ability === 'quickfeet') {
 				stats.spe = Math.floor(stats.spe * 1.5);
+			} else if (pokemon.status === 'par') {
+				if (this.battle.gen > 6) {
+					stats.spe = Math.floor(stats.spe * 0.5);
+				} else {
+					stats.spe = Math.floor(stats.spe * 0.25);
+				}
 			}
 		}
 
@@ -2221,9 +2225,9 @@ class BattleStatGuesser {
 	supportsEVs: boolean;
 	supportsAVs: boolean;
 
-	constructor(formatid: ID) {
+	constructor(formatid: ID, modid: ID) {
 		this.formatid = formatid;
-		this.dex = formatid ? Dex.mod(formatid.slice(0, 4) as ID) : Dex;
+		this.dex = modid ? Dex.mod(modid) : formatid ? Dex.mod(formatid.slice(0, 4) as ID) : Dex;
 		this.ignoreEVLimits = (
 			this.dex.gen < 3 ||
 			((this.formatid.endsWith('hackmons') || this.formatid.endsWith('bh')) && this.dex.gen !== 6) ||
