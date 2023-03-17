@@ -653,8 +653,13 @@ export class Side {
 	}
 	reset() {
 		this.clearPokemon();
+		this.updateSprites();
 		this.sideConditions = {};
 		this.faintCounter = 0;
+	}
+	updateSprites() {
+		this.z = (this.isFar ? 200 : 0);
+		this.battle.scene.updateSpritesForSide(this);
 	}
 	setAvatar(avatar: string) {
 		this.avatar = avatar;
@@ -1073,6 +1078,7 @@ export class Battle {
 	myAllyPokemon: ServerPokemon[] | null = null;
 	lastMove = '';
 
+	mod = '' as ID;
 	gen = 8;
 	dex: ModdedDex = Dex;
 	teamPreviewCount = 0;
@@ -1128,6 +1134,19 @@ export class Battle {
 		} else {
 			throw new Error(`You must specify $frame and $logFrame simultaneously`);
 		}
+
+		const format = this.id.slice(this.id.indexOf('-') + 1, this.id.lastIndexOf('-'));
+		for (const mod in window.ModConfig) {
+			for (const formatid in window.ModConfig[mod].formats) {
+				if (format === formatid) {
+					this.mod = mod as ID;
+					this.dex = Dex.mod(mod as ID);
+					break;
+				}
+			}
+			if (this.mod) break;
+		}
+		if (this.id.includes('digimon')) this.mod = 'digimon' as ID;
 
 		this.paused = !!options.paused;
 		this.started = !this.paused;
@@ -3475,9 +3494,9 @@ export class Battle {
 			side.setName(args[2]);
 			if (args[3]) side.setAvatar(args[3]);
 			if (args[4]) side.rating = args[4];
+			this.scene.updateSidebar(side);
 			if (this.joinButtons) this.scene.hideJoinButtons();
 			this.log(args);
-			this.scene.updateSidebar(side);
 			break;
 		}
 		case 'teamsize': {
@@ -3594,7 +3613,7 @@ export class Battle {
 		}
 		case 'gen': {
 			this.gen = parseInt(args[1], 10);
-			this.dex = Dex.forGen(this.gen);
+			this.dex = this.mod ? Dex.mod(this.mod) : Dex.forGen(this.gen);
 			this.scene.updateGen();
 			this.log(args);
 			break;
