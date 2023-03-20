@@ -342,7 +342,7 @@
 
 		// abilities
 		if (gen >= 3) {
-			var abilities = this.engine.dex.forGen(gen).species.get(id).abilities;
+			var abilities = Dex.forGen(gen).species.get(id).abilities;
 			if (gen >= 5) {
 				if (abilities['1']) {
 					buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
