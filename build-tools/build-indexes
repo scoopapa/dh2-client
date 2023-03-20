@@ -847,6 +847,49 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	const gen3HMs = new Set(['cut', 'fly', 'surf', 'strength', 'flash', 'rocksmash', 'waterfall', 'dive']);
 	const gen4HMs = new Set(['cut', 'fly', 'surf', 'strength', 'rocksmash', 'waterfall', 'rockclimb']);
 
+	function getLearnsetStr(moveid, learnMoveArr, pokemonid = "", modid = "") {
+		let learnsetStr = '';
+		if (!learnMoveArr || !learnMoveArr.map) {
+			return "";
+		}
+		const gens = learnMoveArr.map(x => Number(x[0]));
+		const minGen = Math.min(...gens);
+		const vcOnly = (minGen === 7 && learnMoveArr.every(x => x[0] !== '7' || x === '7V') ||
+			minGen === 8 && learnMoveArr.every(x => x[0] !== '8' || x === '8V') ||
+			minGen === 9 && learnMoveArr.every(x => x[0] !== '9' || x === '9V'));
+
+      if (minGen <= 4 && minGen > 2 && (gen3HMs.has(moveid) || gen4HMs.has(moveid))) {
+			let legalGens = '';
+			let available = false;
+
+			if (minGen === 3) {
+				legalGens += '3';
+				available = true;
+			}
+			if (available) available = !gen3HMs.has(moveid);
+
+			if (available || gens.includes(4)) {
+				legalGens += '4';
+				available = true;
+			}
+			if (available) available = !gen4HMs.has(moveid);
+
+			let minUpperGen = available ? 5 : Math.min(
+				...gens.filter(gen => gen > 4)
+			);
+			legalGens += '0123456789'.slice(minUpperGen);
+			learnsetStr = legalGens;
+		} else {
+			learnsetStr = '0123456789'.slice(minGen);
+		}
+
+		if (gens.indexOf(6) >= 0) learnsetStr += 'p';
+		if (gens.indexOf(7) >= 0 && !vcOnly) learnsetStr += 'q';
+		if (gens.indexOf(8) >= 0 && !vcOnly) learnsetStr += 'g';
+		if (gens.indexOf(9) >= 0 && !vcOnly) learnsetStr += 'w';
+		return learnsetStr;
+	}
+
 	const learnsets = {};
 	BattleTeambuilderTable.learnsets = learnsets;
 	for (const id in Dex.data.Learnsets) {
@@ -991,6 +1034,20 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const genData = genDex.data;
 		const nextGenDex = Dex.mod(nextGen);
 		const nextGenData = nextGenDex.data;
+
+		const overrideSpeciesData = {};
+		BattleTeambuilderTable[gen].overrideSpeciesData = overrideSpeciesData;
+		for (const id in genData.Pokedex) {
+			const curEntry = genDex.species.get(id);
+			const nextEntry = nextGenDex.species.get(id);
+			for (const key of overrideSpeciesKeys) {
+				if (JSON.stringify(curEntry[key]) !== JSON.stringify(nextEntry[key])) {
+					if (!overrideSpeciesData[id]) overrideSpeciesData[id] = {};
+					overrideSpeciesData[id][key] = curEntry[key];
+				}
+			}
+		}
+
 		const overrideDexInfo = {};
 		BattleTeambuilderTable[gen].overrideDexInfo = overrideDexInfo;
 		for (const id in genData.Pokedex) {
@@ -1201,7 +1258,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				BattleTeambuilderTable[modid].doubles.overrideTier = doublesOverrideTier;
 			}
 			for (const id of pokemon) {
-				const species = modDex.getSpecies(id);
+				const species = Dex.species.get(id);
 				const tier = species.tier;
 				overrideTier[species.id] = tier;
 				if (species.forme && JSON.stringify(modData.Pokedex[species.id]) === JSON.stringify(Dex.data.Pokedex[species.id]) && !ModConfig.showAllFormes) { // hardcode from main
@@ -1500,7 +1557,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Abilities = requireNoCache('../data/pokemon-showdown/dist/data/abilities.js').Abilities;
+	const Abilities = requireNoCache('../data/pokemon-showdown/.data-dist/abilities.js').Abilities;
 	for (const id in Abilities) {
 		const ability = Dex.abilities.get(Abilities[id].name);
 		if (ability.desc) Abilities[id].desc = ability.desc;
@@ -1525,7 +1582,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Aliases = requireNoCache('../data/pokemon-showdown/dist/data/aliases.js').Aliases;
+	const Aliases = requireNoCache('../data/pokemon-showdown/.data-dist/aliases.js').Aliases;
 	const buf = 'exports.BattleAliases = ' + es3stringify(Aliases) + ';';
 	fs.writeFileSync('data/aliases.js', buf);
 }
@@ -1545,7 +1602,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Formats = requireNoCache('../data/pokemon-showdown/dist/config/formats.js').Formats;
+	const Formats = requireNoCache('../data/pokemon-showdown/.config-dist/formats.js').Formats;
 	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
 	fs.writeFileSync('data/formats.js', buf);
 }
