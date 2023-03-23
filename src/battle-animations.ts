@@ -1511,6 +1511,21 @@ export class BattleScene implements BattleSceneStub {
 		return pokemon.sprite.afterMove();
 	}
 
+	updateSpritesForSide(side: Side) {
+		side.missedPokemon?.sprite?.destroy();
+
+		side.missedPokemon = {
+			sprite: new PokemonSprite(null, {
+				x: side.leftof(-100),
+				y: side.y,
+				z: side.z,
+				opacity: 0,
+			}, this, side.isFar),
+		} as any;
+
+		side.missedPokemon.sprite.isMissedPokemon = true;
+	}
+
 	// Misc
 	/////////////////////////////////////////////////////////////////////
 

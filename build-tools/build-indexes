@@ -1187,7 +1187,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			let hasSinglesFormats = false;
 			let hasDoublesFormats = false;
 			for (const formatName in Dex.data.Formats) {
-				const format = Dex.getFormat(formatName);
+				const format = Dex.data.Formats.get(formatName);
 				const formatid = toID(formatName);
 				let maxGen = 0;
 				if (format.mod === modid) {
@@ -1458,7 +1458,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 
-		const overrideMoveData = {};
+		var overrideMoveData = {};
 		BattleTeambuilderTable[mod].overrideMoveData = overrideMoveData;
 		for (const id in modData.Moves) {
 			const modEntry = modDex.moves.get(id);
@@ -1472,7 +1472,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 
-		const overrideAbilityData = {};
+		var overrideAbilityData = {};
 		BattleTeambuilderTable[mod].overrideAbilityData = overrideAbilityData;
 		for (const id in modData.Abilities) {
 			const modEntry = modDex.abilities.get(id);

@@ -1050,7 +1050,7 @@ const Dex = new class implements ModdedDex {
 };
 
 class ModdedDex {
-	readonly gen: number;
+	gen: number;
 	readonly modid: ID;
 	readonly cache = {
 		Moves: {} as any as {[k: string]: Move},
@@ -1062,7 +1062,7 @@ class ModdedDex {
 	pokeballs: string[] | null = null;
 	constructor(modid: ID) {
 		this.modid = modid;
-		const gen = parseInt(modid.slice(3, 1), 10);
+		const gen = parseInt(modid.slice(3), 10);
 		if (!modid.startsWith('gen') || !gen) this.gen = 9;
 		else this.gen = gen;
 	}
@@ -1073,20 +1073,14 @@ class ModdedDex {
 				name = BattleAliases[id];
 				id = toID(name);
 			}
-			if (this.cache.Moves.hasOwnProperty(id)) return this.cache.Moves[id];
+			// if (this.cache.Moves.hasOwnProperty(id)) return this.cache.Moves[id];
 
 			let data = {...Dex.moves.get(name)};
 
-			for (let i = Dex.gen - 1; i >= this.gen; i--) {
-				const table = window.BattleTeambuilderTable[`gen${i}`];
-				if (id in table.overrideMoveData) {
-					Object.assign(data, table.overrideMoveData[id]);
-				}
-			}
-			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideMoveData) {
-					Object.assign(data, table.overrideMoveData[id]);
+			const table = window.BattleTeambuilderTable[this.modid];
+			if (table.overrideMoveInfo[id]) {
+				for (const key in table.overrideMoveInfo[id]) {
+					data = {...Dex.moves.get(name), ...table.overrideMoveInfo[id]};
 				}
 			}
 			if (this.gen <= 3 && data.category !== 'Status') {
@@ -1098,31 +1092,6 @@ class ModdedDex {
 			return move;
 		},
 	};
-
-	/** @deprecated */
-	getMove(name: string): Move {
-		let id = toID(name);
-		if (window.BattleAliases && id in BattleAliases) {
-			name = BattleAliases[id];
-			id = toID(name);
-		}
-		// if (this.cache.Moves.hasOwnProperty(id)) return this.cache.Moves[id];
-
-		let data = {...Dex.getMove(name)};
-
-		const table = window.BattleTeambuilderTable[this.modid];
-		if (table.overrideMoveInfo[id]) {
-			for (const key in table.overrideMoveInfo[id]) {
-				data = {...Dex.getMove(name), ...table.overrideMoveInfo[id]};
-			}
-		}
-		if (this.gen <= 3 && data.category !== 'Status') {
-			data.category = Dex.getGen3Category(data.type);
-		}
-		const move = new Move(id, name, data);
-		this.cache.Moves[id] = move;
-		return move;
-	}
 
 	items = {
 		get: (name: string): Item => {
@@ -1148,156 +1117,6 @@ class ModdedDex {
 			return item;
 		},
 	};
-
-	/** @deprecated */
-	getItem(name: string): Item {
-		let id = toID(name);
-		if (window.BattleAliases && id in BattleAliases) {
-			name = BattleAliases[id];
-			id = toID(name);
-		}
-		if (this.cache.Items.hasOwnProperty(id)) return this.cache.Items[id];
-		const table = window.BattleTeambuilderTable[this.modid];
-		let data = {...Dex.getItem(name)};
-		if (table.fullItemName && id in table.fullItemName) {
-			data.name = table.fullItemName[id];
-			data.exists = true;
-		}
-		if (id in table.overrideItemDesc) data.shortDesc = table.overrideItemDesc[id];
-		for (let i = this.gen; i < 8; i++) {
-			if (id in window.BattleTeambuilderTable['gen' + i].overrideItemDesc) {
-				data.shortDesc = window.BattleTeambuilderTable['gen' + i].overrideItemDesc[id];
-				break;
-			}
-		}
-
-		const item = new Item(id, name, data);
-		this.cache.Items[id] = item;
-		return item;
-	}
-
-	/** @deprecated */
-	getAbility(name: string): Ability {
-		let id = toID(name);
-		if (window.BattleAliases && id in BattleAliases) {
-			name = BattleAliases[id];
-			id = toID(name);
-		}
-		// if (this.cache.Abilities.hasOwnProperty(id)) return this.cache.Abilities[id];
-		let table = BattleTeambuilderTable[this.modid];
-		let data = {...Dex.getAbility(name)};
-		if (table.fullAbilityName && id in table.fullAbilityName) {
-			data.name = table.fullAbilityName[id];
-			data.exists = true;
-		}
-		if (id in table.overrideAbilityDesc) {
-			data.shortDesc = table.overrideAbilityDesc[id];
-		} else {
-			for (let i = this.gen; i < 8; i++) {
-				if (id in window.BattleTeambuilderTable['gen' + i].overrideAbilityDesc) {
-					data.shortDesc = window.BattleTeambuilderTable['gen' + i].overrideAbilityDesc[id];
-					break;
-				}
-			}
-		}
-		const ability = new Ability(id, name, data);
-		this.cache.Abilities[id] = ability;
-		return ability;
-	}
-
-	/** @deprecated */	
-	getSpecies(name: string, hasData = true, debug = ""): Species {
-		let id = toID(name);
-		let formid = id;
-		// if (debug) console.log("getSpecies (ModdedDex): " + debug + ' ' + id);
-		if (name.includes('-')) this.getSpecies(name.split('-')[0]);
-		const table = window.BattleTeambuilderTable[this.modid];
-		if (!table.BattlePokedexAltForms) table.BattlePokedexAltForms = {};
-		if (formid in table.BattlePokedexAltForms) {
-			return table.BattlePokedexAltForms[formid];
-		}
-		if (!table.BattleBaseSpeciesChart) table.BattleBaseSpeciesChart = [];
-		if (window.BattleAliases && id in BattleAliases && !table.overrideDexInfo[id]) {
-			name = BattleAliases[id];
-			id = toID(name);
-		} else if (table.overrideDexInfo && !(id in table.overrideDexInfo) && table.BattleBaseSpeciesChart) {
-			for (const baseSpeciesId of table.BattleBaseSpeciesChart) {
-				if (formid.startsWith(baseSpeciesId)) {
-					id = baseSpeciesId;
-					break;
-				}
-			}
-		}
-		// if (this.cache.Species.hasOwnProperty(id)) return this.cache.Species[id];
-		var data;
-		if (hasData) {
-			data = {...Dex.getSpecies(name, true, "from moddedDex: getSpecies 1")};
-			if (table.overrideDexInfo && table.overrideDexInfo[id]) {
-				data = {...Dex.getSpecies(name, true, "from moddedDex: getSpecies 2"), ...table.overrideDexInfo[id]};
-			}
-		} else {
-			if (table.overrideDexInfo && table.overrideDexInfo[id]) {
-				data = {...table.overrideDexInfo[id]};
-			}
-		}
-		
-		if (this.gen < 3) {
-			data.abilities = {0: "None"};
-		}
-
-		if (id in table.overrideTier) data.tier = table.overrideTier[id];
-		if (!data.tier && id.slice(-5) === 'totem') {
-			data.tier = this.getSpecies(id.slice(0, -5)).tier;
-		}
-		if (!data.tier && data.baseSpecies && toID(data.baseSpecies) !== id) {
-			data.tier = this.getSpecies(data.baseSpecies).tier;
-		}
-		if (data.cosmeticFormes) {
-			if (!table.BattleBaseSpeciesChart.includes(id)) table.BattleBaseSpeciesChart.push(id);
-			for (const forme of data.cosmeticFormes) {
-				if (toID(forme) === formid) {
-					data = new Species(formid, name, {
-						...data,
-						name: forme,
-						forme: forme.slice(data.name.length + 1),
-						baseForme: "",
-						baseSpecies: data.name,
-						otherFormes: null,
-					});
-					table.BattlePokedexAltForms[formid] = data;
-					break;
-				}
-			}
-		}
-		if (data.gen > this.gen) data.tier = 'Illegal';
-		const species = new Species(id, name, data);
-		this.cache.Species[id] = species;
-		return species;
-	}
-
-	/** @deprecated */	
-	getType(name: string): Effect {
-		let id = toID(name) as string;
-		id = id.substr(0, 1).toUpperCase() + id.substr(1);
-
-		// if (this.cache.Types.hasOwnProperty(id)) return this.cache.Types[id];
-
-		let data = {...Dex.getType(name)};
-
-		for (let i = 7; i >= this.gen; i--) {
-			if (id in window.BattleTeambuilderTable['gen' + i].removeType) {
-				data.exists = false;
-				// don't bother correcting its attributes given it doesn't exist
-				break;
-			}
-			if (id in window.BattleTeambuilderTable['gen' + i].overrideTypeChart) {
-				data = {...data, ...window.BattleTeambuilderTable['gen' + i].overrideTypeChart[id]};
-			}
-		}
-
-		this.cache.Types[id] = data;
-		return data;
-	}
 
 	abilities = {
 		get: (name: string): Ability => {
