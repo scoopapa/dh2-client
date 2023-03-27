@@ -25,6 +25,8 @@ const Dex = require('../data/pokemon-showdown/.sim-dist/dex').Dex;
 const toID = Dex.toID;
 const ModConfigData = require('../config/mod-config').ModConfigData;
 const ModConfig = ModConfigData.ClientMods;
+var Formats = require('../data/pokemon-showdown/.config-dist/formats.js').Formats;
+
 for (const modid in Dex.dexes) {
 	try {
 		if ((/gen\d/.test(modid) && modid.length === 4) || modid === 'base') continue;
@@ -47,10 +49,10 @@ Dex.includeData();
 console.log("DONE");
 
 function es3stringify(obj) {
-	const buf = JSON.stringify(obj);
-	return buf.replace(/\"([A-Za-z][A-Za-z0-9]*)\"\:/g, (fullMatch, key) => (
-		['return', 'new', 'delete'].includes(key) ? fullMatch : `${key}:`
-	));
+	let buf = JSON.stringify(obj);
+	buf = buf.replace(/\"([A-Za-z][A-Za-z0-9]*)\"\:/g, '$1:');
+	buf = buf.replace(/return\:/g, '"return":').replace(/new\:/g, '"new":').replace(/delete\:/g, '"delete":');
+	return buf;
 }
 
 function requireNoCache(pathSpec) {
@@ -1180,16 +1182,18 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			const modDex = Dex.mod(modid);
 			const modData = modDex.data;
 			if (modData.Scripts.teambuilderConfig) ModConfig[modid] = modData.Scripts.teambuilderConfig;
-			let modGen = 0;
+			let modGen = modDex.gen;
 			const formats = {};
 			ModConfig[modid].formats = formats;
 			// Find formats using this mod
 			let hasSinglesFormats = false;
 			let hasDoublesFormats = false;
-			for (const formatName in Dex.data.Formats) {
-				const format = Dex.data.Formats.get(formatName);
+			for (const i in Formats) {
+				if (!Formats[i].name) continue; // formats list dividers don't have a name
+				const formatName = Formats[i].name;
+				const format = Formats[i];
 				const formatid = toID(formatName);
-				let maxGen = 0;
+				let maxGen = format.gen;
 				if (format.mod === modid) {
 					formats[formatid] = {
 						name: formatName,
@@ -1198,9 +1202,9 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 						gameType: '',
 						bans: [],
 						unbans: [],
-						banlist: format.banlist.concat(format.teambuilderBans),
+						banlist: !!format.teambuilderBans ? format.banlist.concat(format.teambuilderBans) : []
 					};
-					if (format.teambuilderFormat) formats[formatid].teambuilderFormat = format.teambuilderFormat;
+					if (!!format.teambuilderFormat) formats[formatid].teambuilderFormat = format.teambuilderFormat;
 					if (format.ruleset.includes('Standard NatDex')) formats[formatid].formatType = 'natdex';
 					if (format.gameType === 'doubles') {
 						formats[formatid].gameType = 'doubles';
@@ -1210,7 +1214,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 						const id = toID(name);
 						if (id in Dex.data.Pokedex || id in modData.Pokedex) formats[formatid].bans.push(id);
 					}
-					if (format.banlist.includes("All Pokemon")) {
+					if (!!format.banlist && format.banlist.includes("All Pokemon")) {
 						formats[formatid].bans.push('All Pokemon');
 						for (const name of format.unbanlist) {
 							const id = toID(name);
@@ -1282,7 +1286,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			for (const tier in tierTable) {
 				for (const formatid in formats) {
 					const banlist = formats[formatid].banlist;
-					if (banlist.includes(tier) || banlist.includes(toID(tier))) {
+					if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
 						for (const i in tierTable[tier]) {
 							const speciesid = tierTable[tier][i];
 							if (!formats[formatid].bans.includes(speciesid)) formats[formatid].bans.push(speciesid);
@@ -1602,7 +1606,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Formats = requireNoCache('../data/pokemon-showdown/.config-dist/formats.js').Formats;
+	Formats = requireNoCache('../data/pokemon-showdown/.config-dist/formats.js').Formats;
 	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
 	fs.writeFileSync('data/formats.js', buf);
 }
