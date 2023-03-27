@@ -1180,10 +1180,10 @@ Storage.importTeam = function (buffer, teams) {
 			var parenIndex = line.lastIndexOf(' (');
 			if (line.substr(line.length - 1) === ')' && parenIndex !== -1) {
 				line = line.substr(0, line.length - 1);
-				var thisDex = Dex.getSpecies(line.substr(parenIndex + 2)).exists ? Dex : null;
+				var thisDex = Dex.species.get(line.substr(parenIndex + 2)).exists ? Dex : null;
 				if (!thisDex) {
 					for (var modid in (ModConfig)) {
-						if (Dex.mod(modid).getSpecies(line.substr(parenIndex + 2)).exists) {
+						if (Dex.mod(modid).species.get(line.substr(parenIndex + 2)).exists) {
 							thisDex = Dex.mod(modid);
 						}
 					}
@@ -1192,10 +1192,10 @@ Storage.importTeam = function (buffer, teams) {
 				line = line.substr(0, parenIndex);
 				curSet.name = line;
 			} else {
-				var thisDex = Dex.getSpecies(line).exists ? Dex : null;
+				var thisDex = Dex.species.get(line).exists ? Dex : null;
 				if (!thisDex) {
 					for (var modid in (ModConfig)) {
-						if (Dex.mod(modid).getSpecies(line).exists) {
+						if (Dex.mod(modid).species.get(line).exists) {
 							thisDex = Dex.mod(modid);
 						}
 					}
