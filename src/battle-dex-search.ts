@@ -627,7 +627,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 
 		this.baseResults = null;
 		this.baseIllegalResults = null;
-
+		let gen = 9;
 		const ClientMods = window.ModConfig;
 		this.modFormat = format;
 
@@ -648,6 +648,14 @@ abstract class BattleTypedSearch<T extends SearchType> {
 						break;
 					}
 				}
+			}
+			if (mod === "scootopia") console.log( "Gen " + gen + " scootopia");
+			if (mod) {
+				this.dex = Dex.mod(mod as ID);
+				this.dex.gen = gen;
+				this.mod = mod;
+			} else {
+				this.dex = Dex.forGen(gen);
 			}
 		} else if (!format) {
 			this.dex = Dex;
