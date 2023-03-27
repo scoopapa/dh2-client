@@ -136,6 +136,8 @@
 		exportMode: false,
 		update: function () {
 			teams = Storage.teams;
+			console.log("mod: " + this.curTeam?.mod)
+			console.log("gen: " + this.curTeam?.gen)
 			if (this.curTeam) {
 				this.ignoreEVLimits = (this.curTeam.gen < 3 ||
 					((this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh')) && this.curTeam.gen !== 6) ||
@@ -1201,7 +1203,7 @@
 			buf += '<div class="setchart-nickname">';
 			buf += '<label>Nickname</label><input type="text" name="nickname" class="textbox" value="' + BattleLog.escapeHTML(set.name || '') + '" placeholder="' + BattleLog.escapeHTML(species.baseSpecies) + '" />';
 			buf += '</div>';
-			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.gen) + ';">';
+			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.gen, this.curTeam.mod) + ';">';
 
 			// icon
 			buf += '<div class="setcol setcol-icon">';
@@ -3349,7 +3351,7 @@
 			// do this after setting set.evs because it's assumed to exist
 			// after getStat is run
 			var species;
-			if (this.curTeam.mod) species = this.curTeam.mod.species.get(set.species,undefined, "from getStat1");
+			if (this.curTeam.mod) species = Dex.mod(this.curTeam.mod).species.get(set.species,undefined, "from getStat1");
 			else species = Dex.forGen(this.curTeam.gen).species.get(set.species,undefined, "from getStat 2");
 			if (!species || !species.exists) return 0;
 
