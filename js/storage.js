@@ -1119,6 +1119,7 @@ Storage.importTeam = function (buffer, teams) {
 	} else if (text.length === 1 || (text.length === 2 && !text[1])) {
 		return Storage.unpackTeam(text[0]);
 	}
+	const mod = (window.room.curTeam && window.room.curTeam.mod) ? window.room.curTeam.mod : "";
 	for (var i = 0; i < text.length; i++) {
 		var line = $.trim(text[i]);
 		if (line === '' || line === '---') {

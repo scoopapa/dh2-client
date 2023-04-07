@@ -136,9 +136,10 @@
 		exportMode: false,
 		update: function () {
 			teams = Storage.teams;
-			console.log("mod: " + this.curTeam?.mod)
-			console.log("gen: " + this.curTeam?.gen)
+			// console.log("mod: " + this.curTeam?.mod)
+			// console.log("gen: " + this.curTeam?.gen)
 			if (this.curTeam) {
+				console.log(JSON.stringify(this.curTeam, null, 4))
 				this.ignoreEVLimits = (this.curTeam.gen < 3 ||
 					((this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh')) && this.curTeam.gen !== 6) ||
 					this.curTeam.format.includes('metronomebattle') || (this.curTeam.mod && ModConfig[this.curTeam.mod].ignoreEVLimits));

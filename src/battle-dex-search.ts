@@ -657,10 +657,12 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			} else {
 				this.dex = Dex.forGen(gen);
 			}
+			if (overrideFormat) format = overrideFormat as ID;
+			else format = (format.slice(4) || 'customgame') as ID;
+			if (modFormatType) this.formatType = modFormatType as 'doubles' | 'letsgo' | 'metronome' | 'natdex' | 'nfe' | 'dlc1' | 'dlc1doubles' | null;
 		} else if (!format) {
 			this.dex = Dex;
 		}
-
 		if (format.startsWith('dlc1')) {
 			if (format.includes('doubles')) {
 				this.formatType = 'dlc1doubles';
