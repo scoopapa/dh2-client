@@ -1188,15 +1188,15 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			// Find formats using this mod
 			let hasSinglesFormats = false;
 			let hasDoublesFormats = false;
-			for (const i in Formats) {
-				if (!Formats[i].name) continue; // formats list dividers don't have a name
-				const formatName = Formats[i].name;
-				const format = Formats[i];
-				const formatid = toID(formatName);
+			for (const i in Dex.formatsCache) {
+				const format = Dex.formats.get(i);
+				const formatMod = toID(format.mod);
+				const formatid = toID(i);
 				let maxGen = format.gen;
-				if (format.mod === modid) {
+				if (formatMod === modid) {
+					console.log("creating formats data for " + formatid)
 					formats[formatid] = {
-						name: formatName,
+						name: formatMod,
 						teambuilderFormat: '',
 						formatType: '',
 						gameType: '',
@@ -1205,7 +1205,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 						banlist: !!format.teambuilderBans ? format.banlist.concat(format.teambuilderBans) : []
 					};
 					if (!!format.teambuilderFormat) formats[formatid].teambuilderFormat = format.teambuilderFormat;
-					if (format.ruleset.includes('Standard NatDex')) formats[formatid].formatType = 'natdex';
+					if (format.ruleset?.includes('Standard NatDex')) formats[formatid].formatType = 'natdex';
 					if (format.gameType === 'doubles') {
 						formats[formatid].gameType = 'doubles';
 						hasDoublesFormats = true;
@@ -1224,7 +1224,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 
 					if (formatid.startsWith('gen') && maxGen < Number(formatid.charAt(3))) maxGen = Number(formatid.charAt(3));
 				}
-				if (maxGen !== 8) modGen = maxGen;
+				if (maxGen !== 9) modGen = maxGen;
 			}
 			// Find any nonstandard tiers used by this mod
 			const standardTiers = ['uber', 'ou', 'uubl', 'uu', 'rubl', 'ru', 'nubl', 'nu', 'publ',
@@ -1262,7 +1262,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				BattleTeambuilderTable[modid].doubles.overrideTier = doublesOverrideTier;
 			}
 			for (const id of pokemon) {
-				const species = Dex.species.get(id);
+				const species = modDex.species.get(id);
 				const tier = species.tier;
 				overrideTier[species.id] = tier;
 				if (species.forme && JSON.stringify(modData.Pokedex[species.id]) === JSON.stringify(Dex.data.Pokedex[species.id]) && !ModConfig.showAllFormes) { // hardcode from main
