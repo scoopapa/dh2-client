@@ -8,28 +8,51 @@ const child_process = require("child_process");
 const rootDir = path.resolve(__dirname, '..');
 process.chdir(rootDir);
 
-if (!fs.existsSync('data/pokemon-showdown')) {
-	child_process.execSync('git clone https://github.com/smogon/pokemon-showdown.git', {
-		cwd: 'data',
-	});
-}
+const debug = true;
+
+// if (!fs.existsSync('data/pokemon-showdown')) {
+// 	child_process.execSync('git clone -b gen9 https://github.com/scoopapa/DH.git pokemon-showdown', {
+// 				cwd: 'data',
+// 	});
+// }
 
 process.stdout.write("Syncing data from Git repository... ");
-child_process.execSync('git pull', {cwd: 'data/pokemon-showdown'});
+// child_process.execSync('git pull', {cwd: 'data/pokemon-showdown'});
 child_process.execSync('npm run build', {cwd: 'data/pokemon-showdown'});
 console.log("DONE");
 
-const Dex = require('../data/pokemon-showdown/dist/sim/dex').Dex;
+const Dex = require('../data/pokemon-showdown/.sim-dist/dex').Dex;
 const toID = Dex.toID;
+const ModConfigData = require('../config/mod-config').ModConfigData;
+const ModConfig = ModConfigData.ClientMods;
+var Formats = require('../data/pokemon-showdown/.config-dist/formats.js').Formats;
+
+for (const modid in Dex.dexes) {
+	try {
+		if ((/gen\d/.test(modid) && modid.length === 4) || modid === 'base') continue;
+		let teambuilderConfig = Dex.dexes[modid].data.Scripts.teambuilderConfig;
+		teambuilderConfig = teambuilderConfig ? teambuilderConfig : {};
+		ModConfig[modid] = ModConfig[modid] ? ModConfig[modid] : {};
+		ModConfig[modid] = Object.assign(ModConfig[modid], teambuilderConfig);
+	} catch(err) {
+		// delete ModConfig[modid];
+		// delete BattleTeambuilderTable[modid];
+		if (debug) {
+			console.log("WARNING: Failed to load config data for " + modid);
+			console.log("This was the error:");
+			console.log(err);
+		}
+	}
+}
 process.stdout.write("Loading gen 6 data... ");
 Dex.includeData();
 console.log("DONE");
 
 function es3stringify(obj) {
-	const buf = JSON.stringify(obj);
-	return buf.replace(/\"([A-Za-z][A-Za-z0-9]*)\"\:/g, (fullMatch, key) => (
-		['return', 'new', 'delete'].includes(key) ? fullMatch : `${key}:`
-	));
+	let buf = JSON.stringify(obj);
+	buf = buf.replace(/\"([A-Za-z][A-Za-z0-9]*)\"\:/g, '$1:');
+	buf = buf.replace(/return\:/g, '"return":').replace(/new\:/g, '"new":').replace(/delete\:/g, '"delete":');
+	return buf;
 }
 
 function requireNoCache(pathSpec) {
@@ -78,7 +101,9 @@ function requireNoCache(pathSpec) {
 	index.push('moves article');
 
 	// generate aliases
+	const usedIDs = [];
 	function generateAlias(id, name, type) {
+		usedIDs.push(id);
 		let i = name.lastIndexOf(' ');
 		if (i < 0) i = name.lastIndexOf('-');
 		if (name.endsWith('-Mega-X') || name.endsWith('-Mega-Y')) {
@@ -222,6 +247,31 @@ function requireNoCache(pathSpec) {
 	for (const id in Dex.data.Abilities) {
 		const name = Dex.data.Abilities[id].name;
 		generateAlias(id, name, 'ability');
+	}
+
+	const infoTable = {Pokedex: 'pokemon', Moves: 'move', Items: 'item', Abilities: 'ability', TypeChart: 'type'};
+	for (const modid in ModConfig) {
+		for (const key in infoTable) {
+			try {
+				const modDex = Dex.mod(modid);
+				if (!modDex || !modDex.data || !modDex.data[key]) continue;
+				for (let id in modDex.data[key]) {
+					if (!modDex.data[key][id]) continue;
+					if (!usedIDs.includes(toID(id)) && id in Dex.data.TypeChart === false) {
+						index.push(toID(id) + ' ' + infoTable[key]);
+						usedIDs.push(toID(id));
+						const name = modDex.data[key][id].name;
+						if (name) generateAlias(id, name, infoTable[key]);
+					}
+				}
+			} catch(err) {
+				if (debug) {
+					console.log("WARNING: Failed to load search data for " + modid);
+					console.log("This was the error:");
+					console.log(err);
+				}
+			}
+		}
 	}
 
 	index.sort();
@@ -799,6 +849,49 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	const gen3HMs = new Set(['cut', 'fly', 'surf', 'strength', 'flash', 'rocksmash', 'waterfall', 'dive']);
 	const gen4HMs = new Set(['cut', 'fly', 'surf', 'strength', 'rocksmash', 'waterfall', 'rockclimb']);
 
+	function getLearnsetStr(moveid, learnMoveArr, pokemonid = "", modid = "") {
+		let learnsetStr = '';
+		if (!learnMoveArr || !learnMoveArr.map) {
+			return "";
+		}
+		const gens = learnMoveArr.map(x => Number(x[0]));
+		const minGen = Math.min(...gens);
+		const vcOnly = (minGen === 7 && learnMoveArr.every(x => x[0] !== '7' || x === '7V') ||
+			minGen === 8 && learnMoveArr.every(x => x[0] !== '8' || x === '8V') ||
+			minGen === 9 && learnMoveArr.every(x => x[0] !== '9' || x === '9V'));
+
+      if (minGen <= 4 && minGen > 2 && (gen3HMs.has(moveid) || gen4HMs.has(moveid))) {
+			let legalGens = '';
+			let available = false;
+
+			if (minGen === 3) {
+				legalGens += '3';
+				available = true;
+			}
+			if (available) available = !gen3HMs.has(moveid);
+
+			if (available || gens.includes(4)) {
+				legalGens += '4';
+				available = true;
+			}
+			if (available) available = !gen4HMs.has(moveid);
+
+			let minUpperGen = available ? 5 : Math.min(
+				...gens.filter(gen => gen > 4)
+			);
+			legalGens += '0123456789'.slice(minUpperGen);
+			learnsetStr = legalGens;
+		} else {
+			learnsetStr = '0123456789'.slice(minGen);
+		}
+
+		if (gens.indexOf(6) >= 0) learnsetStr += 'p';
+		if (gens.indexOf(7) >= 0 && !vcOnly) learnsetStr += 'q';
+		if (gens.indexOf(8) >= 0 && !vcOnly) learnsetStr += 'g';
+		if (gens.indexOf(9) >= 0 && !vcOnly) learnsetStr += 'w';
+		return learnsetStr;
+	}
+
 	const learnsets = {};
 	BattleTeambuilderTable.learnsets = learnsets;
 	for (const id in Dex.data.Learnsets) {
@@ -957,16 +1050,66 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 
-		const overrideMoveData = {};
-		BattleTeambuilderTable[gen].overrideMoveData = overrideMoveData;
+		const overrideDexInfo = {};
+		BattleTeambuilderTable[gen].overrideDexInfo = overrideDexInfo;
+		for (const id in genData.Pokedex) {
+			const modEntry = genData.Pokedex[id];
+			const baseEntry = Dex.data.Pokedex[id];
+			if (typeof baseEntry === 'undefined') {
+				overrideDexInfo[id] = {};
+				overrideDexInfo[id] = modEntry;
+				overrideDexInfo[id].exists = true;
+				continue;
+			}
+			for (const key in modEntry) {
+				const modString = JSON.stringify(modEntry[key]);
+				const baseString = JSON.stringify(baseEntry[key]);
+				if (modString !== baseString) {
+					if (!overrideDexInfo[id]) overrideDexInfo[id] = {};
+					overrideDexInfo[id][key] = JSON.parse(modString);
+				}
+			}
+		}
+		const overrideMoveKeys = ['basePower', 'accuracy', 'category', 'pp', 'isNonstandard', 'shortDesc', 'unviable'];
+		const overrideMoveInfo = {};
+		BattleTeambuilderTable[gen].overrideMoveInfo = overrideMoveInfo;
 		for (const id in genData.Moves) {
-			const curEntry = genDex.moves.get(id);
-			const nextEntry = nextGenDex.moves.get(id);
-			for (const key of overrideMoveKeys) {
-				if (key === 'category' && genNum <= 3) continue;
-				if (JSON.stringify(curEntry[key]) !== JSON.stringify(nextEntry[key])) {
-					if (!overrideMoveData[id]) overrideMoveData[id] = {};
-					overrideMoveData[id][key] = curEntry[key];
+			const modEntry = genData.Moves[id];
+			const baseEntry = Dex.data.Moves[id];
+			if (typeof baseEntry === 'undefined') {
+				overrideMoveInfo[id] = {};
+				overrideMoveInfo[id] = modEntry;
+				overrideMoveInfo[id].exists = true;
+				continue;
+			}
+			for (const key in modEntry) {
+				if (!overrideMoveKeys.includes(key)) continue;
+				const modString = JSON.stringify(modEntry[key]);
+				const baseString = JSON.stringify(baseEntry[key]);
+				if (modString !== baseString) {
+					if (!overrideMoveInfo[id]) overrideMoveInfo[id] = {};
+					overrideMoveInfo[id][key] = JSON.parse(modString);
+				}
+			}
+		}
+
+		BattleTeambuilderTable[gen].overrideMoveInfo = overrideMoveInfo;
+		for (const id in genData.Moves) {
+			const modEntry = genData.Moves[id];
+			const baseEntry = Dex.data.Moves[id];
+			if (typeof baseEntry === 'undefined') {
+				overrideMoveInfo[id] = {};
+				overrideMoveInfo[id] = modEntry;
+				overrideMoveInfo[id].exists = true;
+				continue;
+			}
+			for (const key in modEntry) {
+				if (!overrideMoveKeys.includes(key)) continue;
+				const modString = JSON.stringify(modEntry[key]);
+				const baseString = JSON.stringify(baseEntry[key]);
+				if (modString !== baseString) {
+					if (!overrideMoveInfo[id]) overrideMoveInfo[id] = {};
+					overrideMoveInfo[id][key] = JSON.parse(modString);
 				}
 			}
 		}
@@ -1001,12 +1144,298 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		for (const id in nextGenData.TypeChart) {
 			const curEntry = genData.TypeChart[id];
 			const nextEntry = nextGenData.TypeChart[id];
-			if (curEntry.isNonstandard) {
+			if (!curEntry) {
 				removeType[id] = true;
 				continue;
 			}
 			if (JSON.stringify(nextEntry) !== JSON.stringify(curEntry)) {
 				overrideTypeChart[id] = curEntry;
+			}
+		}
+	}
+	const sliceTiers = ["OU", "AG", "Uber", "UU", "(UU)", "RU", "NU", "(NU)", "PU", "(PU)", "NFE", "LC", "DOU", "DUU", "(DUU)", "New", "Legal", "Regular", "Restricted Legendary", "CAP LC"];
+	function buildTiers(modid, tierTable, tiers, customTiers, formatSlices, tierOrder) {
+		for (const tier of tierOrder) {
+			if (ModConfig[modid].excludeStandardTiers) break;
+			if (sliceTiers.includes(tier)) {
+				let usedTier = tier;
+				if (usedTier === "(UU)") usedTier = "RU";
+				if (usedTier === "(NU)") usedTier = "PU";
+				if (usedTier === "(PU)") usedTier = "ZU";
+				if (usedTier === "(DUU)") usedTier = "DNU";
+				formatSlices[usedTier] = tiers.length;
+			}
+			if (!tierTable[tier]) continue;
+			tiers.push(['header', tier]);
+			tiers.push(...tierTable[tier]);
+		}
+		for (const tier of ModConfig[modid].customTiers) {
+			if (!tierTable[tier]) continue;
+			customTiers.push(['header', tier]);
+			customTiers.push(...tierTable[tier]);
+		}
+	}
+	for (const modid of Object.keys(ModConfig)) {
+		if (BattleTeambuilderTable[modid]) continue;
+		try { // catch loading errors so the whole thing doesn't break if one mod does
+			// Gather data about formats
+			const modDex = Dex.mod(modid);
+			const modData = modDex.data;
+			if (modData.Scripts.teambuilderConfig) ModConfig[modid] = modData.Scripts.teambuilderConfig;
+			let modGen = modDex.gen;
+			const formats = {};
+			ModConfig[modid].formats = formats;
+			// Find formats using this mod
+			let hasSinglesFormats = false;
+			let hasDoublesFormats = false;
+			for (const i in Dex.formatsCache) {
+				const format = Dex.formats.get(i);
+				const formatMod = toID(format.mod);
+				const formatid = toID(i);
+				let maxGen = format.gen;
+				if (formatMod === modid) {
+					console.log("creating formats data for " + formatid)
+					formats[formatid] = {
+						name: formatMod,
+						teambuilderFormat: '',
+						formatType: '',
+						gameType: '',
+						bans: [],
+						unbans: [],
+						banlist: format.banlist.concat(format.teambuilderBans),
+					};
+					if (!!format.teambuilderFormat) formats[formatid].teambuilderFormat = format.teambuilderFormat;
+					if (format.ruleset?.includes('Standard NatDex')) formats[formatid].formatType = 'natdex';
+					if (format.gameType === 'doubles') {
+						formats[formatid].gameType = 'doubles';
+						hasDoublesFormats = true;
+					} else hasSinglesFormats = true;
+					for (const name of formats[formatid].banlist) {
+						const id = toID(name);
+						if (id in Dex.data.Pokedex || id in modData.Pokedex) formats[formatid].bans.push(id);
+					}
+					if (!!format.banlist && format.banlist.includes("All Pokemon")) {
+						formats[formatid].bans.push('All Pokemon');
+						for (const name of format.unbanlist) {
+							const id = toID(name);
+							if (id in Dex.data.Pokedex || id in modData.Pokedex) formats[formatid].unbans.push(id);
+						}
+					}
+
+					if (formatid.startsWith('gen') && maxGen < Number(formatid.charAt(3))) maxGen = Number(formatid.charAt(3));
+				}
+				if (maxGen !== 9) modGen = maxGen;
+			}
+			// Find any nonstandard tiers used by this mod
+			const standardTiers = ['uber', 'ou', 'uubl', 'uu', 'rubl', 'ru', 'nubl', 'nu', 'publ',
+				'pu', 'zu', 'nfe', 'lcuber', 'lc', 'cap', 'caplc', 'capnfe', 'ag', 'duber', 'dou',
+				'dbl', 'duu', 'dnu', 'illegal', 'unreleased'];
+			if (!ModConfig[modid].customTiers) ModConfig[modid].customTiers = [];
+			if (!ModConfig[modid].customDoublesTiers) ModConfig[modid].customDoublesTiers = [];
+			for (const speciesid in modData.FormatsData) {
+				if (modData.FormatsData[speciesid] === undefined && debug) {
+					console.log('Warning: ' + speciesid + ' does not have tiering data in ' + modid);
+					continue;
+				}
+				const tier = modData.FormatsData[speciesid].tier;
+				const doublesTier = modData.FormatsData[speciesid].doublesTier;
+				if (tier === undefined && doublesTier === undefined) continue;
+				if (!standardTiers.includes(toID(tier)) &&
+					!ModConfig[modid].customTiers.includes(tier)) {
+					ModConfig[modid].customTiers.push(tier);
+				}
+				if (!standardTiers.includes(toID(doublesTier)) &&
+					!ModConfig[modid].customDoublesTiers.includes(doublesTier)) {
+					ModConfig[modid].customDoublesTiers.push(doublesTier);
+				}
+			}
+			BattleTeambuilderTable[modid] = {};
+			//tiers
+			const tierTable = {};
+			const pokemon = Object.keys(modData.Pokedex);
+			pokemon.sort();
+			const overrideTier = {};
+			BattleTeambuilderTable[modid].overrideTier = overrideTier;
+			const doublesOverrideTier = {};
+			if (hasDoublesFormats) {
+				BattleTeambuilderTable[modid].doubles = {};
+				BattleTeambuilderTable[modid].doubles.overrideTier = doublesOverrideTier;
+			}
+			for (const id of pokemon) {
+				const species = modDex.species.get(id);
+				const tier = species.tier;
+				overrideTier[species.id] = tier;
+				if (species.forme && JSON.stringify(modData.Pokedex[species.id]) === JSON.stringify(Dex.data.Pokedex[species.id]) && !ModConfig.showAllFormes) { // hardcode from main
+				if (
+						[
+							'Aegislash', 'Castform', 'Cherrim', 'Cramorant', 'Eiscue', 'Meloetta', 'Mimikyu', 'Minior', 'Morpeko', 'Wishiwashi',
+						].includes(species.baseSpecies) || species.forme.includes('Totem') || species.forme.includes('Zen')
+					) {
+						continue;
+					}
+				}
+				if (!tierTable[tier]) tierTable[tier] = [];
+				tierTable[tier].push(id);
+				if (hasDoublesFormats) {
+					const doublesTier = species.doublesTier;
+					doublesOverrideTier[species.id] = species.doublesTier;
+					if (!tierTable[doublesTier]) tierTable[doublesTier] = [];
+					if (tier !== doublesTier) tierTable[doublesTier].push(id);
+				}
+			}
+			for (const tier in tierTable) {
+				for (const formatid in formats) {
+					const banlist = formats[formatid].banlist;
+					if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
+						for (const i in tierTable[tier]) {
+							const speciesid = tierTable[tier][i];
+							if (!formats[formatid].bans.includes(speciesid)) formats[formatid].bans.push(speciesid);
+						}
+					}
+				}
+			}
+			const tiers = [];
+			BattleTeambuilderTable[modid].tiers = tiers;
+			const doublesTiers = [];
+			if (hasDoublesFormats) BattleTeambuilderTable[modid].doubles.tiers = doublesTiers;
+			const customTiers = [];
+			BattleTeambuilderTable[modid].customTiers = customTiers;
+			const customDoublesTiers = [];
+			if (hasDoublesFormats) BattleTeambuilderTable[modid].doubles.customTiers = customDoublesTiers;
+			const formatSlices = {};
+			BattleTeambuilderTable[modid].formatSlices = formatSlices;
+			const doublesFormatSlices = {};
+			if (hasDoublesFormats) BattleTeambuilderTable[modid].doubles.formatSlices = doublesFormatSlices;
+			const tierOrder = ["OU", "AG", "Uber", "(Uber)", "OU", "(OU)", "UUBL", "UU", "RUBL", "RU", "NUBL", "NU", "PUBL", "PU", "(PU)", "New", "NFE", "LC Uber", "LC", "Unreleased"];
+			const tierOrderDoubles = ["DUber", "(DUber)", "DOU", "DBL", "(DOU)", "DUU", "(DUU)", "New", "NFE", "LC Uber", "LC"];
+			if (hasSinglesFormats) buildTiers(modid, tierTable, tiers, customTiers, formatSlices, tierOrder);
+			if (hasDoublesFormats) buildTiers(modid, tierTable, doublesTiers, customDoublesTiers, doublesFormatSlices, tierOrderDoubles);
+			//pokemon stats
+			const overrideDexInfo = {};
+			BattleTeambuilderTable[modid].overrideDexInfo = overrideDexInfo;
+			for (const id in modData.Pokedex) {
+				const modEntry = modData.Pokedex[id];
+				const baseEntry = Dex.data.Pokedex[id];
+				if (typeof baseEntry === 'undefined') {
+					overrideDexInfo[id] = {};
+					overrideDexInfo[id] = modEntry;
+					overrideDexInfo[id].exists = true;
+					continue;
+				}
+				for (const key in modEntry) {
+					const modString = JSON.stringify(modEntry[key]);
+					const baseString = JSON.stringify(baseEntry[key]);
+					if (modString !== baseString) {
+						if (!overrideDexInfo[id]) overrideDexInfo[id] = {};
+						if (modString === undefined) overrideDexInfo[id][key] = undefined;
+						else overrideDexInfo[id][key] = JSON.parse(modString);
+					}
+				}
+			}
+			//learnsets
+			const overrideLearnsets = {};
+			BattleTeambuilderTable[modid].overrideLearnsets = overrideLearnsets;
+			for (const id in modDex.data.Learnsets) {
+				const learnset = modDex.data.Learnsets[id].learnset;
+				const baseLearnset = Dex.data.Learnsets[id] ? Dex.data.Learnsets[id].learnset : {};
+				if (!learnset) continue;
+				if (!learnsets[id]) learnsets[id] = {};
+				for (const moveid in learnset) {
+					const newLearnsetEntry = getLearnsetStr(moveid, learnset[moveid], id, modid);
+					let baseLearnsetEntry = learnsets[id][moveid];
+					if (modGen === 'gen2' || modGen === 'gen1') baseLearnsetEntry = G2Learnsets[id][moveid];
+					const baseLsetNoEarlyGen = baseLearnsetEntry ? baseLearnsetEntry.replace(1, '').replace(2, '') : '';
+					if (newLearnsetEntry !== baseLearnsetEntry && newLearnsetEntry !== baseLsetNoEarlyGen) {
+						if (!overrideLearnsets[id]) overrideLearnsets[id] = {};
+						overrideLearnsets[id][moveid] = newLearnsetEntry;
+					}
+				}
+				for (const moveid in baseLearnset) {
+					if (baseLearnset[moveid] && !learnset[moveid]) {
+						if (!overrideLearnsets[id]) overrideLearnsets[id] = {};
+						overrideLearnsets[id][moveid] = 'r';
+					}
+				}
+			}
+			//items
+			let items = [];
+			const fullItemName = {};
+			BattleTeambuilderTable[modid].fullItemName = fullItemName;
+			BattleTeambuilderTable[modid].items = items;
+			const overrideItemDesc = {};
+			BattleTeambuilderTable[modid].overrideItemDesc = overrideItemDesc;
+			items.push(BattleTeambuilderTable.items[0]);
+			for (const id in modData.Items) {
+				const modEntry = modData.Items[id];
+				const baseEntry = Dex.data.Items[id];
+				const fakeItem = (typeof baseEntry === 'undefined');
+				if (fakeItem) {
+					items.push(id);
+					fullItemName[id] = modData.Items[id].name;
+				}
+				if (fakeItem || (modEntry.shortDesc || modEntry.desc) !== (baseEntry.shortDesc || baseEntry.desc)) {
+					overrideItemDesc[id] = (modEntry.shortDesc || modEntry.desc);
+				}
+			}
+			let itemTable = BattleTeambuilderTable.items;
+			if (modGen) itemTable = BattleTeambuilderTable['gen' + modGen].items;
+			items.push(...itemTable.slice(1));
+			//moves
+			const overrideMoveInfo = {};
+			const overrideMoveKeys = ['basePower', 'accuracy', 'category', 'pp', 'isNonstandard', 'shortDesc', 'type', 'unviable'];
+			BattleTeambuilderTable[modid].overrideMoveInfo = overrideMoveInfo;
+			for (const id in modData.Moves) {
+				const modEntry = modData.Moves[id];
+				const baseEntry = Dex.data.Moves[id];
+				if (typeof baseEntry === 'undefined') {
+					overrideMoveInfo[id] = {};
+					overrideMoveInfo[id] = modEntry;
+					overrideMoveInfo[id].exists = true;
+					continue;
+				}
+				for (const key in modEntry) {
+					if (!overrideMoveKeys.includes(key)) continue;
+					const modString = JSON.stringify(modEntry[key]);
+					const baseString = JSON.stringify(baseEntry[key]);
+					// if (modid === "cleanslate") console.log(modString);
+					if (modString !== baseString) {
+						if (!overrideMoveInfo[id]) overrideMoveInfo[id] = {};
+						if (modString === undefined) overrideMoveInfo[id][key] = undefined;
+						else overrideMoveInfo[id][key] = JSON.parse(modString);
+					}
+				}
+			}
+			//abilities
+			const fullAbilityName = {};
+			BattleTeambuilderTable[modid].fullAbilityName = fullAbilityName;
+			const overrideAbilityDesc = {};
+			BattleTeambuilderTable[modid].overrideAbilityDesc = overrideAbilityDesc;
+			for (const id in modData.Abilities) {
+				const modEntry = modData.Abilities[id];
+				const baseEntry = Dex.data.Abilities[id];
+				const fakeAbility = (typeof baseEntry === 'undefined');
+				if (fakeAbility) fullAbilityName[id] = modData.Abilities[id].name;
+				if (fakeAbility || (modEntry.shortDesc || modEntry.desc) !== (baseEntry.shortDesc || baseEntry.desc)) {
+					overrideAbilityDesc[id] = (modEntry.shortDesc || modEntry.desc);
+				}
+			}
+			//type chart
+			const overrideTypeChart = {};
+			BattleTeambuilderTable[modid].overrideTypeChart = overrideTypeChart;
+			for (const id in modData.TypeChart) {
+				const modEntry = modData.TypeChart[id];
+				const baseEntry = Dex.data.TypeChart[id];
+				if (JSON.stringify(modEntry) !== JSON.stringify(baseEntry)) {
+					overrideTypeChart[id] = modEntry;
+				}
+			}
+		} catch (err) {
+			delete ModConfig[modid];
+			delete BattleTeambuilderTable[modid];
+			if (debug) {
+				console.log("WARNING: Failed to load " + modid);
+				console.log("This was the error:");
+				console.log(err);
 			}
 		}
 	}
@@ -1033,7 +1462,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 
-		const overrideMoveData = {};
+		var overrideMoveData = {};
 		BattleTeambuilderTable[mod].overrideMoveData = overrideMoveData;
 		for (const id in modData.Moves) {
 			const modEntry = modDex.moves.get(id);
@@ -1047,7 +1476,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 
-		const overrideAbilityData = {};
+		var overrideAbilityData = {};
 		BattleTeambuilderTable[mod].overrideAbilityData = overrideAbilityData;
 		for (const id in modData.Abilities) {
 			const modEntry = modDex.abilities.get(id);
@@ -1064,6 +1493,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	buf += `exports.BattleTeambuilderTable = JSON.parse('${JSON.stringify(BattleTeambuilderTable).replace(/['\\]/g, "\\$&")}');\n\n`;
 
 	fs.writeFileSync('data/teambuilder-tables.js', buf);
+		fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
 }
 
 console.log("DONE");
@@ -1075,7 +1505,7 @@ console.log("DONE");
 process.stdout.write("Building `data/pokedex.js`... ");
 
 {
-	const Pokedex = requireNoCache('../data/pokemon-showdown/dist/data/pokedex.js').Pokedex;
+	const Pokedex = requireNoCache('../data/pokemon-showdown/.data-dist/pokedex.js').Pokedex;
 	for (const id in Pokedex) {
 		const entry = Pokedex[id];
 		if (Dex.data.FormatsData[id]) {
@@ -1100,7 +1530,7 @@ console.log("DONE");
 process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.js`...");
 
 {
-	const Moves = requireNoCache('../data/pokemon-showdown/dist/data/moves.js').Moves;
+	const Moves = requireNoCache('../data/pokemon-showdown/.data-dist/moves.js').Moves;
 	for (const id in Moves) {
 		const move = Dex.moves.get(Moves[id].name);
 		if (move.desc) Moves[id].desc = move.desc;
@@ -1116,7 +1546,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Items = requireNoCache('../data/pokemon-showdown/dist/data/items.js').Items;
+	const Items = requireNoCache('../data/pokemon-showdown/.data-dist/items.js').Items;
 	for (const id in Items) {
 		const item = Dex.items.get(Items[id].name);
 		if (item.desc) Items[id].desc = item.desc;
@@ -1131,7 +1561,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Abilities = requireNoCache('../data/pokemon-showdown/dist/data/abilities.js').Abilities;
+	const Abilities = requireNoCache('../data/pokemon-showdown/.data-dist/abilities.js').Abilities;
 	for (const id in Abilities) {
 		const ability = Dex.abilities.get(Abilities[id].name);
 		if (ability.desc) Abilities[id].desc = ability.desc;
@@ -1146,7 +1576,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const TypeChart = requireNoCache('../data/pokemon-showdown/dist/data/typechart.js').TypeChart;
+	const TypeChart = requireNoCache('../data/pokemon-showdown/.data-dist/typechart.js').TypeChart;
 	const buf = 'exports.BattleTypeChart = ' + es3stringify(TypeChart) + ';';
 	fs.writeFileSync('data/typechart.js', buf);
 }
@@ -1156,7 +1586,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Aliases = requireNoCache('../data/pokemon-showdown/dist/data/aliases.js').Aliases;
+	const Aliases = requireNoCache('../data/pokemon-showdown/.data-dist/aliases.js').Aliases;
 	const buf = 'exports.BattleAliases = ' + es3stringify(Aliases) + ';';
 	fs.writeFileSync('data/aliases.js', buf);
 }
@@ -1166,7 +1596,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const FormatsData = requireNoCache('../data/pokemon-showdown/dist/data/formats-data.js').FormatsData;
+	const FormatsData = requireNoCache('../data/pokemon-showdown/.data-dist/formats-data.js').FormatsData;
 	const buf = 'exports.BattleFormatsData = ' + es3stringify(FormatsData) + ';';
 	fs.writeFileSync('data/formats-data.js', buf);
 }
@@ -1176,7 +1606,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Formats = requireNoCache('../data/pokemon-showdown/dist/config/formats.js').Formats;
+	Formats = requireNoCache('../data/pokemon-showdown/.config-dist/formats.js').Formats;
 	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
 	fs.writeFileSync('data/formats.js', buf);
 }
@@ -1186,10 +1616,37 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Learnsets = requireNoCache('../data/pokemon-showdown/dist/data/learnsets.js').Learnsets;
+	const Learnsets = requireNoCache('../data/pokemon-showdown/.data-dist/learnsets.js').Learnsets;
 	const buf = 'exports.BattleLearnsets = ' + es3stringify(Learnsets) + ';';
 	fs.writeFileSync('data/learnsets.js', buf);
 	fs.writeFileSync('data/learnsets.json', JSON.stringify(Learnsets));
+}
+
+/*********************************************************
+ * Build mod-sprites.js
+ *********************************************************/
+
+{
+	const modSprites = {};
+	const modDir = fs.readdirSync('data/pokemon-showdown/data/mods/');
+	for (const i in modDir) {
+		const modName = modDir[i];
+		const subFolders = ['front', 'front-shiny', 'back', 'back-shiny', 'icons', 'types', 'items'];
+		for (const j in subFolders) {
+			const subF = subFolders[j];
+			const spritePath = 'data/pokemon-showdown/data/mods/' + modName + '/sprites/' + subF;
+			const spriteDir = fs.existsSync(spritePath) ? fs.readdirSync(spritePath) : '';
+			for (const sprI in spriteDir) {
+				let id = spriteDir[sprI];
+				id = toID(id.slice(0, id.length - 4));
+				if (!modSprites[id]) modSprites[id] = {};
+				if (!modSprites[id][modName]) modSprites[id][modName] = [];
+				modSprites[id][modName].push(subF);
+			}
+		}
+	}
+	const buf = 'exports.ModSprites = ' + es3stringify(modSprites) + ';';
+	fs.writeFileSync('data/mod-sprites.js', buf);
 }
 
 /*********************************************************

@@ -179,15 +179,19 @@ const Dex = new class implements ModdedDex {
 
 	pokeballs: string[] | null = null;
 
+	//TODO we might want to move this to something like data/petmods
+	readonly modResourcePrefix = 'https://raw.githubusercontent.com/scoopapa/dh/master/data/mods/';
+
+
 	resourcePrefix = (() => {
 		let prefix = '';
 		if (window.document?.location?.protocol !== 'http:') prefix = 'https:';
-		return `${prefix}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/`;
+		return `${prefix}//${'play.pokemonshowdown.com'}/`;
 	})();
 
 	fxPrefix = (() => {
 		const protocol = (window.document?.location?.protocol !== 'http:') ? 'https:' : '';
-		return `${protocol}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/fx/`;
+		return `${protocol}//${'play.pokemonshowdown.com'}/fx/`;
 	})();
 
 	loadedSpriteData = {xy: 1, bw: 0};
@@ -353,7 +357,6 @@ const Dex = new class implements ModdedDex {
 			if (!window.BattleAbilities) window.BattleAbilities = {};
 			let data = window.BattleAbilities[id];
 			if (data && typeof data.exists === 'boolean') return data;
-			if (!data) data = {exists: false};
 			let ability = new Ability(id, name, data);
 			window.BattleAbilities[id] = ability;
 			return ability;
@@ -361,7 +364,7 @@ const Dex = new class implements ModdedDex {
 	};
 
 	species = {
-		get: (nameOrSpecies: string | Species | null | undefined): Species => {
+		get: (nameOrSpecies: string | Species | null | undefined, modded = false, debug = ""): Species => {
 			if (nameOrSpecies && typeof nameOrSpecies !== 'string') {
 				// TODO: don't accept Species' here
 				return nameOrSpecies;
@@ -384,7 +387,6 @@ const Dex = new class implements ModdedDex {
 			}
 			if (!window.BattlePokedex) window.BattlePokedex = {};
 			let data = window.BattlePokedex[id];
-
 			let species: Species;
 			if (data && typeof data.exists === 'boolean') {
 				species = data;
@@ -461,6 +463,17 @@ const Dex = new class implements ModdedDex {
 		return false;
 	}
 
+	getSpriteMod(mod: string, id: string, folder: string, overrideStandard: boolean = false) {
+		if (!window.ModSprites[id]) return '';
+		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) {
+			for (const modName in window.ModSprites[id]) {
+				if (window.ModSprites[id][modName].includes(folder)) return modName;
+			}
+		}
+		if (mod && window.ModSprites[id][mod] && window.ModSprites[id][mod].includes(folder)) return mod;
+		return '';
+	}
+
 	loadSpriteData(gen: 'xy' | 'bw') {
 		if (this.loadedSpriteData[gen]) return;
 		this.loadedSpriteData[gen] = 1;
@@ -473,16 +486,18 @@ const Dex = new class implements ModdedDex {
 		el.src = path + 'data/pokedex-mini-bw.js' + qs;
 		document.getElementsByTagName('body')[0].appendChild(el);
 	}
+
 	getSpriteData(pokemon: Pokemon | Species | string, isFront: boolean, options: {
 		gen?: number,
 		shiny?: boolean,
 		gender?: GenderName,
 		afd?: boolean,
 		noScale?: boolean,
-		mod?: string,
+		mod: string,
 		dynamax?: boolean,
-	} = {gen: 6}) {
-		const mechanicsGen = options.gen || 6;
+	} = {gen: 6, mod: ''}) {
+		let mechanicsGen = options.gen || 6;
+		if (options.mod && window.ModConfig[options.mod].spriteGen) mechanicsGen = window.ModConfig[options.mod].spriteGen;
 		let isDynamax = !!options.dynamax;
 		if (pokemon instanceof Pokemon) {
 			if (pokemon.volatiles.transform) {
@@ -502,6 +517,20 @@ const Dex = new class implements ModdedDex {
 			}
 			pokemon = pokemon.getSpeciesForme() + (isGigantamax ? '-Gmax' : '');
 		}
+		const modSpecies = Dex.species.get(pokemon);
+		let resourcePrefix = Dex.resourcePrefix;
+		let spriteDir = 'sprites/';
+		let fakeSprite = false;
+		let modName = modSpecies.spriteid;
+		let id = toID(modName);
+		options.mod = this.getSpriteMod(options.mod, id, isFront ? 'front' : 'back', modSpecies.exists !== false);
+		if (options.mod) {
+			resourcePrefix = Dex.modResourcePrefix;
+			spriteDir = `${options.mod}/sprites/`;
+			fakeSprite = true;
+			if (this.getSpriteMod(options.mod, id, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists !== false) === '') options.shiny = false;
+		}
+
 		const species = Dex.species.get(pokemon);
 		// Gmax sprites are already extremely large, so we don't need to double.
 		if (species.name.endsWith('-Gmax')) isDynamax = false;
@@ -510,7 +539,7 @@ const Dex = new class implements ModdedDex {
 			w: 96,
 			h: 96,
 			y: 0,
-			url: Dex.resourcePrefix + 'sprites/',
+			url: resourcePrefix + spriteDir,
 			pixelated: true,
 			isFrontSprite: false,
 			cryurl: '',
@@ -527,7 +556,7 @@ const Dex = new class implements ModdedDex {
 			dir = '-back';
 			facing = 'back';
 		}
-
+		if (fakeSprite) dir = isFront ? 'front' : 'back';
 		// Decide which gen sprites to use.
 		//
 		// There are several different generations we care about here:
@@ -620,13 +649,13 @@ const Dex = new class implements ModdedDex {
 		}
 
 		// Mod Cries
-		if (options.mod) {
+		if (options.mod === 'digimon') {
 			spriteData.cryurl = `sprites/${options.mod}/audio/${toID(species.baseSpecies)}`;
 			spriteData.cryurl += '.mp3';
 		}
 
 		if (animationData[facing + 'f'] && options.gender === 'F') facing += 'f';
-		let allowAnim = !Dex.prefs('noanim') && !Dex.prefs('nogif');
+		let allowAnim = !fakeSprite && !Dex.prefs('noanim') && !Dex.prefs('nogif');
 		if (allowAnim && spriteData.gen >= 6) spriteData.pixelated = false;
 		if (allowAnim && animationData[facing] && spriteData.gen >= 5) {
 			if (facing.slice(-1) === 'f') name += '-f';
@@ -638,7 +667,7 @@ const Dex = new class implements ModdedDex {
 		} else {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
-			dir = (baseDir || 'gen5') + dir;
+			if (!fakeSprite) dir = (baseDir || 'gen5') + dir;
 
 			// Gender differences don't exist prior to Gen 4,
 			// so there are no sprites for it
@@ -704,7 +733,7 @@ const Dex = new class implements ModdedDex {
 		return num;
 	}
 
-	getPokemonIcon(pokemon: string | Pokemon | ServerPokemon | PokemonSet | null, facingLeft?: boolean) {
+	getPokemonIcon(pokemon: string | Pokemon | ServerPokemon | PokemonSet | null, facingLeft?: boolean, mod: string = '') {
 		if (pokemon === 'pokeball') {
 			return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-pokeball-sheet.png) no-repeat scroll -0px 4px`;
 		} else if (pokemon === 'pokeball-statused') {
@@ -731,15 +760,30 @@ const Dex = new class implements ModdedDex {
 		let top = Math.floor(num / 12) * 30;
 		let left = (num % 12) * 40;
 		let fainted = ((pokemon as Pokemon | ServerPokemon)?.fainted ? `;opacity:.3;filter:grayscale(100%) brightness(.5)` : ``);
+		Dex.species.get(id);
+		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
+		mod = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
+		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
 		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v11) no-repeat scroll -${left}px -${top}px${fainted}`;
 	}
 
-	getTeambuilderSpriteData(pokemon: any, gen: number = 0): TeambuilderSpriteData {
+	getTeambuilderSpriteData(pokemon: any, gen: number = 0, mod: string = ''): TeambuilderSpriteData {
 		let id = toID(pokemon.species);
 		let spriteid = pokemon.spriteid;
-		let species = Dex.species.get(pokemon.species);
+		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(pokemon.species);;
 		if (pokemon.species && !spriteid) {
 			spriteid = species.spriteid || toID(pokemon.species);
+		}
+		if (mod && window.ModConfig[mod].spriteGen) gen = window.ModConfig[mod].spriteGen;
+		mod = this.getSpriteMod(mod, id, 'front', species.exists !== false);
+		if (mod) {
+			return {
+				spriteDir: `${mod}/sprites/front`,
+				spriteid,
+				shiny: (this.getSpriteMod(mod, id, 'front-shiny', species.exists !== false) !== null && pokemon.shiny),
+				x: 10,
+				y: 5,
+			};
 		}
 		if (species.exists === false) return { spriteDir: 'sprites/gen5', spriteid: '0', x: 10, y: 5 };
 		const spriteData: TeambuilderSpriteData = {
@@ -781,16 +825,20 @@ const Dex = new class implements ModdedDex {
 		return spriteData;
 	}
 
-	getTeambuilderSprite(pokemon: any, gen: number = 0) {
+	getTeambuilderSprite(pokemon: any, gen: number = 0, mod: string = '') {
 		if (!pokemon) return '';
-		const data = this.getTeambuilderSpriteData(pokemon, gen);
+		const data = this.getTeambuilderSpriteData(pokemon, gen, mod);
 		const shiny = (data.shiny ? '-shiny' : '');
+		let resourcePrefix = Dex.resourcePrefix;
+		if (data.spriteDir.includes('front')) resourcePrefix = Dex.modResourcePrefix;
 		return 'background-image:url(' + Dex.resourcePrefix + data.spriteDir + shiny + '/' + data.spriteid + '.png);background-position:' + data.x + 'px ' + data.y + 'px;background-repeat:no-repeat';
 	}
 
-	getItemIcon(item: any) {
+	getItemIcon(item: any, mod: string = '') {
 		let num = 0;
 		if (typeof item === 'string' && exports.BattleItems) item = exports.BattleItems[toID(item)];
+		mod = this.getSpriteMod(mod, item.id, 'items');
+		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/items/${item.id}.png) no-repeat`;
 		if (item?.spritenum) num = item.spritenum;
 
 		let top = Math.floor(num / 16) * 24;
@@ -798,11 +846,16 @@ const Dex = new class implements ModdedDex {
 		return 'background:transparent url(' + Dex.resourcePrefix + 'sprites/itemicons-sheet.png?g9) no-repeat scroll -' + left + 'px -' + top + 'px';
 	}
 
-	getTypeIcon(type: string | null, b?: boolean) { // b is just for utilichart.js
+	getTypeIcon(type: string | null, b?: boolean, mod: string = '') { // b is just for utilichart.js
 		type = this.types.get(type).name;
 		if (!type) type = '???';
 		let sanitizedType = type.replace(/\?/g, '%3f');
-		return `<img src="${Dex.resourcePrefix}sprites/types/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
+		mod = this.getSpriteMod(mod, toID(type), 'types');
+		if (mod) {
+			return `<img src="${this.modResourcePrefix}${mod}/sprites/types/${toID(type)}.png" alt="${type}" class="pixelated${b ? ' b' : ''}" />`;
+		} else {
+			return `<img src="${Dex.resourcePrefix}sprites/types/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
+		}
 	}
 
 	getCategoryIcon(category: string | null) {
@@ -834,7 +887,7 @@ const Dex = new class implements ModdedDex {
 };
 
 class ModdedDex {
-	readonly gen: number;
+	gen: number;
 	readonly modid: ID;
 	readonly cache = {
 		Moves: {} as any as {[k: string]: Move},
@@ -846,9 +899,9 @@ class ModdedDex {
 	pokeballs: string[] | null = null;
 	constructor(modid: ID) {
 		this.modid = modid;
-		const gen = parseInt(modid.substr(3, 1), 10);
-		if (!modid.startsWith('gen') || !gen) throw new Error("Unsupported modid");
-		this.gen = gen;
+		const gen = parseInt(modid.slice(3), 10);
+		if (!modid.startsWith('gen') || !gen) this.gen = 9;
+		else this.gen = gen;
 	}
 	moves = {
 		get: (name: string): Move => {
@@ -857,20 +910,14 @@ class ModdedDex {
 				name = BattleAliases[id];
 				id = toID(name);
 			}
-			if (this.cache.Moves.hasOwnProperty(id)) return this.cache.Moves[id];
+			// if (this.cache.Moves.hasOwnProperty(id)) return this.cache.Moves[id];
 
 			let data = {...Dex.moves.get(name)};
 
-			for (let i = Dex.gen - 1; i >= this.gen; i--) {
-				const table = window.BattleTeambuilderTable[`gen${i}`];
-				if (id in table.overrideMoveData) {
-					Object.assign(data, table.overrideMoveData[id]);
-				}
-			}
-			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideMoveData) {
-					Object.assign(data, table.overrideMoveData[id]);
+			const table = window.BattleTeambuilderTable[this.modid];
+			if (table.overrideMoveInfo[id]) {
+				for (const key in table.overrideMoveInfo[id]) {
+					data = {...Dex.moves.get(name), ...table.overrideMoveInfo[id]};
 				}
 			}
 			if (this.gen <= 3 && data.category !== 'Status') {
@@ -893,7 +940,13 @@ class ModdedDex {
 			if (this.cache.Items.hasOwnProperty(id)) return this.cache.Items[id];
 
 			let data = {...Dex.items.get(name)};
-
+			const table = window.BattleTeambuilderTable[this.modid];
+			if (table.fullItemName && id in table.fullItemName) {
+				data.name = table.fullItemName[id];
+				data.exists = true;
+			}
+			if (id in table.overrideItemDesc) data.shortDesc = table.overrideItemDesc[id];
+	
 			for (let i = this.gen; i < 9; i++) {
 				const table = window.BattleTeambuilderTable['gen' + i];
 				if (id in table.overrideItemDesc) {
@@ -939,33 +992,49 @@ class ModdedDex {
 	};
 
 	species = {
-		get: (name: string): Species => {
+		get: (name: string, hasData = true, debug = ""): Species => {
 			let id = toID(name);
+			let formid = id;
 			if (window.BattleAliases && id in BattleAliases) {
 				name = BattleAliases[id];
 				id = toID(name);
 			}
-			if (this.cache.Species.hasOwnProperty(id)) return this.cache.Species[id];
-
-			let data = {...Dex.species.get(name)};
-
-			for (let i = Dex.gen - 1; i >= this.gen; i--) {
-				const table = window.BattleTeambuilderTable[`gen${i}`];
-				if (id in table.overrideSpeciesData) {
-					Object.assign(data, table.overrideSpeciesData[id]);
-				}
-			}
-			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideSpeciesData) {
-					Object.assign(data, table.overrideSpeciesData[id]);
-				}
-			}
-			if (this.gen < 3 || this.modid === 'gen7letsgo') {
-				data.abilities = {0: "No Ability"};
-			}
-
+			
+			if (name.includes('-')) this.species.get(name.split('-')[0]);
 			const table = window.BattleTeambuilderTable[this.modid];
+			if (!table.BattlePokedexAltForms) table.BattlePokedexAltForms = {};
+			if (formid in table.BattlePokedexAltForms) {
+				return table.BattlePokedexAltForms[formid];
+			}
+			if (!table.BattleBaseSpeciesChart) table.BattleBaseSpeciesChart = [];
+			if (window.BattleAliases && id in BattleAliases && !table.overrideDexInfo[id]) {
+				name = BattleAliases[id];
+				id = toID(name);
+			} else if (table.overrideDexInfo && !(id in table.overrideDexInfo) && table.BattleBaseSpeciesChart) {
+				for (const baseSpeciesId of table.BattleBaseSpeciesChart) {
+					if (formid.startsWith(baseSpeciesId)) {
+						id = baseSpeciesId;
+						break;
+					}
+				}
+			}
+			// if (this.cache.Species.hasOwnProperty(id)) return this.cache.Species[id];
+			var data;
+			if (hasData) {
+				data = {...Dex.species.get(name, true, "from moddedDex: getSpecies 1")};
+				if (table.overrideDexInfo && table.overrideDexInfo[id]) {
+					data = {...Dex.species.get(name, true, "from moddedDex: getSpecies 2"), ...table.overrideDexInfo[id]};
+				}
+			} else {
+				if (table.overrideDexInfo && table.overrideDexInfo[id]) {
+					data = {...table.overrideDexInfo[id]};
+				}
+			}
+			
+			if (this.gen < 3 || this.modid === 'gen7letsgo') {
+				data.abilities = {0: "None"};
+			}
+	
 			if (id in table.overrideTier) data.tier = table.overrideTier[id];
 			if (!data.tier && id.slice(-5) === 'totem') {
 				data.tier = this.species.get(id.slice(0, -5)).tier;
@@ -973,8 +1042,24 @@ class ModdedDex {
 			if (!data.tier && data.baseSpecies && toID(data.baseSpecies) !== id) {
 				data.tier = this.species.get(data.baseSpecies).tier;
 			}
+			if (data.cosmeticFormes) {
+				if (!table.BattleBaseSpeciesChart.includes(id)) table.BattleBaseSpeciesChart.push(id);
+				for (const forme of data.cosmeticFormes) {
+					if (toID(forme) === formid) {
+						data = new Species(formid, name, {
+							...data,
+							name: forme,
+							forme: forme.slice(data.name.length + 1),
+							baseForme: "",
+							baseSpecies: data.name,
+							otherFormes: null,
+						});
+						table.BattlePokedexAltForms[formid] = data;
+						break;
+					}
+				}
+			}
 			if (data.gen > this.gen) data.tier = 'Illegal';
-
 			const species = new Species(id, name, data);
 			this.cache.Species[id] = species;
 			return species;
@@ -986,7 +1071,7 @@ class ModdedDex {
 			const id = toID(name) as ID;
 			name = id.substr(0, 1).toUpperCase() + id.substr(1);
 
-			if (this.cache.Types.hasOwnProperty(id)) return this.cache.Types[id];
+			// if (this.cache.Types.hasOwnProperty(id)) return this.cache.Types[id];
 
 			let data = {...Dex.types.get(name)};
 
