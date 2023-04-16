@@ -1202,7 +1202,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 						gameType: '',
 						bans: [],
 						unbans: [],
-						banlist: !!format.teambuilderBans ? format.banlist.concat(format.teambuilderBans) : []
+						banlist: format.banlist.concat(format.teambuilderBans),
 					};
 					if (!!format.teambuilderFormat) formats[formatid].teambuilderFormat = format.teambuilderFormat;
 					if (format.ruleset?.includes('Standard NatDex')) formats[formatid].formatType = 'natdex';
