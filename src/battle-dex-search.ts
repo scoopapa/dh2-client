@@ -592,7 +592,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	* keeps track of the original format in such a case
 	*/
    modFormat = '' as ID;
-   mod = '';
 	/**
 	 * `species` is the second of two base filters. It constrains results to
 	 * things that species can use, and affects the default sort.
@@ -603,6 +602,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	 * (Abilities/items can affect what moves are sorted as usable.)
 	 */
 	set: PokemonSet | null = null;
+	mod = '';
 
 	protected formatType: 'doubles' | 'bdsp' | 'bdspdoubles' | 'letsgo' | 'metronome' | 'natdex' | 'nfe' |
 	'dlc1' | 'dlc1doubles' | 'stadium' | null = null;
@@ -627,13 +627,12 @@ abstract class BattleTypedSearch<T extends SearchType> {
 
 		this.baseResults = null;
 		this.baseIllegalResults = null;
+		this.modFormat = format;
 		let gen = 9;
 		const ClientMods = window.ModConfig;
-		this.modFormat = format;
-
 		if (format.slice(0, 3) === 'gen') {
 			const gen = (Number(format.charAt(3)) || 6);
-			format = (format.slice(4) || 'customgame') as ID;
+			// format = (format.slice(4) || 'customgame') as ID;
 			this.dex = Dex.forGen(gen);
 			let mod = '';
 			let overrideFormat = '';
@@ -797,7 +796,8 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	}
 	protected firstLearnsetid(speciesid: ID) {
 		let table = BattleTeambuilderTable;
-		if (speciesid in BattleTeambuilderTable.learnsets) return speciesid;
+		let learnsets = table.learnsets;
+		if (speciesid in learnsets) return speciesid;
 		if (this.formatType?.startsWith('bdsp')) table = table['gen8bdsp'];
 		if (this.formatType === 'letsgo') table = table['gen7letsgo'];
 		if (speciesid in table.learnsets) return speciesid;
@@ -1626,6 +1626,8 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (!this.species) return this.getDefaultResults();
 		const dex = this.dex;
 		let species = dex.species.get(this.species);
+		console.log(this.mod);
+		console.log(species.name);
 		const format = this.format;
 		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
 		const isSTABmons = (format.includes('stabmons') || format === 'staaabmons');
