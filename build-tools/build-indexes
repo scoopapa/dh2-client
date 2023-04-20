@@ -10,14 +10,13 @@ process.chdir(rootDir);
 
 const debug = true;
 
-// if (!fs.existsSync('data/pokemon-showdown')) {
-// 	child_process.execSync('git clone -b gen9 https://github.com/scoopapa/DH.git pokemon-showdown', {
-// 				cwd: 'data',
-// 	});
-// }
+if (!fs.existsSync('DH')) {
+	child_process.execSync('git clone -b gen9clean https://github.com/Rezzo64/DH.git DH', {
+	});
+}
 
 process.stdout.write("Syncing data from Git repository... ");
-// child_process.execSync('git pull', {cwd: 'data/pokemon-showdown'});
+child_process.execSync('git pull');
 child_process.execSync('npm run build', {cwd: 'DH'});
 console.log("DONE");
 
