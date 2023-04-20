@@ -16,7 +16,7 @@ if (!fs.existsSync('DH')) {
 }
 
 process.stdout.write("Syncing data from Git repository... ");
-child_process.execSync('git pull', {cwd: 'DH'});
+// child_process.execSync('git pull', {cwd: 'DH'});
 child_process.execSync('npm run build', {cwd: 'DH'});
 console.log("DONE");
 
