@@ -36,7 +36,7 @@ Config.customcolors = {
 Config.version = "0.11.2 (b1be3bc0)";
 
 Config.routes = {
-	root: 'dragonheavenserver.herokuapp.com',
+	root: './../DH/',
 	client: 'dragonheaven.herokuapp.com',
 	dex: 'dex.pokemonshowdown.com',
 	replays: 'replay.pokemonshowdown.com',
