@@ -49,29 +49,33 @@ if ($curuser['group'] == 5) $authLevel = 3; // mod
 if ($curuser['group'] == 6) $authLevel = 4; // leader
 if ($curuser['group'] == 6 && $auth2FA) $authLevel = 5; // leader with 2FA
 if ($curuser['group'] == 2 && $auth2FA) $authLevel = 6; // admin
+if ($authLevel === 6 && $auth2FA && ($curuser['userid'] === 'chaos' || $curuser['userid'] === 'zarel')) $authLevel = 10;
 
 $userid = false;
 $user = false;
 $formats = array(
-	'gen8randombattle' => 'Random Battle',
-	'gen8ou' => 'OverUsed',
-	'gen8ubers' => 'Ubers',
-	'gen8uu' => 'UnderUsed',
-	'gen8ru' => 'RarelyUsed',
-	'gen8nu' => 'NeverUsed',
-	'gen8pu' => 'PU',
-	'gen8lc' => 'Little Cup',
-	'gen8monotype' => 'Monotype',
-	'gen8battlestadiumsingles' => 'Battle Stadium Singles',
-	'gen8cap' => 'CAP',
-	'gen8randomdoublesbattle' => 'Random Doubles Battle',
-	'gen8doublesou' => 'Doubles OU',
-	'gen8vgc2020' => 'VGC 2020',
-	'gen8balancedhackmons' => 'Balanced Hackmons',
-	'gen8mixandmega' => 'Mix and Mega',
-	'gen8almostanyability' => 'Almost Any Ability',
-	'gen8stabmons' => 'STABmons',
-	'gen8nfe' => 'NFE',
+	'gen9randombattle' => 'Random Battle',
+	'gen9ou' => 'OverUsed',
+	'gen9ubers' => 'Ubers',
+	'gen9uu' => 'UnderUsed',
+	'gen9ru' => 'RarelyUsed',
+	'gen9nu' => 'NeverUsed',
+	'gen9pu' => 'PU',
+	'gen9lc' => 'Little Cup',
+	'gen9monotype' => 'Monotype',
+	'gen9battlestadiumsingles' => 'Battle Stadium Singles',
+	'gen9cap' => 'CAP',
+	'gen9randomdoublesbattle' => 'Random Doubles Battle',
+	'gen9doublesou' => 'Doubles OU',
+	'gen9vgc2023' => 'VGC 2023',
+	'gen9balancedhackmons' => 'Balanced Hackmons',
+	'gen9mixandmega' => 'Mix and Mega',
+	'gen9almostanyability' => 'Almost Any Ability',
+	'gen9stabmons' => 'STABmons',
+	'gen9nfe' => 'NFE',
+	'gen9godlygift' => 'Godly Gift',
+	'gen8randombattle' => '[Gen 8] Random Battle',
+	'gen8ou' => '[Gen 8] OU',
 	'gen7randombattle' => '[Gen 7] Random Battle',
 	'gen7ou' => '[Gen 7] OU',
 	'gen6randombattle' => '[Gen 6] Random Battle',
@@ -179,11 +183,15 @@ if (!$user) {
 
 	if ($authLevel >= 4 && substr($user['email'] ?? '', -1) === '@') echo '[2FA]';
 
-	if ($user['group'] && $user['group'] != 2 && $authLevel >= 3) {
+	$canChangeGroup = $user['group'] == 2 ? $authLevel >= 10 : $authLevel >= 3;
+
+	if ($user['group'] && $canChangeGroup) {
 		$csrfOk = (!!$users->csrfCheck() && $authLevel >= 4);
 		if ($csrfOk && isset($_POST['group'])) {
 			$group = intval($_POST['group']);
-			if ($group != 3 && $group != 4 && $group != 5 && $group != 6) $group = 1;
+			if ($group != 3 && $group != 4 && $group != 5 && $group != 6 && $group != 1) {
+				die(" Cannot change to group $group - access denied.</div></div>");
+			}
 			$psdb->query("UPDATE ntbb_users SET `group` = ".intval($group)." WHERE userid = '".$psdb->escape($user['userid'])."' LIMIT 1");
 			$user['group'] = $group;
 
@@ -266,31 +274,39 @@ if (!$user) {
 		} else if ($csrfOk && isset($_POST['googlelogin'])) {
 			$email = $_POST['googlelogin'];
 			$remove = ($email === 'remove');
-			$psdb->query(
-				"UPDATE {$psdb->prefix}users SET email = ? WHERE userid = ?",
-				[$remove ? '' : $email . '@', $user['userid']]
-			);
+			if (!$remove && (strpos($email, '@') === false || strpos($email, '.') === false)) {
+?>
+				<div style="border: 1px solid #AADD88; padding: 0 1em; margin-bottom: 1em">
+					<p>Invalid e-mail address "<?= htmlspecialchars($email) ?>"</p>
+				</div>
+<?php
+			} else {
+				$psdb->query(
+					"UPDATE {$psdb->prefix}users SET email = ? WHERE userid = ?",
+					[$remove ? '' : $email . '@', $user['userid']]
+				);
 
-			$modlogentry = $remove ? "Login method set to password" : "Login method set to Google " . $email;
-			$psdb->query(
-				"INSERT INTO `{$psdb->prefix}usermodlog` (`userid`,`actorid`,`date`,`ip`,`entry`) VALUES (?, ?, ?, ?, ?)",
-				[$user['userid'], $curuser['userid'], time(), $users->getIp(), $modlogentry]
-			);
+				$modlogentry = $remove ? "Login method set to password" : "Login method set to Google " . $email;
+				$psdb->query(
+					"INSERT INTO `{$psdb->prefix}usermodlog` (`userid`,`actorid`,`date`,`ip`,`entry`) VALUES (?, ?, ?, ?, ?)",
+					[$user['userid'], $curuser['userid'], time(), $users->getIp(), $modlogentry]
+				);
 ?>
 		<div style="border: 1px solid #DDAA88; padding: 0 1em; margin-bottom: 1em">
 			<p>Login method updated</p>
 		</div>
 <?php
-		} else if ($csrfOk && $authLevel >= 5 && @$_POST['passreset']) {
+			}
+		} else if ($csrfOk && $authLevel >= 6 && @$_POST['passreset']) {
 			$token = $users->createPasswordResetToken($user['userid']);
 ?>
 		<div style="border: 1px solid #DDAA88; padding: 0 1em; margin-bottom: 1em">
 			<p>
 				Use this link:
 			</p>
-			<p style="margin: 1em -13px">
-				<small><code>https://<?= $psconfig['routes']['root'] ?>/resetpassword/<?= $token ?></code></small><br />
-				<button name="copyUrl" value="<?= $token ?>">Copy URL</button>
+			<p>
+				<textarea class="textbox" style="width:100%;box-sizing:border-box" readonly>https://<?= $psconfig['routes']['root'] ?>/resetpassword/<?= $token ?></textarea><br />
+				<button name="copyUrl">Copy URL</button>
 			</p>
 		</div>
 <?php
@@ -301,7 +317,7 @@ if (!$user) {
 			<form action="" method="post" data-target="replace"><p>
 				<?php $users->csrfData(); ?>
 				<label class="label"><strong>Group:</strong><br />
-				<select name="group" class="textbox"<?php if ($authLevel < 4) echo ' disabled'; ?>>
+				<select name="group" class="textbox"<?php if (!$canChangeGroup) echo ' disabled'; ?>>
 <?php
 		foreach ($ntbb_groups as $i => $group) {
 			if (!$i) continue;
@@ -310,7 +326,7 @@ if (!$user) {
 <?php
 		}
 ?>
-				</select></label><?php if ($authLevel >= 4) { ?> <button type="submit"><strong>Change</strong></button><?php } ?>
+				</select></label><?php if ($canChangeGroup) { ?> <button type="submit"><strong>Change</strong></button><?php } ?>
 			</p></form>
 			<p>
 				<strong class="label"><label>IP: </label></strong><br />
@@ -352,7 +368,7 @@ if (!$user) {
 			</p></form>
 <?php
 		}
-		if ($authLevel >= 5) {
+		if ($authLevel >= 6) {
 ?>
 			<form action="" method="post" data-target="replace"><p>
 				<?php $users->csrfData(); ?>
@@ -364,7 +380,7 @@ if (!$user) {
 ?>
 		</div>
 <?php
-	} else if (!$user['group'] && ($curuser['group'] == 2 || $curuser['group'] == 6)) {
+	} else if (!$user['group'] && $users->isLeader()) {
 		$csrfOk = false;
 		if ($users->csrfCheck()) {
 			$csrfOk = true;
@@ -447,7 +463,7 @@ if (!$user) {
 		</p>
 <?php
 	}
-	if ($user['userid'] === 'slarty' || $user['userid'] === 'peterthegreeat' || $user['userid'] === 'chrisloud' || $user['userid'] === 'skitty') {
+	if ($user['userid'] === 'slarty' || $user['userid'] === 'peterthegreeat' || $user['userid'] === 'chrisloud' || $user['userid'] === 'skitty' || $user['userid'] === 'aulu') {
 		echo '<p>;_;7</p>';
 	}
 

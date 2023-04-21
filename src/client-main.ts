@@ -29,9 +29,9 @@ const PSPrefsDefaults: {[key: string]: any} = {};
  */
 class PSPrefs extends PSStreamModel<string | null> {
 	/**
-	 * Dark mode!
+	 * The theme to use. "system" matches the theme of the system accessing the client.
 	 */
-	dark = false;
+	theme: 'light' | 'dark' | 'system' = 'light';
 	/**
 	 * Disables animated GIFs, but keeps other animations enabled.
 	 * Workaround for a Chrome 64 bug with GIFs.
@@ -127,6 +127,17 @@ class PSPrefs extends PSStreamModel<string | null> {
 		} else if (isChrome64) {
 			newPrefs['nogif'] = true;
 			alert('Your version of Chrome has a bug that makes animated GIFs freeze games sometimes, so certain animations have been disabled. Only some people have the problem, so you can experiment and enable them in the Options menu setting "Disable GIFs for Chrome 64 bug".');
+		}
+
+		const colorSchemeQuerySupported = window.matchMedia?.('(prefers-color-scheme: dark)').media !== 'not all';
+		if (newPrefs['theme'] === 'system' && !colorSchemeQuerySupported) {
+			newPrefs['theme'] = 'light';
+		}
+		if (newPrefs['dark'] !== undefined) {
+			if (newPrefs['dark']) {
+				newPrefs['theme'] = 'dark';
+			}
+			delete newPrefs['dark'];
 		}
 	}
 }
@@ -263,9 +274,9 @@ class PSTeams extends PSStreamModel<'team' | 'format'> {
  *********************************************************************/
 
 class PSUser extends PSModel {
-	name = "";
+	name = "Guest";
 	group = '';
-	userid = "" as ID;
+	userid = "guest" as ID;
 	named = false;
 	registered = false;
 	avatar = "1";
@@ -285,22 +296,22 @@ class PSUser extends PSModel {
 			}
 		}
 	}
-	logOut() {
-		PSLoginServer.query({
-			act: 'logout',
-			userid: this.userid,
-		});
-		PS.send('|/logout');
-		PS.connection?.disconnect();
+	// logOut() {
+	// 	PSLoginServer.query({
+	// 		act: 'logout',
+	// 		userid: this.userid,
+	// 	});
+	// 	PS.send('|/logout');
+	// 	PS.connection?.disconnect();
 
-		alert("You have been logged out and disconnected.\n\nIf you wanted to change your name while staying connected, use the 'Change Name' button or the '/nick' command.");
-		this.name = "";
-		this.group = '';
-		this.userid = "" as ID;
-		this.named = false;
-		this.registered = false;
-		this.update();
-	}
+	// 	alert("You have been logged out and disconnected.\n\nIf you wanted to change your name while staying connected, use the 'Change Name' button or the '/nick' command.");
+	// 	this.name = "";
+	// 	this.group = '';
+	// 	this.userid = "" as ID;
+	// 	this.named = false;
+	// 	this.registered = false;
+	// 	this.update();
+	// }
 }
 
 /**********************************************************************
@@ -352,14 +363,19 @@ class PSServer {
 			type: 'staff',
 			order: 106,
 		},
-		// by default, unrecognized ranks go here, between driver and bot
+		'\u00a7': {
+			name: "Section Leader (\u00a7)",
+			type: 'staff',
+			order: 107,
+		},
+		// by default, unrecognized ranks go here, between section leader and bot
 		'*': {
 			name: "Bot (*)",
-			order: 108,
+			order: 109,
 		},
 		'\u2606': {
 			name: "Player (\u2606)",
-			order: 109,
+			order: 110,
 		},
 		'+': {
 			name: "Voice (+)",
@@ -385,7 +401,7 @@ class PSServer {
 		},
 	};
 	defaultGroup: PSGroup = {
-		order: 107,
+		order: 108,
 	};
 	getGroup(symbol: string | undefined) {
 		return this.groups[(symbol || ' ').charAt(0)] || this.defaultGroup;
@@ -524,23 +540,13 @@ class PSRoom extends PSStreamModel<Args | null> implements RoomOptions {
 		}}
 	}
 	handleMessage(line: string) {
-		if (!line.startsWith('/') || line.startsWith('//')) return false;
-		const spaceIndex = line.indexOf(' ');
-		const cmd = spaceIndex >= 0 ? line.slice(1, spaceIndex) : line.slice(1);
-		// const target = spaceIndex >= 0 ? line.slice(spaceIndex + 1) : '';
-		switch (cmd) {
-		case 'logout': {
-			PS.user.logOut();
-			return true;
-		}}
 		return false;
 	}
 	send(msg: string, direct?: boolean) {
 		if (!direct && !msg) return;
 		if (!direct && this.handleMessage(msg)) return;
 
-		const id = this.id === 'lobby' ? '' : this.id;
-		PS.send(id + '|' + msg);
+		PS.send(this.id + '|' + msg);
 	}
 	destroy() {
 		if (this.connected) {
@@ -660,17 +666,6 @@ const PS = new class extends PSModel {
 	 */
 	leftRoomWidth = 0;
 	mainmenu: MainMenuRoom = null!;
-
-	/**
-	 * The drag-and-drop API is incredibly dumb and doesn't let us know
-	 * what's being dragged until the `drop` event, so we track it here.
-	 *
-	 * Note that `PS.dragging` will be null if the drag was initiated
-	 * outside PS (e.g. dragging a team from File Explorer to PS), and
-	 * for security reasons it's impossible to know what they are until
-	 * they're dropped.
-	 */
-	dragging: {type: 'room', roomid: RoomID} | null = null;
 
 	/** Tracks whether or not to display the "Use arrow keys" hint */
 	arrowKeysUsed = false;
@@ -833,11 +828,7 @@ const PS = new class extends PSModel {
 		const roomid = fullMsg.slice(0, pipeIndex) as RoomID;
 		const msg = fullMsg.slice(pipeIndex + 1);
 		console.log('\u25b6\ufe0f ' + (roomid ? '[' + roomid + '] ' : '') + '%c' + msg, "color: #776677");
-		if (!this.connection) {
-			alert(`You are not connected and cannot send ${msg}.`);
-			return;
-		}
-		this.connection.send(fullMsg);
+		this.connection!.send(fullMsg);
 	}
 	isVisible(room: PSRoom) {
 		if (this.leftRoomWidth === 0) {
@@ -895,7 +886,7 @@ const PS = new class extends PSModel {
 			case 'news':
 				options.type = options.id;
 				break;
-			case 'battle-': case 'user-': case 'team-': case 'ladder-':
+				case 'battle-': case 'user-': case 'team-':
 				options.type = options.id.slice(0, hyphenIndex);
 				break;
 			case 'view-':

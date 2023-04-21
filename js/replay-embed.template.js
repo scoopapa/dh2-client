@@ -1,3 +1,19 @@
+/**
+ * Replay embed
+ *
+ * This file is used to play back downloaded replay files, and can also be
+ * used by third parties to embed PS replays. The protocol data to replay
+ * should be in
+ * `<script type="text/plain" class="battle-log-data">`
+ *
+ * The replay animation will be put into an existing replay HTML structure if
+ * it exists, but if it doesn't, the animation would be put at the bottom of
+ * the page.
+ *
+ * @author Guangcong Luo <guangcongluo@gmail.com>
+ * @license MIT
+ */
+
 window.exports = window;
 
 function linkStyle(url) {
@@ -12,28 +28,30 @@ function requireScript(url) {
 	document.head.appendChild(scriptEl);
 }
 
-linkStyle('https://play.pokemonshowdown.com/style/font-awesome.css?');
-linkStyle('https://play.pokemonshowdown.com/style/battle.css?a7');
-linkStyle('https://play.pokemonshowdown.com/style/replay.css?a7');
-linkStyle('https://play.pokemonshowdown.com/style/utilichart.css?a7');
+linkStyle('https://dragonheaven.herokuapp.com//style/font-awesome.css?');
+linkStyle('https://dragonheaven.herokuapp.com//style/battle.css?a7');
+linkStyle('https://dragonheaven.herokuapp.com//style/replay.css?a7');
+linkStyle('https://dragonheaven.herokuapp.com//style/utilichart.css?a7');
 
-requireScript('https://play.pokemonshowdown.com/js/lib/ps-polyfill.js');
-requireScript('https://play.pokemonshowdown.com/config/config.js?a7');
-requireScript('https://play.pokemonshowdown.com/js/lib/jquery-1.11.0.min.js');
-requireScript('https://play.pokemonshowdown.com/js/lib/lodash.compat.js');
-requireScript('https://play.pokemonshowdown.com/js/lib/html-sanitizer-minified.js');
-requireScript('https://play.pokemonshowdown.com/js/battle-sound.js');
-requireScript('https://play.pokemonshowdown.com/js/battledata.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/pokedex-mini.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/pokedex-mini-bw.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/graphics.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/pokedex.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/moves.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/abilities.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/items.js?a7');
-requireScript('https://play.pokemonshowdown.com/data/teambuilder-tables.js?a7');
-requireScript('https://play.pokemonshowdown.com/js/battle-tooltips.js?a7');
-requireScript('https://play.pokemonshowdown.com/js/battle.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//js/lib/ps-polyfill.js');
+requireScript('https://dragonheaven.herokuapp.com//config/config.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//js/lib/jquery-1.11.0.min.js');
+requireScript('https://dragonheaven.herokuapp.com//js/lib/lodash.compat.js');
+requireScript('https://dragonheaven.herokuapp.com//js/lib/html-sanitizer-minified.js');
+requireScript('https://dragonheaven.herokuapp.com//js/battle-sound.js');
+requireScript('https://dragonheaven.herokuapp.com//js/battledata.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/pokedex-mini.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/pokedex-mini-bw.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/graphics.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/pokedex.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/moves.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/abilities.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/items.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/teambuilder-tables.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/mod-sprites.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//data/mod-config.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//js/battle-tooltips.js?a7');
+requireScript('https://dragonheaven.herokuapp.com//js/battle.js?a7');
 
 var Replays = {
 	battle: null,

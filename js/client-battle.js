@@ -252,6 +252,7 @@
 		updateControls: function () {
 			if (this.battle.scene.customControls) return;
 			var controlsShown = this.controlsShown;
+			var switchSidesButton = '<p><button class="button" name="switchSides"><i class="fa fa-random"></i> Switch sides</button></p>';
 			this.controlsShown = false;
 
 			if (this.battle.seeking !== null) {
@@ -267,10 +268,10 @@
 					// spectator
 					if (this.battle.paused) {
 						// paused
-						this.$controls.html('<p><button class="button" name="resume"><i class="fa fa-play"></i><br />Play</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button" name="skipTurn"><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button" name="goToEnd"><i class="fa fa-fast-forward"></i><br />Skip to end</button></p><p><button name="switchSides"><i class="fa fa-random"></i> Switch sides</button></p>');
+						this.$controls.html('<p><button class="button" name="resume"><i class="fa fa-play"></i><br />Play</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button" name="skipTurn"><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button" name="goToEnd"><i class="fa fa-fast-forward"></i><br />Skip to end</button></p>' + switchSidesButton);
 					} else {
 						// playing
-						this.$controls.html('<p><button class="button" name="pause"><i class="fa fa-pause"></i><br />Pause</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button" name="skipTurn"><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button" name="goToEnd"><i class="fa fa-fast-forward"></i><br />Skip to end</button></p><p><button name="switchSides"><i class="fa fa-random"></i> Switch sides</button></p>');
+						this.$controls.html('<p><button class="button" name="pause"><i class="fa fa-pause"></i><br />Pause</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button" name="skipTurn"><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button" name="goToEnd"><i class="fa fa-fast-forward"></i><br />Skip to end</button></p>' + switchSidesButton);
 					}
 				} else {
 					// is a player
@@ -282,7 +283,7 @@
 
 			if (this.battle.ended) {
 
-				var replayDownloadButton = '<span style="float:right;"><a href="//' + Config.routes.replays + '/" class="button replayDownloadButton" style="padding:2px 6px"><i class="fa fa-download"></i> Download replay</a><br /><br /><button name="saveReplay"><i class="fa fa-upload"></i> Upload and share replay</button></span>';
+				var replayDownloadButton = '<span style="float:right;"><a href="//' + Config.routes.replays + '/" class="button replayDownloadButton"><i class="fa fa-download"></i> Download replay</a><br /><br /><button class="button" name="saveReplay"><i class="fa fa-upload"></i> Upload and share replay</button></span>';
 
 				// battle has ended
 				if (this.side) {
@@ -290,7 +291,7 @@
 					this.closeNotification('choice');
 					this.$controls.html('<div class="controls"><p>' + replayDownloadButton + '<button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />Instant replay</button></p><p><button class="button" name="closeAndMainMenu"><strong>Main menu</strong><br /><small>(closes this battle)</small></button> <button class="button" name="closeAndRematch"><strong>Rematch</strong><br /><small>(closes this battle)</small></button></p></div>');
 				} else {
-					this.$controls.html('<div class="controls"><p>' + replayDownloadButton + '<button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />Instant replay</button></p><p><button name="switchSides"><i class="fa fa-random"></i> Switch sides</button></p></div>');
+					this.$controls.html('<div class="controls"><p>' + replayDownloadButton + '<button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />Instant replay</button></p>' + switchSidesButton + '</div>');
 				}
 
 			} else if (this.side) {
@@ -314,10 +315,10 @@
 				// full battle
 				if (this.battle.paused) {
 					// paused
-					this.$controls.html('<p><button class="button" name="resume"><i class="fa fa-play"></i><br />Play</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button disabled" disabled><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button disabled" disabled><i class="fa fa-fast-forward"></i><br />Skip to end</button></p><p><button name="switchSides"><i class="fa fa-random"></i> Switch sides</button></p><p><em>Waiting for players...</em></p>');
+					this.$controls.html('<p><button class="button" name="resume"><i class="fa fa-play"></i><br />Play</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button disabled" disabled><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button disabled" disabled><i class="fa fa-fast-forward"></i><br />Skip to end</button></p>' + switchSidesButton + '<p><em>Waiting for players...</em></p>');
 				} else {
 					// playing
-					this.$controls.html('<p><button class="button" name="pause"><i class="fa fa-pause"></i><br />Pause</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button disabled" disabled><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button disabled" disabled><i class="fa fa-fast-forward"></i><br />Skip to end</button></p><p><button name="switchSides"><i class="fa fa-random"></i> Switch sides</button></p><p><em>Waiting for players...</em></p>');
+					this.$controls.html('<p><button class="button" name="pause"><i class="fa fa-pause"></i><br />Pause</button> <button class="button" name="rewindTurn"><i class="fa fa-step-backward"></i><br />Last turn</button><button class="button disabled" disabled><i class="fa fa-step-forward"></i><br />Skip turn</button> <button class="button" name="instantReplay"><i class="fa fa-undo"></i><br />First turn</button><button class="button disabled" disabled><i class="fa fa-fast-forward"></i><br />Skip to end</button></p>' + switchSidesButton + '<p><em>Waiting for players...</em></p>');
 				}
 
 			}
@@ -515,7 +516,11 @@
 			var switchables = this.request && this.request.side ? this.battle.myPokemon : [];
 
 			if (type !== 'movetarget') {
-				while (switchables[this.choice.choices.length] && switchables[this.choice.choices.length].fainted && this.choice.choices.length + 1 < this.battle.nearSide.active.length) {
+				while (
+					switchables[this.choice.choices.length] &&
+					(switchables[this.choice.choices.length].fainted || switchables[this.choice.choices.length].commanding) &&
+					this.choice.choices.length + 1 < this.battle.nearSide.active.length
+				) {
 					this.choice.choices.push('pass');
 				}
 			}
@@ -535,6 +540,7 @@
 			var canDynamax = curActive.canDynamax || switchables[pos].canDynamax;
 			var maxMoves = curActive.maxMoves || switchables[pos].maxMoves;
 			var gigantamax = curActive.gigantamax;
+			var canTerastallize = curActive.canTerastallize || switchables[pos].canTerastallize;
 			if (canZMove && typeof canZMove[0] === 'string') {
 				canZMove = _.map(canZMove, function (move) {
 					return {move: move, target: Dex.moves.get(move).target};
@@ -697,6 +703,8 @@
 					moveMenu += '<br /><label class="megaevo"><input type="checkbox" name="ultraburst" />&nbsp;Ultra Burst</label>';
 				} else if (canDynamax) {
 					moveMenu += '<br /><label class="megaevo"><input type="checkbox" name="dynamax" />&nbsp;Dynamax</label>';
+				} else if (canTerastallize) {
+					moveMenu += '<br /><label class="megaevo"><input type="checkbox" name="terastallize" />&nbsp;Terastallize<br />' + Dex.getTypeIcon(canTerastallize) + '</label>';
 				}
 				if (this.finalDecisionMove) {
 					moveMenu += '<em style="display:block;clear:both">You <strong>might</strong> have some moves disabled, so you won\'t be able to cancel an attack!</em><br/>';
@@ -769,7 +777,17 @@
 		updateSwitchControls: function (type) {
 			var pos = this.choice.choices.length;
 
-			if (type !== 'switchposition' && this.request.forceSwitch !== true && !this.choice.freedomDegrees) {
+			// Needed so it client does not freak out when only 1 mon left wants to switch out
+			var atLeast1Reviving = false;
+			for (var i = 0; i < this.battle.pokemonControlled; i++) {
+				var pokemon = this.battle.myPokemon[i];
+				if (pokemon.reviving) {
+					atLeast1Reviving = true;
+					break;
+				}
+			}
+
+			if (type !== 'switchposition' && this.request.forceSwitch !== true && (!this.choice.freedomDegrees || atLeast1Reviving)) {
 				while (!this.request.forceSwitch[pos] && pos < 6) {
 					pos = this.choice.choices.push('pass');
 				}
@@ -777,6 +795,7 @@
 
 			var switchables = this.request && this.request.side ? this.battle.myPokemon : [];
 			var nearActive = this.battle.nearSide.active;
+			var isReviving = !!switchables[pos].reviving;
 
 			var requestTitle = '';
 			if (type === 'switch2' || type === 'switchposition') {
@@ -807,7 +826,9 @@
 					'</div>'
 				);
 			} else {
-				if (this.choice.freedomDegrees >= 1) {
+				if (isReviving) {
+					requestTitle += "Choose a fainted Pokémon to revive!";
+				} else if (this.choice.freedomDegrees >= 1) {
 					requestTitle += "Choose a Pokémon to send to battle!";
 				} else {
 					requestTitle += "Switch <strong>" + BattleLog.escapeHTML(switchables[pos].name) + "</strong> to:";
@@ -817,17 +838,25 @@
 				for (var i = 0; i < switchables.length; i++) {
 					var pokemon = switchables[i];
 					var tooltipArgs = 'switchpokemon|' + i;
-					if (pokemon.fainted || i < this.battle.pokemonControlled || this.choice.switchFlags[i]) {
-						switchMenu += '<button class="disabled has-tooltip" name="chooseDisabled" value="' + BattleLog.escapeHTML(pokemon.name) + (pokemon.fainted ? ',fainted' : i < this.battle.pokemonControlled ? ',active' : '') + '" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '">';
+					if (isReviving) {
+						if (!pokemon.fainted || this.choice.switchFlags[i]) {
+							switchMenu += '<button class="disabled has-tooltip" name="chooseDisabled" value="' + BattleLog.escapeHTML(pokemon.name) + (pokemon.reviving ? ',active' : !pokemon.fainted ? ',notfainted' : '') + '" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '">';
+						} else {
+							switchMenu += '<button name="chooseSwitch" value="' + i + '" class="has-tooltip" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '">';
+						}
 					} else {
-						switchMenu += '<button name="chooseSwitch" value="' + i + '" class="has-tooltip" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '">';
+						if (pokemon.fainted || i < this.battle.pokemonControlled || this.choice.switchFlags[i]) {
+							switchMenu += '<button class="disabled has-tooltip" name="chooseDisabled" value="' + BattleLog.escapeHTML(pokemon.name) + (pokemon.fainted ? ',fainted' : i < this.battle.pokemonControlled ? ',active' : '') + '" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '">';
+						} else {
+							switchMenu += '<button name="chooseSwitch" value="' + i + '" class="has-tooltip" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '">';
+						}
 					}
 					switchMenu += '<span class="picon" style="' + Dex.getPokemonIcon(pokemon) + '"></span>' + BattleLog.escapeHTML(pokemon.name) + (!pokemon.fainted ? '<span class="' + pokemon.getHPColorClass() + '"><span style="width:' + (Math.round(pokemon.hp * 92 / pokemon.maxhp) || 1) + 'px"></span></span>' + (pokemon.status ? '<span class="status ' + pokemon.status + '"></span>' : '') : '') + '</button> ';
 				}
 
 				var controls = (
 					'<div class="switchcontrols">' +
-					'<div class="switchselect"><button name="selectSwitch">Switch</button></div>' +
+					'<div class="switchselect"><button name="selectSwitch">' + (isReviving ? 'Revive' : 'Switch') + '</button></div>' +
 					'<div class="switchmenu">' + switchMenu + '</div>' +
 					'</div>'
 				);
@@ -900,10 +929,16 @@
 			if (this.choice.teamPreview) {
 				var myPokemon = this.battle.mySide.pokemon;
 				var leads = [];
-				for (var i = 0; i < this.choice.count; i++) {
+				var back = [];
+				var leadCount = this.battle.gameType === 'doubles' ? 2 : (this.battle.gameType === 'triples' ? 3 : 1);
+				for (var i = 0; i < leadCount; i++) {
 					leads.push(myPokemon[this.choice.teamPreview[i] - 1].speciesForme);
 				}
 				buf += leads.join(', ') + ' will be sent out first.<br />';
+				for (var i = leadCount; i < this.choice.count; i++) {
+					back.push(myPokemon[this.choice.teamPreview[i] - 1].speciesForme);
+				}
+				if (back.length) buf += back.join(', ') + ' are in the back.<br />';
 			} else if (this.choice.choices && this.request && this.battle.myPokemon) {
 				var myPokemon = this.battle.myPokemon;
 				for (var i = 0; i < this.choice.choices.length; i++) {
@@ -921,16 +956,24 @@
 						if (parts.length > 2) {
 							var targetPos = parts[2];
 							if (targetPos === 'mega') {
-								buf += 'mega evolve, then ';
+								buf += 'Mega Evolve, then ';
 								targetPos = parts[3];
 							}
 							if (targetPos === 'zmove') {
 								move = this.request.active[i].canZMove[parseInt(parts[1], 10) - 1].move;
 								targetPos = parts[3];
 							}
+							if (targetPos === 'ultra') {
+								buf += 'Ultra Burst, then ';
+								targetPos = parts[3];
+							}
 							if (targetPos === 'dynamax') {
 								move = this.request.active[i].maxMoves.maxMoves[parseInt(parts[1], 10) - 1].move;
 								buf += 'Dynamax, then ';
+								targetPos = parts[3];
+							}
+							if (targetPos === 'terastallize') {
+								buf += 'Terastallize, then ';
 								targetPos = parts[3];
 							}
 							if (targetPos) {
@@ -939,7 +982,9 @@
 									// Targeting your own side in doubles / triples
 									targetActive = this.battle.nearSide.active;
 									targetPos = -targetPos;
-									target += 'your ';
+									if (this.battle.gameType !== 'freeforall') {
+										target += 'your ';
+									}
 								}
 								if (targetActive[targetPos - 1]) {
 									target += targetActive[targetPos - 1].speciesForme;
@@ -993,7 +1038,7 @@
 				return;
 			}
 
-			if (!this.autoTimerActivated && Storage.prefs('autotimer')) {
+			if (!this.autoTimerActivated && Storage.prefs('autotimer') && !this.battle.ended) {
 				this.setTimer('on');
 				this.autoTimerActivated = true;
 			}
@@ -1166,11 +1211,12 @@
 				var isZMove = !!(this.$('input[name=zmove]')[0] || '').checked;
 				var isUltraBurst = !!(this.$('input[name=ultraburst]')[0] || '').checked;
 				var isDynamax = !!(this.$('input[name=dynamax]')[0] || '').checked;
+				var isTerastal = !!(this.$('input[name=terastallize]')[0] || '').checked;
 
 				var target = e.getAttribute('data-target');
 				var choosableTargets = {normal: 1, any: 1, adjacentAlly: 1, adjacentAllyOrSelf: 1, adjacentFoe: 1};
 
-				this.choice.choices.push('move ' + pos + (isMega ? ' mega' : '') + (isZMove ? ' zmove' : '') + (isUltraBurst ? ' ultra' : '') + (isDynamax ? ' dynamax' : ''));
+				this.choice.choices.push('move ' + pos + (isMega ? ' mega' : '') + (isZMove ? ' zmove' : '') + (isUltraBurst ? ' ultra' : '') + (isDynamax ? ' dynamax' : '') + (isTerastal ? ' terastallize' : ''));
 				if (nearActive.length > 1 && target in choosableTargets) {
 					this.choice.type = 'movetarget';
 					this.choice.moveTarget = target;
@@ -1195,6 +1241,12 @@
 		chooseSwitch: function (pos) {
 			if (!this.choice) return;
 			this.tooltips.hideTooltip();
+
+			if (this.battle.myPokemon[this.choice.choices.length].reviving) {
+				this.choice.choices.push('switch ' + (parseInt(pos, 10) + 1));
+				this.endChoice();
+				return;
+			}
 
 			if (pos !== undefined) { // pos === undefined if called by chooseSwitchTarget()
 				this.choice.switchFlags[pos] = true;
@@ -1267,6 +1319,8 @@
 				app.addPopupMessage("You are trapped and cannot select " + data[0] + "!");
 			} else if (data[1] === 'active') {
 				app.addPopupMessage("" + data[0] + " is already in battle!");
+			} else if (data[1] === 'notfainted') {
+				app.addPopupMessage("" + data[0] + " still has energy to battle!");
 			} else {
 				app.addPopupMessage("" + data[0] + " is already selected!");
 			}
@@ -1295,7 +1349,9 @@
 					return true;
 				}
 			} else if (this.request.requestType === 'move') {
-				while (choices.length < this.battle.pokemonControlled && !nearActive[choices.length]) {
+				var requestDetails = this.request && this.request.side ? this.battle.myPokemon : [];
+				while (choices.length < this.battle.pokemonControlled &&
+						(!nearActive[choices.length] || requestDetails[choices.length].commanding)) {
 					choices.push('pass');
 				}
 
@@ -1414,6 +1470,8 @@
 				buf += 'Forfeiting makes you lose the battle.';
 			} else if (this.gameType === 'help') {
 				buf += 'Leaving the room will close the ticket.';
+			} else if (this.gameType === 'room') {
+				buf += 'Are you sure you want to exit this room?';
 			} else {
 				// game
 				buf += 'Forfeiting makes you lose the game.';
@@ -1421,6 +1479,8 @@
 			if (this.gameType === 'help') {
 				buf += ' Are you sure?</p><p><label><input type="checkbox" name="closeroom" checked /> Close room</label></p>';
 				buf += '<p><button type="submit"><strong>Close ticket</strong></button> ';
+			} else if (this.gameType === 'room') {
+				buf += ' </p><p><button type="leaveRoom" name="leaveRoom"><strong>Close room</strong></button>';
 			} else {
 				buf += ' Are you sure?</p><p><label><input type="checkbox" name="closeroom" checked /> Close after forfeiting</label></p>';
 				buf += '<p><button type="submit"><strong>Forfeit</strong></button> ';
@@ -1448,6 +1508,10 @@
 			if (this.$('input[name=closeroom]')[0].checked) {
 				app.removeRoom(this.room.id);
 			}
+			this.close();
+		},
+		leaveRoom: function (data) {
+			this.room.send('/noreply /leave');
 			this.close();
 		}
 	});

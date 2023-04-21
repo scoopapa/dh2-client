@@ -51,7 +51,7 @@
 
 		focus: function (e, focusTextbox) {
 			var target = e && e.target;
-			if (target && ['TEXTAREA', 'INPUT'].includes(target.tagName)) {
+			if (target && ['TEXTAREA', 'INPUT', 'SELECT'].includes(target.tagName)) {
 				// this workaround works for iOS 12 but not iOS 13
 				/* if (window.isiOS) {
 					// iOS will not bring up a keyboard unless you manually blur and refocus
@@ -441,7 +441,7 @@
 				var spaceIndex = text.indexOf(' ');
 				if (spaceIndex > 0) {
 					cmd = text.substr(1, spaceIndex - 1);
-					target = text.substr(spaceIndex + 1);
+					target = text.substr(spaceIndex + 1).trim();
 				} else {
 					cmd = text.substr(1);
 					target = '';
@@ -449,7 +449,7 @@
 				}
 			}
 
-			switch (cmd.toLowerCase()) {
+			switch (toID(cmd)) {
 			case 'chal':
 			case 'chall':
 			case 'challenge':
@@ -611,10 +611,6 @@
 
 			case 'clearignore':
 				if (this.checkBroadcast(cmd, text)) return false;
-				if (!target) {
-					this.parseCommand('/help ignore');
-					return false;
-				}
 				if (toID(target) !== 'confirm') {
 					this.add("Are you sure you want to clear your ignore list?");
 					this.add('|html|If you\'re sure, use <code>/clearignore confirm</code>');
@@ -1318,6 +1314,9 @@
 			if (app.rooms[''].games && app.rooms[''].games[this.id]) {
 				app.addPopup(ForfeitPopup, {room: this, sourceEl: e && e.currentTarget, gameType: (this.id.substring(0, 5) === 'help-' ? 'help' : 'game')});
 				return false;
+			} else if (Dex.prefs('leavePopupRoom')) {
+				app.addPopup(ForfeitPopup, {room: this, sourceEl: e && e.currentTarget, gameType: 'room'});
+				return false;
 			}
 			return true;
 		},
@@ -1746,6 +1745,10 @@
 
 			var isHighlighted = userid !== app.user.get('userid') && this.getHighlight(message);
 			var parsedMessage = MainMenuRoom.parseChatMessage(message, name, ChatRoom.getTimestamp('chat', msgTime), isHighlighted, this.$chat, true);
+			if (typeof parsedMessage.challenge === 'string') {
+				this.$chat.append('<div class="chat message-error">The server sent a challenge but this isn\'t a PM window!</div>');
+				return;
+			}
 			if (typeof parsedMessage === 'object' && 'noNotify' in parsedMessage) {
 				mayNotify = mayNotify && !parsedMessage.noNotify;
 				parsedMessage = parsedMessage.message;

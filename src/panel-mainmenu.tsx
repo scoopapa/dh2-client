@@ -5,7 +5,7 @@
  * @license AGPLv3
  */
 
-type RoomInfo = {title: string, desc?: string, userCount?: number, section?: string, spotlight?: string, subRooms?: string[]};
+type RoomInfo = {title: string, desc?: string, userCount?: number, subRooms?: string[]};
 
 class MainMenuRoom extends PSRoom {
 	readonly classType: string = 'mainmenu';
@@ -14,7 +14,7 @@ class MainMenuRoom extends PSRoom {
 		avatar?: string | number,
 		status?: string,
 		group?: string,
-		customgroup?: string,
+		// customgroup?: string,
 		rooms?: {[roomid: string]: {isPrivate?: true, p1?: string, p2?: string}},
 	}} = {};
 	roomsCache: {
@@ -22,6 +22,8 @@ class MainMenuRoom extends PSRoom {
 		userCount?: number,
 		chat?: RoomInfo[],
 		sectionTitles?: string[],
+		official?: RoomInfo[],
+		pspl?: RoomInfo[],
 	} = {};
 	receiveLine(args: Args) {
 		const [cmd] = args;
@@ -94,6 +96,7 @@ class MainMenuRoom extends PSRoom {
 
 		let column = 0;
 
+		window.NonBattleGames = {rps: 'Rock Paper Scissors'};
 		window.BattleFormats = {};
 		for (let j = 1; j < formatsList.length; j++) {
 			const entry = formatsList[j];
@@ -241,16 +244,6 @@ class MainMenuRoom extends PSRoom {
 			if (userRoom) userRoom.update(null);
 			break;
 		case 'rooms':
-			if (response.pspl) {
-				for (const roomInfo of response.pspl) roomInfo.spotlight = "Spotlight";
-				response.chat = [...response.pspl, ...response.chat];
-				response.pspl = null;
-			}
-			if (response.official) {
-				for (const roomInfo of response.official) roomInfo.section = "Official";
-				response.chat = [...response.official, ...response.chat];
-				response.official = null;
-			}
 			this.roomsCache = response;
 			const roomsRoom = PS.rooms[`rooms`] as RoomsRoom;
 			if (roomsRoom) roomsRoom.update(null);
@@ -266,12 +259,6 @@ class MainMenuRoom extends PSRoom {
 				}
 				battlesRoom.battles = battles;
 				battlesRoom.update(null);
-			}
-			break;
-		case 'laddertop':
-			const ladderRoomEntries = Object.entries(PS.rooms).filter(entry => entry[0].startsWith('ladder'));
-			for (const [, ladderRoom] of ladderRoomEntries) {
-				(ladderRoom as LadderRoom).update(response);
 			}
 			break;
 		}
@@ -293,10 +280,10 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 	submit = (e: Event) => {
 		alert('todo: implement');
 	};
-	handleDragStart = (e: DragEvent) => {
-		const roomid = (e.currentTarget as HTMLElement).getAttribute('data-roomid') as RoomID;
-		PS.dragging = {type: 'room', roomid};
-	};
+	// handleDragStart = (e: DragEvent) => {
+	// 	const roomid = (e.currentTarget as HTMLElement).getAttribute('data-roomid') as RoomID;
+	// 	PS.dragging = {type: 'room', roomid};
+	// };
 	renderMiniRoom(room: PSRoom) {
 		const roomType = PS.roomTypes[room.type];
 		const Panel = roomType ? roomType.Component : PSRoomPanel;
@@ -307,7 +294,7 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 			const room = PS.rooms[roomid]!;
 			return <div class="pmbox">
 				<div class="mini-window">
-					<h3 draggable onDragStart={this.handleDragStart} data-roomid={roomid}>
+					<h3>
 						<button class="closebutton" name="closeRoom" value={roomid} aria-label="Close" tabIndex={-1}><i class="fa fa-times-circle"></i></button>
 						<button class="minimizebutton" tabIndex={-1}><i class="fa fa-minus-circle"></i></button>
 						{room.title}
@@ -317,41 +304,60 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 			</div>;
 		});
 	}
-	renderSearchButton() {
-		if (PS.down) {
-			return <div class="menugroup" style="background: rgba(10,10,10,.6)">
-				{PS.down === 'ddos' ?
-					<p class="error"><strong>Pok&eacute;mon Showdown is offline due to a DDoS attack!</strong></p>
-				:
-					<p class="error"><strong>Pok&eacute;mon Showdown is offline due to technical difficulties!</strong></p>
-				}
-				<p>
-					<div style={{textAlign: 'center'}}>
-						<img width="96" height="96" src={`//${Config.routes.client}/sprites/gen5/teddiursa.png`} alt="" />
-					</div>
-					Bear with us as we freak out.
-				</p>
-				<p>(We'll be back up in a few hours.)</p>
-			</div>;
-		}
+	// renderSearchButton() {
+	// 	if (PS.down) {
+	// 		return <div class="menugroup" style="background: rgba(10,10,10,.6)">
+	// 			{PS.down === 'ddos' ?
+	// 				<p class="error"><strong>Pok&eacute;mon Showdown is offline due to a DDoS attack!</strong></p>
+	// 			:
+	// 				<p class="error"><strong>Pok&eacute;mon Showdown is offline due to technical difficulties!</strong></p>
+	// 			}
+	// 			<p>
+	// 				<div style={{textAlign: 'center'}}>
+	// 					<img width="96" height="96" src={`//${Config.routes.client}/sprites/gen5/teddiursa.png`} alt="" />
+	// 				</div>
+	// 				Bear with us as we freak out.
+	// 			</p>
+	// 			<p>(We'll be back up in a few hours.)</p>
+	// 		</div>;
+	// 	}
 
-		if (!PS.user.userid || PS.isOffline) {
-			return <TeamForm class="menugroup" onSubmit={this.submit}>
-				<button class="mainmenu1 big button disabled" name="search">
-					<em>{PS.isOffline ? "Disconnected" : "Connecting..."}</em>
-				</button>
-			</TeamForm>;
-		}
+	// 	if (!PS.user.userid || PS.isOffline) {
+	// 		return <TeamForm class="menugroup" onSubmit={this.submit}>
+	// 			<button class="mainmenu1 big button disabled" name="search">
+	// 				<em>{PS.isOffline ? "Disconnected" : "Connecting..."}</em>
+	// 			</button>
+	// 		</TeamForm>;
+	// 	}
 
-		return <TeamForm class="menugroup" onSubmit={this.submit}>
-			<button class="mainmenu1 big button" name="search">
+	// 	return <TeamForm class="menugroup" onSubmit={this.submit}>
+	// 		<button class="mainmenu1 big button" name="search">
+	// 			<strong>Battle!</strong><br />
+	// 			<small>Find a random opponent</small>
+	// 		</button>
+	// 	</TeamForm>;
+	// }
+	render() {
+		const onlineButton = ' button' + (PS.isOffline ? ' disabled' : '');
+		const searchButton = (PS.down ? <div class="menugroup" style="background: rgba(10,10,10,.6)">
+			{PS.down === 'ddos' ?
+				<p class="error"><strong>Pok&eacute;mon Showdown is offline due to a DDoS attack!</strong></p>
+			:
+				<p class="error"><strong>Pok&eacute;mon Showdown is offline due to technical difficulties!</strong></p>
+			}
+			<p>
+				<div style={{textAlign: 'center'}}>
+					<img width="96" height="96" src={`//${Config.routes.client}/sprites/gen5/teddiursa.png`} alt="" />
+				</div>
+				Bear with us as we freak out.
+			</p>
+			<p>(We'll be back up in a few hours.)</p>
+		</div> : <TeamForm class="menugroup" onSubmit={this.submit}>
+			<button class={"mainmenu1 big" + onlineButton} name="search">
 				<strong>Battle!</strong><br />
 				<small>Find a random opponent</small>
 			</button>
-		</TeamForm>;
-	}
-	render() {
-		const onlineButton = ' button' + (PS.isOffline ? ' disabled' : '');
+		</TeamForm>);
 		return <PSPanelWrapper room={this.props.room} scrollable>
 			<div class="mainmenuwrapper">
 				<div class="leftmenu">
@@ -359,7 +365,7 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 						{this.renderMiniRooms()}
 					</div>
 					<div class="mainmenu">
-						{this.renderSearchButton()}
+						{searchButton}
 
 						<div class="menugroup">
 							<p><button class="mainmenu2 button" name="joinRoom" value="teambuilder">Teambuilder</button></p>
@@ -397,75 +403,71 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 }
 
 class FormatDropdown extends preact.Component<{format?: string, onChange?: JSX.EventHandler<Event>}> {
-	base?: HTMLButtonElement;
-	getFormat() {
-		return this.base?.value || '[Gen 7] Random Battle';
-	}
-	componentDidMount() {
-		this.base!.value = this.getFormat();
-	}
+	declare base?: HTMLButtonElement;
+	format = '[Gen 7] Random Battle';
 	change = (e: Event) => {
+		if (!this.base) return;
+		this.format = this.base.value;
 		this.forceUpdate();
 		if (this.props.onChange) this.props.onChange(e);
 	};
 	render() {
 		if (this.props.format) {
 			return <button
-				class="select formatselect preselected" name="format" value={this.props.format} disabled
+			name="format" value={this.props.format} class="select formatselect preselected" disabled
 			>{this.props.format}</button>;
 		}
-		const format = this.getFormat();
-		return <button class="select formatselect" name="format" data-href="/formatdropdown" onChange={this.change}>
-			{format}
+		return <button
+			name="format" value={this.format}
+			class="select formatselect" data-href="/formatdropdown" onChange={this.change}
+		>
+			{this.format}
 		</button>;
 	}
 }
 
 class TeamDropdown extends preact.Component<{format: string}> {
-	base?: HTMLButtonElement;
-	getTeam() {
-		if (this.base) {
-			const key = this.base.value;
-			return PS.teams.byKey[key] || null;
-		}
-		const formatid = PS.teams.teambuilderFormat(this.props.format);
+	teamFormat = '';
+	teamKey = '';
+	change = () => {
+		if (!this.base) return;
+		this.teamKey = (this.base as HTMLButtonElement).value;
+		this.forceUpdate();
+	};
+	getDefaultTeam(teambuilderFormat: string) {
 		for (const team of PS.teams.list) {
-			if (team.format === formatid) return team;
+			if (team.format === teambuilderFormat) return team.key;
 		}
-		return null;
+		return '';
 	}
-	componentDidMount() {
-		const team = this.getTeam();
-		if (team) {
-			this.base!.value = team.key;
-		}
-	}
-	change = () => this.forceUpdate();
 	render() {
-		const formatid = PS.teams.teambuilderFormat(this.props.format);
-		const formatData = window.BattleFormats?.[formatid];
+		const teamFormat = PS.teams.teambuilderFormat(this.props.format);
+		const formatData = window.BattleFormats?.[teamFormat];
 		if (formatData && formatData.team) {
 			return <button class="select teamselect preselected" name="team" value="random" disabled>
 				<div class="team">
 					<strong>Random team</strong>
 					<small>
-						<span class="picon" style={`float:left;background:transparent url(https://${Config.routes.client}/sprites/pokemonicons-sheet.png?a6) no-repeat scroll -0px -0px`}></span>
-						<span class="picon" style={`float:left;background:transparent url(https://${Config.routes.client}/sprites/pokemonicons-sheet.png?a6) no-repeat scroll -0px -0px`}></span>
-						<span class="picon" style={`float:left;background:transparent url(https://${Config.routes.client}/sprites/pokemonicons-sheet.png?a6) no-repeat scroll -0px -0px`}></span>
-						<span class="picon" style={`float:left;background:transparent url(https://${Config.routes.client}/sprites/pokemonicons-sheet.png?a6) no-repeat scroll -0px -0px`}></span>
-						<span class="picon" style={`float:left;background:transparent url(https://${Config.routes.client}/sprites/pokemonicons-sheet.png?a6) no-repeat scroll -0px -0px`}></span>
-						<span class="picon" style={`float:left;background:transparent url(https://${Config.routes.client}/sprites/pokemonicons-sheet.png?a6) no-repeat scroll -0px -0px`}></span>
+						<span class="picon" style={Dex.getPokemonIcon(null)}></span>
+						<span class="picon" style={Dex.getPokemonIcon(null)}></span>
+						<span class="picon" style={Dex.getPokemonIcon(null)}></span>
+						<span class="picon" style={Dex.getPokemonIcon(null)}></span>
+						<span class="picon" style={Dex.getPokemonIcon(null)}></span>
+						<span class="picon" style={Dex.getPokemonIcon(null)}></span>
 					</small>
 				</div>
 			</button>;
 		}
-		const team = this.getTeam();
-		let teambox = null;
-		if (PS.roomTypes['teamdropdown']) {
-			teambox = <TeamBox team={team} noLink />;
+		if (teamFormat !== this.teamFormat) {
+			this.teamFormat = teamFormat;
+			this.teamKey = this.getDefaultTeam(teamFormat);
 		}
-		return <button class="select teamselect" name="team" data-href="/teamdropdown" data-format={formatid} onChange={this.change}>
-			{teambox}
+		const team = PS.teams.byKey[this.teamKey] || null;
+		return <button
+			name="team" value={this.teamKey}
+			class="select teamselect" data-href="/teamdropdown" data-format={teamFormat} onChange={this.change}
+		>
+			{PS.roomTypes['teamdropdown'] && <TeamBox team={team} noLink />}
 		</button>;
 	}
 }

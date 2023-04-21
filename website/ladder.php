@@ -17,29 +17,30 @@ if ($formatid && !ctype_alnum($formatid)) {
 }
 
 $formats = array(
-	'gen8randombattle' => 'Random Battle',
-	'gen8challengecup1v1' => 'Challenge Cup 1v1',
-	'gen8hackmonscup' => 'Hackmons Cup',
-	'gen8ou' => 'OverUsed',
-	'gen8ubers' => 'Ubers',
-	'gen8uu' => 'UnderUsed',
-	'gen8ru' => 'RarelyUsed',
-	'gen8nu' => 'NeverUsed',
-	'gen8pu' => 'PU',
-	'gen8lc' => 'Little Cup',
-	'gen8monotype' => 'Monotype',
-	'gen8anythinggoes' => 'Anything Goes',
-	'gen8zu' => 'ZU',
-	'gen81v1' => '1v1',
-	'gen8battlestadiumsingles' => 'Battle Stadium Singles',
-	'gen8randomdoublesbattle' => 'Random Doubles Battle',
-	'gen8doublesou' => 'Doubles OU',
-	'gen8vgc2021' => 'VGC 2021',
-	'gen8balancedhackmons' => 'Balanced Hackmons',
-	'gen8mixandmega' => 'Mix and Mega',
-	'gen8almostanyability' => 'Almost Any Ability',
-	'gen8stabmons' => 'STABmons',
-	'gen8nfe' => 'NFE',
+	'gen9randombattle' => 'Random Battle',
+	'gen9challengecup1v1' => 'Challenge Cup 1v1',
+	'gen9hackmonscup' => 'Hackmons Cup',
+	'gen9ou' => 'OverUsed',
+	'gen9ubers' => 'Ubers',
+	'gen9uu' => 'UnderUsed',
+	'gen9ru' => 'RarelyUsed',
+	'gen9nu' => 'NeverUsed',
+	'gen9pu' => 'PU',
+	'gen9lc' => 'Little Cup',
+	'gen9monotype' => 'Monotype',
+	'gen9anythinggoes' => 'Anything Goes',
+	'gen9zu' => 'ZU',
+	'gen91v1' => '1v1',
+	'gen9battlestadiumsingles' => 'Battle Stadium Singles',
+	'gen9randomdoublesbattle' => 'Random Doubles Battle',
+	'gen9doublesou' => 'Doubles OU',
+	'gen9vgc2023regulationc' => 'VGC 2023 Regulation C',
+	'gen9balancedhackmons' => 'Balanced Hackmons',
+	'gen9mixandmega' => 'Mix and Mega',
+	'gen9almostanyability' => 'Almost Any Ability',
+	'gen9stabmons' => 'STABmons',
+	'gen9nfe' => 'NFE',
+	'gen9godlygift' => 'Godly Gift',
 	'gen8cap' => 'CAP',
 );
 
@@ -52,7 +53,8 @@ if (isset($_REQUEST['json'])) {
 	header('Access-Control-Allow-Origin: *');
 	if (!$formatid) die('null');
 	$ladder = new NTBBLadder($formatid);
-	$toplist = $ladder->getTop();
+	$prefix = $_REQUEST['prefix'] ?? null;
+	$toplist = $ladder->getTop($prefix);
 	foreach ($toplist as &$row) {
 		unset($row['formatid']);
 		unset($row['entryid']);
@@ -96,39 +98,39 @@ if (!$formatid) {
 			Ladders
 		</h1>
 		<ul class="laddernav">
-			<li><a data-target="push" class="button nav-first" href="/ladder/gen8randombattle">Random Battle</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8challengecup1v1">Challenge Cup 1v1</a></li>
-			<li><a data-target="push" class="button nav-last" href="/ladder/gen8hackmonscup">Hackmons Cup</a></li>
+			<li><a data-target="push" class="button nav-first" href="/ladder/gen9randombattle">Random Battle</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9challengecup1v1">Challenge Cup 1v1</a></li>
+			<li><a data-target="push" class="button nav-last" href="/ladder/gen9hackmonscup">Hackmons Cup</a></li>
 		</ul>
 		<ul class="laddernav">
-			<li><a data-target="push" class="button nav-first" href="/ladder/gen8ou">OverUsed</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8ubers">Ubers</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8uu">UnderUsed</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8ru">RarelyUsed</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8nu">NeverUsed</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8pu">PU</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8lc">Little Cup</a></li>
-			<li><a data-target="push" class="button nav-last" href="/ladder/gen8monotype">Monotype</a></li>
+			<li><a data-target="push" class="button nav-first" href="/ladder/gen9ou">OverUsed</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9ubers">Ubers</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9uu">UnderUsed</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9ru">RarelyUsed</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9nu">NeverUsed</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9pu">PU</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9lc">Little Cup</a></li>
+			<li><a data-target="push" class="button nav-last" href="/ladder/gen9monotype">Monotype</a></li>
 		</ul>
 		<ul class="laddernav">
-			<li><a data-target="push" class="button nav-first" href="/ladder/gen81v1">1v1</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8anythinggoes">Anything Goes</a></li-->
-			<li><a data-target="push" class="button" href="/ladder/gen8zu">ZU</a></li-->
-			<li><a data-target="push" class="button" href="/ladder/gen8battlestadiumsingles">Battle Stadium Singles</a></li>
-			<li><a data-target="push" class="button nav-last" href="/ladder/gen8cap">CAP</a></li>
+			<li><a data-target="push" class="button nav-first" href="/ladder/gen91v1">1v1</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9anythinggoes">Anything Goes</a></li-->
+			<li><a data-target="push" class="button" href="/ladder/gen9zu">ZU</a></li-->
+			<li><a data-target="push" class="button" href="/ladder/gen9battlestadiumsingles">Battle Stadium Singles</a></li>
+			<li><a data-target="push" class="button nav-last" href="/ladder/gen9cap">CAP</a></li>
 		</ul>
 		<ul class="laddernav">
-			<li><a data-target="push" class="button nav-first" href="/ladder/gen8randomdoublesbattle">Random Doubles Battle</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8doublesou">Doubles OU</a></li>
-			<li><a data-target="push" class="button nav-last" href="/ladder/gen8vgc2021">VGC 2021</a></li>
+			<li><a data-target="push" class="button nav-first" href="/ladder/gen9randomdoublesbattle">Random Doubles Battle</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9doublesou">Doubles OU</a></li>
+			<li><a data-target="push" class="button nav-last" href="/ladder/gen9vgc2023regulationc">VGC 2023 Regulation C</a></li>
 		</ul>
 		<ul class="laddernav">
-			<li><a data-target="push" class="button nav-first" href="/ladder/gen8balancedhackmons">Balanced Hackmons</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8mixandmega">Mix and Mega</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8almostanyability">Almost Any Ability</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8stabmons">STABmons</a></li>
-			<li><a data-target="push" class="button" href="/ladder/gen8stabmons">Camomons</a></li>
-			<li><a data-target="push" class="button nav-last" href="/ladder/gen8nfe">NFE</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9almostanyability">Almost Any Ability</a></li>
+			<li><a data-target="push" class="button nav-first" href="/ladder/gen9balancedhackmons">Balanced Hackmons</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9mixandmega">Mix and Mega</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9godlygift">Godly Gift</a></li>
+			<li><a data-target="push" class="button" href="/ladder/gen9stabmons">STABmons</a></li>
+			<li><a data-target="push" class="button nav-last" href="/ladder/gen9nfe">NFE</a></li>
 		</ul>
 		<h1>
 			Find user
@@ -149,7 +151,7 @@ if (!$formatid) {
 	// we previously allowed all TLs to reset suspect ladders:
 	//   substr($formatid, -11) === 'suspecttest' || substr($formatid, -7) === 'current'
 	// but that functionality got lost somewhere along the way
-	if (in_array($curuser['userid'], $psconfig['sysops'], true)) {
+	if ($users->isSysop()) {
 		$success = false;
 		if (@$_POST['act'] === 'resetladder' && $users->csrfCheck()) {
 			if ($_POST['confirm'] === "Permanently reset this ladder.") {

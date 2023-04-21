@@ -218,7 +218,7 @@ function toId() {
 		getActionPHP: function () {
 			var ret = '/~~' + Config.server.id + '/action.php';
 			if (Config.testclient) {
-				ret = 'https://' + Config.routes.client + ret;
+				ret = 'https://play.pokemonshowdown.com/action.php';
 			}
 			return (this.getActionPHP = function () {
 				return ret;
@@ -393,6 +393,8 @@ function toId() {
 		},
 		focused: true,
 		initialize: function () {
+			// Gotta cache this since backbone removes it
+			this.query = window.location.search;
 			window.app = this;
 			this.initializeRooms();
 			this.initializePopups();
@@ -402,7 +404,7 @@ function toId() {
 			this.supports = {};
 
 			// down
-			// if (document.location.hostname === 'play.pokemonshowdown.com') this.down = 'dos';
+			// if (document.location.hostname === 'play.pokemonshowdown.com') this.down = true;
 
 			this.addRoom('');
 			this.topbar = new Topbar({el: $('#header')});
@@ -467,7 +469,15 @@ function toId() {
 				var muted = Dex.prefs('mute');
 				BattleSound.setMute(muted);
 
-				$('html').toggleClass('dark', !!Dex.prefs('dark'));
+				var theme = Dex.prefs('theme');
+				var colorSchemeQuery = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+				var dark = theme === 'dark' || (theme === 'system' && colorSchemeQuery && colorSchemeQuery.matches);
+				$('html').toggleClass('dark', dark);
+				if (colorSchemeQuery && colorSchemeQuery.media !== 'not all') {
+					colorSchemeQuery.addEventListener('change', function (cs) {
+						if (Dex.prefs('theme') === 'system') $('html').toggleClass('dark', cs.matches);
+					});
+				}
 
 				var effectVolume = Dex.prefs('effectvolume');
 				if (effectVolume !== undefined) BattleSound.setEffectVolume(effectVolume);
@@ -670,6 +680,11 @@ function toId() {
 
 			Storage.whenAppLoaded.load(this);
 
+			// load custom colors from loginserver
+			$.get('/config/colors.json', {}, function (data) {
+				Object.assign(Config.customcolors, data);
+			});
+
 			this.initializeConnection();
 		},
 		/**
@@ -724,7 +739,7 @@ function toId() {
 			}
 
 			if (Config.server.banned) {
-				this.addPopupMessage("This server has been deleted for breaking US laws, impersonating PS global staff, or other major rulebreaking.");
+				this.addPopupMessage("This server has either been deleted for breaking US law or PS global rules, or it is hosted on a platform that's often used to host rulebreaking servers.");
 				return;
 			}
 
@@ -732,8 +747,35 @@ function toId() {
 			var constructSocket = function () {
 				var protocol = (Config.server.port === 443 || Config.server.https) ? 'https' : 'http';
 				Config.server.host = $.trim(Config.server.host);
-				return new SockJS(protocol + '://' + Config.server.host + ':' +
-					Config.server.port + Config.sockjsprefix, [], {timeout: 5 * 60 * 1000});
+				try {
+					if (Config.server.host === 'localhost') {
+						// connecting to localhost from psim.us is now banned as of Chrome 94
+						// thanks Docker for having vulns
+						// https://wicg.github.io/cors-rfc1918
+						// anyway, this affects SockJS because it makes HTTP requests to localhost
+						// but it turns out that making direct WebSocket connections to localhost is
+						// still supported, so we'll just bypass SockJS and use WebSocket directly.
+						var possiblePort = new URL(document.location + self.query).searchParams.get('port');
+						// We need to bypass the port as well because on most modern browsers, http gets forced
+						// to https, which means a ws connection is made to port 443 instead of wherever it's actually running,
+						// thus ensuring a failed connection.
+						var port = possiblePort || Config.server.port;
+						console.log("Bypassing SockJS for localhost");
+						var url = 'ws://' + Config.server.host + ':' + port + Config.sockjsprefix + '/websocket';
+						console.log(url);
+						return new WebSocket(url);
+					}
+					return new SockJS(
+						protocol + '://' + Config.server.host + ':' + Config.server.port + Config.sockjsprefix,
+						[], {timeout: 5 * 60 * 1000}
+					);
+				} catch (err) {
+					// The most common case this happens is if an HTTPS connection fails,
+					// and we fall back to HTTP, which throws a SecurityError if the URL
+					// is HTTPS
+					self.trigger('init:connectionerror');
+					return null;
+				}
 			};
 			this.socket = constructSocket();
 
@@ -807,6 +849,7 @@ function toId() {
 			if (!Config.testclient && location.search && window.history) {
 				history.replaceState(null, null, location.pathname);
 			}
+			if (fragment && fragment.includes('.')) fragment = '';
 			this.fragment = fragment = toRoomid(fragment || '');
 			if (this.initialFragment === undefined) this.initialFragment = fragment;
 			this.tryJoinRoom(fragment);
@@ -816,7 +859,7 @@ function toId() {
 		 * Send to sim server
 		 */
 		send: function (data, room) {
-			if (room && room !== 'lobby' && room !== true) {
+			if (room && room !== true) {
 				data = room + '|' + data;
 			} else if (room !== true) {
 				data = '|' + data;
@@ -831,15 +874,18 @@ function toId() {
 			}
 			this.socket.send(data);
 		},
-		serializeForm: function (form) {
+		serializeForm: function (form, checkboxOnOff) {
 			// querySelector dates back to IE8 so we can use it
 			// fortunate, because form serialization is a HUGE MESS in older browsers
 			var elements = form.querySelectorAll('input[name], select[name], textarea[name], keygen[name]');
 			var out = [];
 			for (var i = 0; i < elements.length; i++) {
 				var element = elements[i];
-				// TODO: values are a mess in the DOM; checkboxes/select probably need special handling
-				out.push([element.name, element.value]);
+				if (element.type === 'checkbox' && !element.value && checkboxOnOff) {
+					out.push([element.name, element.checked ? 'on' : 'off']);
+				} else if (!['checkbox', 'radio'].includes(element.type) || element.checked) {
+					out.push([element.name, element.value]);
+				}
 			}
 			return out;
 		},
@@ -852,10 +898,11 @@ function toId() {
 			var dataSend = target.getAttribute('data-submitsend');
 			if (dataSend) {
 				var toSend = dataSend;
-				var entries = this.serializeForm(target);
+				var entries = this.serializeForm(target, true);
 				for (var i = 0; i < entries.length; i++) {
 					toSend = toSend.replace('{' + entries[i][0] + '}', entries[i][1]);
 				}
+				toSend = toSend.replace(/\{[a-z]+\}/g, '');
 				this.send(toSend);
 				e.currentTarget.innerText = 'Submitted!';
 				e.preventDefault();
@@ -1208,6 +1255,7 @@ function toId() {
 			var column = 0;
 			var columnChanged = false;
 
+			window.NonBattleGames = {rps: 'Rock Paper Scissors'};
 			window.BattleFormats = {};
 			for (var j = 1; j < formatsList.length; j++) {
 				if (isSection) {
@@ -1230,6 +1278,7 @@ function toId() {
 					var searchShow = true;
 					var challengeShow = true;
 					var tournamentShow = true;
+					var partner = false;
 					var team = null;
 					var teambuilderLevel = null;
 					var lastCommaIndex = name.lastIndexOf(',');
@@ -1241,6 +1290,7 @@ function toId() {
 						if (!(code & 4)) challengeShow = false;
 						if (!(code & 8)) tournamentShow = false;
 						if (code & 16) teambuilderLevel = 50;
+						if (code & 32) partner = true;
 					} else {
 						// Backwards compatibility: late 0.9.0 -> 0.10.0
 						if (name.substr(name.length - 2) === ',#') { // preset teams
@@ -1306,6 +1356,7 @@ function toId() {
 						tournamentShow: tournamentShow,
 						rated: searchShow && id.substr(4, 7) !== 'unrated',
 						teambuilderLevel: teambuilderLevel,
+						partner: partner,
 						teambuilderFormat: teambuilderFormat,
 						isTeambuilderFormat: isTeambuilderFormat,
 						effectType: 'Format'
@@ -1336,8 +1387,10 @@ function toId() {
 			var serverid = Config.server.id && toID(Config.server.id.split(':')[0]);
 			var silent = data.silent;
 			if (serverid && serverid !== 'showdown') id = serverid + '-' + id;
-			$.post(app.user.getActionPHP() + '?act=uploadreplay', {
+			$.post(app.user.getActionPHP(), {
+				act: 'uploadreplay',
 				log: data.log,
+				serverid: serverid,
 				password: data.password || '',
 				id: id
 			}, function (data) {
@@ -1536,9 +1589,9 @@ function toId() {
 
 			// otherwise, infer the room type
 			if (!type) {
-				if (id.slice(0, 7) === 'battle-') {
+				if (id.startsWith('battle-') || id.startsWith('game-')) {
 					type = BattleRoom;
-				} else if (id.slice(0, 5) === 'view-') {
+				} else if (id.startsWith('view-')) {
 					type = HTMLRoom;
 				} else {
 					type = ChatRoom;
@@ -2519,39 +2572,44 @@ function toId() {
 			type: 'staff',
 			order: 10006
 		},
+		'\u00a7': {
+			name: "Section Leader (\u00a7)",
+			type: 'staff',
+			order: 10007
+		},
 		'*': {
 			name: "Bot (*)",
 			type: 'normal',
-			order: 10007
+			order: 10008
 		},
 		'\u2606': {
 			name: "Player (\u2606)",
 			type: 'normal',
-			order: 10008
+			order: 10009
 		},
 		'+': {
 			name: "Voice (+)",
 			type: 'normal',
-			order: 10009
+			order: 10010
 		},
 		' ': {
 			type: 'normal',
-			order: 10010
+			order: 10011
 		},
 		'!': {
 			name: "<span style='color:#777777'>Muted (!)</span>",
 			type: 'punishment',
-			order: 10011
+			order: 10012
 		},
 		'✖': {
 			name: "<span style='color:#777777'>Namelocked (✖)</span>",
 			type: 'punishment',
-			order: 10012
+			order: 10013
 		},
 		'\u203d': {
 			name: "<span style='color:#777777'>Locked (\u203d)</span>",
 			type: 'punishment',
-			order: 10013
+			order: 10014
 		}
 	};
 
@@ -2572,9 +2630,10 @@ function toId() {
 		update: function (data) {
 			if (data && data.userid === this.data.userid) {
 				data = _.extend(this.data, data);
-				// Don't cache the roomGroup
+				// Don't cache the roomGroup or status
 				UserPopup.dataCache[data.userid] = _.clone(data);
 				delete UserPopup.dataCache[data.userid].roomGroup;
+				delete UserPopup.dataCache[data.userid].status;
 			} else {
 				data = this.data;
 			}
@@ -2584,7 +2643,7 @@ function toId() {
 			var groupName = ((Config.groups[data.roomGroup] || {}).name || '');
 			var globalGroup = (Config.groups[data.group || Config.defaultGroup || ' '] || null);
 			var globalGroupName = '';
-			if (globalGroup && globalGroup.name) {
+			if (globalGroup && globalGroup.name && toID(globalGroup.name) !== toID(data.customgroup)) {
 				if (globalGroup.type === 'punishment') {
 					groupName = globalGroup.name;
 				} else if (!groupName || groupName === globalGroup.name) {
@@ -2604,13 +2663,13 @@ function toId() {
 				buf += '<span class="userstatus' + (offline ? ' offline' : '') + '">' + BattleLog.escapeHTML(status) + '<br /></span>';
 			}
 			if (groupName) {
-				buf += '<small class="usergroup roomgroup">' + BattleLog.escapeHTML(groupName) + '</small>';
+				buf += '<small class="usergroup roomgroup">' + groupName + '</small>';
 				if (globalGroupName) buf += '<br />';
 			}
 			if (globalGroupName) {
-				buf += '<small class="usergroup globalgroup">' + BattleLog.escapeHTML(globalGroupName) + '</small>';
+				buf += '<small class="usergroup globalgroup">' + globalGroupName + '</small>';
 			}
-			if (data.customgroup) {
+			if (data.customgroup && toID(data.customgroup) !== toID(globalGroupName || groupName)) {
 				if (groupName || globalGroupName) buf += '<br />';
 				buf += '<small class="usergroup globalgroup">' + BattleLog.escapeHTML(data.customgroup) + '</small>';
 			}
@@ -2705,7 +2764,11 @@ function toId() {
 			this.close();
 		},
 		userOptions: function () {
-			app.addPopup(UserOptionsPopup, {name: this.data.name, userid: this.data.userid});
+			app.addPopup(UserOptionsPopup, {
+				name: this.data.name,
+				userid: this.data.userid,
+				friended: this.data.friended,
+			});
 		}
 	}, {
 		dataCache: {}
@@ -2715,10 +2778,31 @@ function toId() {
 		initialize: function (data) {
 			this.name = data.name;
 			this.userid = data.userid;
+			this.data = data;
 			this.update();
 		},
 		update: function () {
-			this.$el.html('<p><button name="toggleIgnoreUser">' + (app.ignore[this.userid] ? 'Unignore' : 'Ignore') + '</button></p><p><button name="report">Report</button></p>');
+			var ignored = app.ignore[this.userid] ? 'Unignore' : 'Ignore';
+			var friended = this.data.friended ? 'Remove friend' : 'Add friend';
+			this.$el.html(
+				'<p><button name="toggleIgnoreUser">' + ignored + '</button></p>' +
+				'<p><button name="report">Report</button></p>' +
+				'<p><button name="toggleFriend">' + friended +
+				'</button></p>'
+			);
+		},
+		toggleFriend: function () {
+			var $button = this.$el.find('[name=toggleFriend]');
+			if (this.data.friended) {
+				app.send('/unfriend ' + this.userid);
+				$button.text('Friend removed.');
+			} else {
+				app.send('/friend add ' + this.userid);
+				$button.text('Friend request sent!');
+			}
+			// we intentionally disable since we don't want them to spam it
+			// you at least have to close and reopen the popup to get it back
+			$button.addClass('button disabled');
 		},
 		report: function () {
 			app.joinRoom('view-help-request-report-user-' + this.userid);

@@ -1,0 +1,5 @@
+[submodule "DH"]
+	path = DH
+	url = https://github.com/Rezzo64/DH.git
+	branch = gen9clean
+    ignore = dirty

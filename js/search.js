@@ -29,7 +29,7 @@
 		this.externalFilter = false;
 		this.cur = {};
 		this.$inputEl = null;
-		this.gen = 8;
+		this.gen = 9;
 		this.mod = null;
 
 		this.engine = new DexSearch();
@@ -108,9 +108,8 @@
 		var buf = '<p>Filters: ';
 		for (var i = 0; i < this.filters.length; i++) {
 			var text = this.filters[i][1];
-			if (this.filters[i][0] === 'move') text = Dex.moves.get(text).name;
-			if (this.filters[i][0] === 'pokemon') text = Dex.species.get(text).name;
-			buf += '<button class="filter" value="' + BattleLog.escapeHTML(this.filters[i].join(':')) + '">' + text + ' <i class="fa fa-times-circle"></i></button> ';
+			if (this.filters[i][0] === 'move') text = this.engine.dex.species.get(text).name;
+			if (this.filters[i][0] === 'pokemon') text = this.engine.dex.moves.get(text).name;			buf += '<button class="filter" value="' + BattleLog.escapeHTML(this.filters[i].join(':')) + '">' + text + ' <i class="fa fa-times-circle"></i></button> ';
 		}
 		if (!q) buf += '<small style="color: #888">(backspace = delete filter)</small>';
 		return buf + '</p>';
@@ -197,7 +196,7 @@
 		case 'sortmove':
 			return this.renderMoveSortRow();
 		case 'pokemon':
-			var pokemon = this.engine.dex.species.get(id);
+			var pokemon = this.engine.dex.species.get(id, (id, undefined, "from renderRow"));
 			return this.renderPokemonRow(pokemon, matchStart, matchLength, errorMessage, attrs);
 		case 'move':
 			var move = this.engine.dex.moves.get(id);
@@ -266,8 +265,12 @@
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'hp' ? ' cur' : '') + '" data-sort="hp">HP</button>';
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'atk' ? ' cur' : '') + '" data-sort="atk">Atk</button>';
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'def' ? ' cur' : '') + '" data-sort="def">Def</button>';
-		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'spa' ? ' cur' : '') + '" data-sort="spa">SpA</button>';
-		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'spd' ? ' cur' : '') + '" data-sort="spd">SpD</button>';
+		if (this.engine.dex.gen >= 2) {
+			buf += '<button class="sortcol statsortcol' + (this.sortCol === 'spa' ? ' cur' : '') + '" data-sort="spa">SpA</button>';
+			buf += '<button class="sortcol statsortcol' + (this.sortCol === 'spd' ? ' cur' : '') + '" data-sort="spd">SpD</button>';
+		} else {
+			buf += '<button class="sortcol statsortcol' + (this.sortCol === 'spa' ? ' cur' : '') + '" data-sort="spa">Spc</button>';
+		}
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'spe' ? ' cur' : '') + '" data-sort="spe">Spe</button>';
 		buf += '<button class="sortcol statsortcol' + (this.sortCol === 'bst' ? ' cur' : '') + '" data-sort="bst">BST</button>';
 		buf += '</div></li>';
@@ -298,7 +301,7 @@
 
 		// icon
 		buf += '<span class="col iconcol">';
-		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name) + '"></span>';
+		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name, false, this.mod) + '"></span>';
 		buf += '</span> ';
 
 		// name
@@ -327,26 +330,26 @@
 			return buf;
 		}
 
-		var gen = this.gen;
+		var gen = this.engine ? this.engine.dex.gen : 9;
 
 		// type
 		buf += '<span class="col typecol">';
 		var types = pokemon.types;
 		for (var i = 0; i < types.length; i++) {
-			buf += Dex.getTypeIcon(types[i]);
+			buf += Dex.getTypeIcon(types[i], null, this.mod);
 		}
 		buf += '</span> ';
 
 		// abilities
 		if (gen >= 3) {
 			var abilities = Dex.forGen(gen).species.get(id).abilities;
-			if (abilities['1']) {
-				buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
-					abilities['1'] + '</span>';
-			} else {
-				buf += '<span class="col abilitycol">' + abilities['0'] + '</span>';
-			}
 			if (gen >= 5) {
+				if (abilities['1']) {
+					buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
+						abilities['1'] + '</span>';
+				} else {
+					buf += '<span class="col abilitycol">' + abilities['0'] + '</span>';
+				}
 				var unreleasedHidden = pokemon.unreleasedHidden;
 				if (unreleasedHidden === 'Past' && (this.mod === 'natdex' || gen < 8)) unreleasedHidden = false;
 				if (abilities['S']) {
@@ -360,7 +363,13 @@
 				} else {
 					buf += '<span class="col abilitycol"></span>';
 				}
+			} else {
+				buf += '<span class="col abilitycol">' + abilities['0'] + '</span>';
+				buf += '<span class="col abilitycol">' + (abilities['1'] ? abilities['1'] : '') + '</span>';
 			}
+		} else {
+			buf += '<span class="col abilitycol"></span>';
+			buf += '<span class="col abilitycol"></span>';
 		}
 
 		// base stats
@@ -393,7 +402,7 @@
 
 		// icon
 		buf += '<span class="col iconcol">';
-		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name) + '"></span>';
+		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name, false, this.mod) + '"></span>';
 		buf += '</span> ';
 
 		// name
@@ -461,7 +470,7 @@
 
 		// icon
 		buf += '<span class="col itemiconcol">';
-		buf += '<span style="' + Dex.getItemIcon(item) + '"></span>';
+		buf += '<span style="' + Dex.getItemIcon(item, null, this.mod) + '"></span>';
 		buf += '</span> ';
 
 		// name
@@ -545,17 +554,16 @@
 
 		// type
 		buf += '<span class="col typecol">';
-		buf += Dex.getTypeIcon(move.type);
+		buf += Dex.getTypeIcon(move.type, null, this.mod);
 		buf += Dex.getCategoryIcon(move.category);
 		buf += '</span> ';
 
 		// power, accuracy, pp
-		var basePower = move.basePower;
-		var accuracy = move.accuracy;
-		var pp = move.pp;
-		buf += '<span class="col labelcol">' + (move.category !== 'Status' ? ('<em>Power</em><br />' + (basePower || '&mdash;')) : '') + '</span> ';
-		buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (accuracy && accuracy !== true ? accuracy + '%' : '&mdash;') + '</span> ';
-		buf += '<span class="col pplabelcol"><em>PP</em><br />' + (pp === 1 || move.noPPBoosts ? pp : pp * 8 / 5) + '</span> ';
+		var pp = (move.pp === 1 || move.noPPBoosts ? move.pp : move.pp * 8 / 5);
+		if (this.engine && this.engine.dex.gen < 3) pp = Math.min(61, pp);
+		buf += '<span class="col labelcol">' + (move.category !== 'Status' ? ('<em>Power</em><br />' + (move.basePower || '&mdash;')) : '') + '</span> ';
+		buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
+		buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
 
 		// desc
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc) + '</span> ';
@@ -583,14 +591,16 @@
 
 		// type
 		buf += '<span class="col typecol">';
-		buf += Dex.getTypeIcon(move.type);
+		buf += Dex.getTypeIcon(move.type, null, this.mod);
 		buf += Dex.getCategoryIcon(move.category);
 		buf += '</span> ';
 
 		// power, accuracy, pp
+		var pp = (move.pp === 1 || move.noPPBoosts ? move.pp : move.pp * 8 / 5);
+		if (this.engine && this.engine.dex.gen < 3) pp = Math.min(61, pp);
 		buf += '<span class="col labelcol">' + (move.category !== 'Status' ? ('<em>Power</em><br />' + (move.basePower || '&mdash;')) : '') + '</span> ';
 		buf += '<span class="col widelabelcol"><em>Accuracy</em><br />' + (move.accuracy && move.accuracy !== true ? move.accuracy + '%' : '&mdash;') + '</span> ';
-		buf += '<span class="col pplabelcol"><em>PP</em><br />' + (move.pp === 1 || move.noPPBoosts ? move.pp : move.pp * 8 / 5) + '</span> ';
+		buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
 
 		// desc
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc || move.desc) + '</span> ';
@@ -765,7 +775,7 @@
 		return buf;
 	};
 
-	Search.gen = 8;
+	Search.gen = 9;
 	Search.renderRow = Search.prototype.renderRow;
 	Search.renderPokemonRow = Search.prototype.renderPokemonRow;
 	Search.renderTaggedPokemonRowInner = Search.prototype.renderTaggedPokemonRowInner;
