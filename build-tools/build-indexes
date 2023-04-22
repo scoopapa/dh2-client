@@ -1518,47 +1518,30 @@ function buildTeambuilderTables() {
 		}
 	}
 
-	buf += `exports.BattleTeambuilderTable = JSON.parse('${JSON.stringify(BattleTeambuilderTable).replace(/['\\]/g, "\\$&")}');\n\n`;
+	// buf += `exports.BattleTeambuilderTable = JSON.parse('${JSON.stringify(BattleTeambuilderTable).replace(/['\\]/g, "\\$&")}');\n\n`;
+	// fs.writeFileSync('data/teambuilder-tables.js', buf);
 
-	fs.writeFileSync('data/teambuilder-tables.js', buf);
-	//fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+	console.log("writing ModConfig...");
+	fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+	console.log("DONE");
 
-	function writePartialJSON(stream, mod, indentLevel = 0) {
-	  const isArray = Array.isArray(mod);
-	  const keys = Object.keys(mod);
-	  const indent = ' '.repeat(indentLevel * 2);
-	  const itemIndent = ' '.repeat((indentLevel + 1) * 2);
-	
-	  stream.write(isArray ? '[\n' : '{\n');
-	
-	  keys.forEach((key, index) => {
-		if (!isArray) {
-		  stream.write(`${itemIndent}"${key}": `);
-		}
-	
-		const value = mod[key];
-		if (typeof value === 'object' && value !== null) {
-		  writePartialJSON(stream, value, indentLevel + 1);
-		} else {
-		  stream.write(JSON.stringify(value));
-		}
-	
-		if (index < keys.length - 1) {
-		  stream.write(',\n');
-		} else {
-		  stream.write('\n');
-		}
-	  });
-	
-	  stream.write(`${indent}${isArray ? ']' : '}'}`);
+	const tableKeys = Object.keys(BattleTeambuilderTable);
+	blockSize = 5;
+	blockIndex = 0;
+
+	console.log("writing BattleTeambuilderTable...");
+	fs.writeFileSync('data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
+	while (blockIndex < tableKeys.length) {
+		const block = tableKeys.slice(blockIndex, blockIndex + blockSize);
+		const blockTable = {};
+		block.forEach(key => {
+			blockTable[key] = BattleTeambuilderTable[key];
+		});
+		const jsonString = JSON.stringify(blockTable).replace(/['\\]/g, "\\$&");
+		fs.appendFileSync('data/teambuilder-tables.js', `Object.assign(exports.BattleTeambuilderTable, ${jsonString});\n`);
+		blockIndex += blockSize;
 	}
-	
-	const stream = fs.createWriteStream('data/mod-config.js');
-	stream.write('exports.ModConfig = ');
-	writePartialJSON(stream, ModConfig);
-	stream.write(';\n\n');
-	stream.end();
-	
+	console.log("DONE");
 }
 
 
