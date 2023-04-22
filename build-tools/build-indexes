@@ -1525,6 +1525,7 @@ function buildTeambuilderTables() {
 
 	console.log("writing BattleTeambuilderTable...");
 	fs.writeFileSync('data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
+	fs.appendFileSync('data/teambuilder-tables.js', 'exports.BattleTeambuilderTable = JSON.parse(')
 	while (blockIndex < tableKeys.length) {
 		const block = tableKeys.slice(blockIndex, blockIndex + blockSize);
 		const blockTable = {};
@@ -1532,9 +1533,10 @@ function buildTeambuilderTables() {
 			blockTable[key] = BattleTeambuilderTable[key];
 		});
 		const jsonString = JSON.stringify(blockTable).replace(/['\\]/g, "\\$&");
-		fs.appendFileSync('data/teambuilder-tables.js', `Object.assign(exports.BattleTeambuilderTable, ${jsonString});\n`);
+		fs.appendFileSync('data/teambuilder-tables.js', `${jsonString});\n`);
 		blockIndex += blockSize;
 	}
+	fs.appendFileSync('data/teambuilder-tables.js', ');');
 	console.log("DONE");
 
 	console.log("writing ModConfig...");
