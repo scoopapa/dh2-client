@@ -1518,13 +1518,7 @@ function buildTeambuilderTables() {
 		}
 	}
 
-	// buf += `exports.BattleTeambuilderTable = JSON.parse('${JSON.stringify(BattleTeambuilderTable).replace(/['\\]/g, "\\$&")}');\n\n`;
-	// fs.writeFileSync('data/teambuilder-tables.js', buf);
-
-	console.log("writing ModConfig...");
-	fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
-	console.log("DONE");
-
+	// ChatGPT suggested to put BattleTeambuilderTable into blocks to prevent memory overload
 	const tableKeys = Object.keys(BattleTeambuilderTable);
 	const blockSize = 5;
 	let blockIndex = 0;
@@ -1541,6 +1535,10 @@ function buildTeambuilderTables() {
 		fs.appendFileSync('data/teambuilder-tables.js', `Object.assign(exports.BattleTeambuilderTable, ${jsonString});\n`);
 		blockIndex += blockSize;
 	}
+	console.log("DONE");
+
+	console.log("writing ModConfig...");
+	fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
 	console.log("DONE");
 }
 
