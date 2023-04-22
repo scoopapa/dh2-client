@@ -65,12 +65,39 @@ function requireNoCache(pathSpec) {
 	return require(pathSpec);
 }
 
+process.stdout.write("Building `data/search-index.js`... ");
+buildSearchIndex();
+console.log("DONE");
+
+process.stdout.write("Building `data/teambuilder-tables.js`... ");
+buildTeambuilderTables();
+console.log("DONE");
+
+process.stdout.write("Building `data/pokedex.js`... ");
+buildPokedex();
+console.log("DONE");
+
+process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.js`...");
+buildMoves();
+buildItems();
+buildAbilities();
+buildTypechart();
+buildLearnsets();
+console.log("DONE");
+
+process.stdout.write("Building aliases, formats-data, formats, mod-sprites, text.js...");
+buildAliases();
+buildFormatsData();
+buildFormats();
+buildModSprites();
+buildText();
+console.log("DONE");
+
 /*********************************************************
  * Build search-index.js
  *********************************************************/
 
-{
-	process.stdout.write("Building `data/search-index.js`... ");
+function buildSearchIndex() {
 
 	let index = [];
 
@@ -358,15 +385,11 @@ function requireNoCache(pathSpec) {
 	fs.writeFileSync('data/search-index.js', buf);
 }
 
-console.log("DONE");
-
 /*********************************************************
  * Build teambuilder-tables.js
  *********************************************************/
 
-process.stdout.write("Building `data/teambuilder-tables.js`... ");
-
-{
+function buildTeambuilderTables() {
 	const BattleTeambuilderTable = {};
 
 	let buf = '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n';
@@ -1501,15 +1524,13 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
 }
 
-console.log("DONE");
+
 
 /*********************************************************
  * Build pokedex.js
  *********************************************************/
 
-process.stdout.write("Building `data/pokedex.js`... ");
-
-{
+function buildPokedex() {
 	const Pokedex = requireNoCache('../DH/.data-dist/pokedex.js').Pokedex;
 	for (const id in Pokedex) {
 		const entry = Pokedex[id];
@@ -1526,15 +1547,11 @@ process.stdout.write("Building `data/pokedex.js`... ");
 	fs.writeFileSync('data/pokedex.json', JSON.stringify(Pokedex));
 }
 
-console.log("DONE");
-
 /*********************************************************
  * Build moves.js
  *********************************************************/
 
-process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.js`...");
-
-{
+function buildMoves() {
 	const Moves = requireNoCache('../DH/.data-dist/moves.js').Moves;
 	for (const id in Moves) {
 		const move = Dex.moves.get(Moves[id].name);
@@ -1550,7 +1567,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build items.js
  *********************************************************/
 
-{
+function buildItems() {
 	const Items = requireNoCache('../DH/.data-dist/items.js').Items;
 	for (const id in Items) {
 		const item = Dex.items.get(Items[id].name);
@@ -1565,7 +1582,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build abilities.js
  *********************************************************/
 
-{
+function buildAbilities() {
 	const Abilities = requireNoCache('../DH/.data-dist/abilities.js').Abilities;
 	for (const id in Abilities) {
 		const ability = Dex.abilities.get(Abilities[id].name);
@@ -1580,7 +1597,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build typechart.js
  *********************************************************/
 
-{
+function buildTypechart() {
 	const TypeChart = requireNoCache('../DH/.data-dist/typechart.js').TypeChart;
 	const buf = 'exports.BattleTypeChart = ' + es3stringify(TypeChart) + ';';
 	fs.writeFileSync('data/typechart.js', buf);
@@ -1590,7 +1607,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build aliases.js
  *********************************************************/
 
-{
+function buildAliases() {
 	const Aliases = requireNoCache('../DH/.data-dist/aliases.js').Aliases;
 	const buf = 'exports.BattleAliases = ' + es3stringify(Aliases) + ';';
 	fs.writeFileSync('data/aliases.js', buf);
@@ -1600,7 +1617,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build formats-data.js
  *********************************************************/
 
-{
+function buildFormatsData() {
 	const FormatsData = requireNoCache('../DH/.data-dist/formats-data.js').FormatsData;
 	const buf = 'exports.BattleFormatsData = ' + es3stringify(FormatsData) + ';';
 	fs.writeFileSync('data/formats-data.js', buf);
@@ -1610,7 +1627,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build formats.js
  *********************************************************/
 
-{
+function buildFormats() {
 	Formats = requireNoCache('../DH/.config-dist/formats.js').Formats;
 	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
 	fs.writeFileSync('data/formats.js', buf);
@@ -1620,7 +1637,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build learnsets.js
  *********************************************************/
 
-{
+function buildLearnsets() {
 	const Learnsets = requireNoCache('../DH/.data-dist/learnsets.js').Learnsets;
 	const buf = 'exports.BattleLearnsets = ' + es3stringify(Learnsets) + ';';
 	fs.writeFileSync('data/learnsets.js', buf);
@@ -1631,7 +1648,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build mod-sprites.js
  *********************************************************/
 
-{
+function buildModSprites() {
 	const modSprites = {};
 	const modDir = fs.readdirSync('DH/data/mods/');
 	for (const i in modDir) {
@@ -1658,7 +1675,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  * Build text.js
  *********************************************************/
 
-{
+function buildText() {
 	const textData = Dex.loadTextData();
 	const Text = textData.Default;
 
@@ -1684,5 +1701,3 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
 	const buf = 'exports.BattleText = ' + es3stringify(Text) + ';';
 	fs.writeFileSync('data/text.js', buf);
 }
-
-console.log("DONE");
