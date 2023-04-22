@@ -1518,25 +1518,39 @@ function buildTeambuilderTables() {
 		}
 	}
 
-	// ChatGPT suggested to put BattleTeambuilderTable into blocks to prevent memory overload
+	/*
+
+	This block of code is a bit wild, I might not be able to help with it too much.
+
+	Essentially it breaks down everything in BattleTeambuilderTable into blocks of 5,
+	casts them to a JSON object and then un-JSONs them by deleting the curly braces
+	that surround them. It =manually parses the edges of the entire JSON file so that the whole
+	thing is treated as a single JSON object with sub-objects to be loaded by the teambuilder.
+
+	*/
+
 	const tableKeys = Object.keys(BattleTeambuilderTable);
 	const blockSize = 5;
 	let blockIndex = 0;
 
 	console.log("writing BattleTeambuilderTable...");
 	fs.writeFileSync('data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
-	fs.appendFileSync('data/teambuilder-tables.js', 'exports.BattleTeambuilderTable = JSON.parse(\'')
+	fs.appendFileSync('data/teambuilder-tables.js', 'exports.BattleTeambuilderTable = JSON.parse(\'{')
+
+	// ChatGPT suggested to put BattleTeambuilderTable into blocks to prevent memory overload.
 	while (blockIndex < tableKeys.length) {
 		const block = tableKeys.slice(blockIndex, blockIndex + blockSize);
 		const blockTable = {};
 		block.forEach(key => {
 			blockTable[key] = BattleTeambuilderTable[key];
 		});
-		const jsonString = JSON.stringify(blockTable).replace(/['\\]/g, "\\$&");
-		fs.appendFileSync('data/teambuilder-tables.js', `${jsonString});\n`);
+		var jsonString = JSON.stringify(blockTable).replace(/['\\]/g, "\\$&");
+		jsonString = jsonString.substring(1, jsonString.length - 1);
+		fs.appendFileSync('data/teambuilder-tables.js', jsonString);
 		blockIndex += blockSize;
+		if (blockIndex < tableKeys.length) fs.appendFileSync('data/teambuilder-tables.js', ',');
 	}
-	fs.appendFileSync('data/teambuilder-tables.js', ');\n\n');
+	fs.appendFileSync('data/teambuilder-tables.js', '}\');\n\n');
 	console.log("DONE");
 
 	console.log("writing ModConfig...");
