@@ -1521,13 +1521,44 @@ function buildTeambuilderTables() {
 	buf += `exports.BattleTeambuilderTable = JSON.parse('${JSON.stringify(BattleTeambuilderTable).replace(/['\\]/g, "\\$&")}');\n\n`;
 
 	fs.writeFileSync('data/teambuilder-tables.js', buf);
-	// 	fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
-	var writeStream = fs.createWriteStream('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
-	var readStream = new MyReadStream();
-	readStream.pipe(writeStream);
-	writeStream.on('close', function() {
-		console.log('Successfully wrote to mod-config');
-	});
+	//fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+
+	function writePartialJSON(stream, mod, indentLevel = 0) {
+	  const isArray = Array.isArray(mod);
+	  const keys = Object.keys(mod);
+	  const indent = ' '.repeat(indentLevel * 2);
+	  const itemIndent = ' '.repeat((indentLevel + 1) * 2);
+	
+	  stream.write(isArray ? '[\n' : '{\n');
+	
+	  keys.forEach((key, index) => {
+		if (!isArray) {
+		  stream.write(`${itemIndent}"${key}": `);
+		}
+	
+		const value = mod[key];
+		if (typeof value === 'object' && value !== null) {
+		  writePartialJSON(stream, value, indentLevel + 1);
+		} else {
+		  stream.write(JSON.stringify(value));
+		}
+	
+		if (index < keys.length - 1) {
+		  stream.write(',\n');
+		} else {
+		  stream.write('\n');
+		}
+	  });
+	
+	  stream.write(`${indent}${isArray ? ']' : '}'}`);
+	}
+	
+	const stream = fs.createWriteStream('data/mod-config.js');
+	stream.write('exports.ModConfig = ');
+	writePartialJSON(stream, ModConfig);
+	stream.write(';\n\n');
+	stream.end();
+	
 }
 
 
