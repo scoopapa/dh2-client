@@ -21,6 +21,8 @@ child_process.execSync('npm run build', {cwd: 'DH'});
 
 // some part of the build script edits this file, so we'll undo that here.
 child_process.execSync('git restore tools/simulate/index.js', {cwd: 'DH'});
+// submodule needs reinitializing after this.
+child_process.execSync('git submodule update --init');
 
 console.log("DONE");
 
