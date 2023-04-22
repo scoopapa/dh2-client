@@ -1521,7 +1521,13 @@ function buildTeambuilderTables() {
 	buf += `exports.BattleTeambuilderTable = JSON.parse('${JSON.stringify(BattleTeambuilderTable).replace(/['\\]/g, "\\$&")}');\n\n`;
 
 	fs.writeFileSync('data/teambuilder-tables.js', buf);
-		fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+	// 	fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+	var writeStream = fs.createWriteStream('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+	var readStream = new MyReadStream();
+	readStream.pipe(writeStream);
+	writeStream.on('close', function() {
+		console.log('Successfully wrote to mod-config');
+	});
 }
 
 
