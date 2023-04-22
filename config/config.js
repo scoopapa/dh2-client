@@ -19,7 +19,7 @@ Config.whitelist = [
 // address bar is `Config.routes.client`.
 Config.defaultserver = {
 	id: 'dragonheaven',
-	host: '127.0.0.1',
+	host: '191.101.232.116',
 	port: 8000,
 	httpport: 8000,
 	altport: 80,
@@ -33,10 +33,10 @@ Config.customcolors = {
 	'zarel': 'aeo'
 };
 /*** Begin automatically generated configuration ***/
-Config.version = "0.11.2 (b1be3bc0)";
+Config.version = "0.11.2 (a09e7f2d/88eb8c23)";
 
 Config.routes = {
-	root: './../DH/',
+	root: 'dragonheavenserver.herokuapp.com',
 	client: 'dragonheaven.herokuapp.com',
 	dex: 'dex.pokemonshowdown.com',
 	replays: 'replay.pokemonshowdown.com',
