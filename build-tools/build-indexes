@@ -1526,8 +1526,8 @@ function buildTeambuilderTables() {
 	console.log("DONE");
 
 	const tableKeys = Object.keys(BattleTeambuilderTable);
-	blockSize = 5;
-	blockIndex = 0;
+	const blockSize = 5;
+	let blockIndex = 0;
 
 	console.log("writing BattleTeambuilderTable...");
 	fs.writeFileSync('data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
