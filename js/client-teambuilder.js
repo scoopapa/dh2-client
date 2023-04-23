@@ -1274,7 +1274,6 @@
 			buf += '</div>';
 			buf += '<div class="setcell setcell-typeicons">';
 			var types = species.types;
-			console.log("pokemon: " + set.species + ", types: " + types );
 			var table = (this.curTeam.gen < 7 ? BattleTeambuilderTable['gen' + this.curTeam.gen] : null);
 			if (
 				table && table.overrideDexInfo && species.id in table.overrideDexInfo &&
@@ -1519,6 +1518,9 @@
 				for (var formatid in ClientMods[modid].formats) {
 					if (formatid === this.curTeam.format) this.curTeam.mod = modid;
 				}
+			}
+			if (this.curTeam.mod) {
+				this.curTeam.dex = Dex.mod(this.curTeam.mod);
 			}
 			this.save();
 			if (this.curTeam.gen === 5 && !Dex.loadedSpriteData['bw']) Dex.loadSpriteData('bw');
