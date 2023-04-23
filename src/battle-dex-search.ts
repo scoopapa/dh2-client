@@ -648,7 +648,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 					}
 				}
 			}
-			if (mod === "scootopia") console.log( "Gen " + gen + " scootopia");
 			if (mod) {
 				this.dex = Dex.mod(mod as ID);
 				this.dex.gen = gen;
@@ -1626,8 +1625,6 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (!this.species) return this.getDefaultResults();
 		const dex = this.dex;
 		let species = dex.species.get(this.species);
-		console.log(this.mod);
-		console.log(species.name);
 		const format = this.format;
 		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
 		const isSTABmons = (format.includes('stabmons') || format === 'staaabmons');
