@@ -993,6 +993,7 @@ class ModdedDex {
 
 	species = {
 		get: (name: string, hasData = true, debug = ""): Species => {
+			console.log(name);
 			let id = toID(name);
 			let formid = id;
 			if (window.BattleAliases && id in BattleAliases) {
