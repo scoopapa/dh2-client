@@ -27,6 +27,9 @@
 				if (this.curTeam.format.includes('bdsp')) {
 					this.curTeam.dex = Dex.mod('gen8bdsp');
 				}
+				if (this.curTeam.mod) {
+					this.curTeam.dex = Dex.mod(this.curTeam.mod);
+				}
 				Storage.activeSetList = this.curSetList;
 			}
 		},
@@ -141,7 +144,8 @@
 				this.ignoreEVLimits = (this.curTeam.gen < 3 ||
 					((this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh')) && this.curTeam.gen !== 6) ||
 					this.curTeam.format.includes('metronomebattle') || (this.curTeam.mod && ModConfig[this.curTeam.mod].ignoreEVLimits));
-					this.dex = this.curTeam.mod ? Dex.mod(this.curTeam.mod) : Dex;
+					this.dex = this.curTeam.mod ? Dex.mod(this.curTeam.mod) : Dex; // keeping just in case for now
+					this.curTeam.dex = this.curTeam.mod ? Dex.mod(this.curTeam.mod) : Dex;
 				if (this.curSet) {
 					return this.updateSetView();
 				}
@@ -705,6 +709,9 @@
 			if (this.curTeam.format.includes('bdsp')) {
 				this.curTeam.dex = Dex.mod('gen8bdsp');
 			}
+			if (this.curTeam.mod) {
+				this.curTeam.dex = Dex.mod(this.curTeam.mod);
+			}
 			Storage.activeSetList = this.curSetList = Storage.unpackTeam(this.curTeam.team);
 			this.curTeamIndex = i;
 			this.update();
@@ -1267,6 +1274,7 @@
 			buf += '</div>';
 			buf += '<div class="setcell setcell-typeicons">';
 			var types = species.types;
+			console.log("pokemon: " + set.species + ", types: " + types );
 			var table = (this.curTeam.gen < 7 ? BattleTeambuilderTable['gen' + this.curTeam.gen] : null);
 			if (
 				table && table.overrideDexInfo && species.id in table.overrideDexInfo &&
