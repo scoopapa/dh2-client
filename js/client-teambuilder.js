@@ -142,7 +142,6 @@
 					((this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh')) && this.curTeam.gen !== 6) ||
 					this.curTeam.format.includes('metronomebattle') || (this.curTeam.mod && ModConfig[this.curTeam.mod].ignoreEVLimits));
 					this.dex = this.curTeam.mod ? Dex.mod(this.curTeam.mod) : Dex;
-					this.curTeam.dex = this.dex; // test
 				if (this.curSet) {
 					return this.updateSetView();
 				}
