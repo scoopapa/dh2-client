@@ -949,7 +949,7 @@ class ModdedDex {
 	
 			for (let i = this.gen; i < 9; i++) {
 				const table = window.BattleTeambuilderTable['gen' + i];
-				if (id in table.overrideItemDesc) {
+				if (table.overrideItemDesc && id in table.overrideItemDesc) {
 					data.shortDesc = table.overrideItemDesc[id];
 					break;
 				}
@@ -979,9 +979,8 @@ class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				console.log("mod: " + this.modid);
 				const table = window.BattleTeambuilderTable[this.modid];
-				if (table && id in table.overrideAbilityData) {
+				if (table.overrideAbilityData && id in table.overrideAbilityData) {
 					Object.assign(data, table.overrideAbilityData[id]);
 				}
 			}
