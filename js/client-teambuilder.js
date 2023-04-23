@@ -1196,7 +1196,7 @@
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 			var buf = '<li value="' + i + '">';
-			if (!set.species) {
+			if (!set.species || !species) {
 				if (this.deletedSet) {
 					buf += '<div class="setmenu setmenu-left"><button name="undeleteSet"><i class="fa fa-undo"></i> Undo Delete</button></div>';
 				}
@@ -3287,7 +3287,7 @@
 			var species;
 			if (this.curTeam.mod) species = Dex.mod(this.curTeam.mod).species.get(val, undefined, "from setPokemon 1"); 
 			else species = Dex.forGen(this.curTeam.gen).species.get(val,undefined, "from setPokemon 2"); 
-			if (!species.exists || set.species === species.name) {
+			if (!species || !species.exists || set.species === species.name) {
 				if (selectNext) this.$('input[name=item]').select();
 				return;
 			}
