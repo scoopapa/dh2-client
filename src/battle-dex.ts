@@ -979,8 +979,9 @@ class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
+				console.log("mod: " + this.modid);
 				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideAbilityData) {
+				if (table && id in table.overrideAbilityData) {
 					Object.assign(data, table.overrideAbilityData[id]);
 				}
 			}
