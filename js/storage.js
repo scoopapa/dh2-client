@@ -1189,7 +1189,7 @@ Storage.importTeam = function (buffer, teams) {
 						}
 					}
 				}
-				curSet.species = Dex.species.get(line.substr(parenIndex + 2)).name;
+				curSet.species = thisDex.species.get(line.substr(parenIndex + 2)).name;
 				line = line.substr(0, parenIndex);
 				curSet.name = line;
 			} else {
@@ -1201,7 +1201,7 @@ Storage.importTeam = function (buffer, teams) {
 						}
 					}
 				}
-				curSet.species = Dex.species.get(line).name;
+				curSet.species = thisDex.species.get(line).name;
 				curSet.name = '';
 			}
 		} else if (line.substr(0, 7) === 'Trait: ') {
