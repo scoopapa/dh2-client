@@ -339,10 +339,11 @@
 			buf += Dex.getTypeIcon(types[i], null, this.mod);
 		}
 		buf += '</span> ';
-
+		console.log("search.js");
+		console.log(pokemon);
 		// abilities
 		if (gen >= 3) {
-			var abilities = Dex.forGen(gen).species.get(id).abilities;
+			var abilities = pokemon.abilities;
 			if (gen >= 5) {
 				if (abilities['1']) {
 					buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
