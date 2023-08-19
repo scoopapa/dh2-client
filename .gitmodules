@@ -1,4 +1,3 @@
-[submodule "DH"]
-	path = DH
-	url = https://github.com/scoopapa/DH.git
-	branch = gen9
+[submodule "DH2"]
+	path = DH2
+	url = https://github.com/scoopapa/DH2.git
