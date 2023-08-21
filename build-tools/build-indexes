@@ -16,13 +16,13 @@ if (!fs.existsSync('DH2')) {
 }
 
 process.stdout.write("Syncing data from Git repository... ");
-child_process.execSync('git submodule update --remote');
+// child_process.execSync('git submodule update --remote');
 child_process.execSync('npm run build', {cwd: 'DH2'});
 
 // some part of the build script edits this file, so we'll undo that here.
 child_process.execSync('git restore tools/simulate/index.js', {cwd: 'DH2'});
 // submodule needs reinitializing after this.
-child_process.execSync('git submodule update --init');
+// child_process.execSync('git submodule update --init');
 
 console.log("DONE");
 
@@ -69,6 +69,10 @@ process.stdout.write("Building `data/search-index.js`... ");
 buildSearchIndex();
 console.log("DONE");
 
+process.stdout.write("Building `data/formats.js`... ");
+buildFormats();
+console.log("DONE");
+
 process.stdout.write("Building `data/teambuilder-tables.js`... ");
 buildTeambuilderTables();
 console.log("DONE");
@@ -85,10 +89,9 @@ buildTypechart();
 buildLearnsets();
 console.log("DONE");
 
-process.stdout.write("Building aliases, formats-data, formats, mod-sprites, text.js...");
+process.stdout.write("Building aliases, formats-data, mod-sprites, text.js...");
 buildAliases();
 buildFormatsData();
-buildFormats();
 buildModSprites();
 buildText();
 console.log("DONE");
@@ -476,8 +479,10 @@ function buildTeambuilderTables() {
 				}
 				if (isVGC) {
 					if (species.isNonstandard && species.isNonstandard !== 'Gigantamax') return 'Illegal';
-					if (baseSpecies.tags.includes('Mythical')) return 'Mythical';
-					if (baseSpecies.tags.includes('Restricted Legendary')) return 'Restricted Legendary';
+					// these are breaking certain mods, disable them for now.
+
+					// if (baseSpecies.tags.includes('Mythical')) return 'Mythical';
+					// if (baseSpecies.tags.includes('Restricted Legendary')) return 'Restricted Legendary';
 					if (species.tier === 'NFE') return 'NFE';
 					if (species.tier === 'LC') return 'LC';
 					return 'Regular';
@@ -1211,47 +1216,33 @@ function buildTeambuilderTables() {
 			const modData = modDex.data;
 			if (modData.Scripts.teambuilderConfig) ModConfig[modid] = modData.Scripts.teambuilderConfig;
 			let modGen = modDex.gen;
-			const formats = {};
-			ModConfig[modid].formats = formats;
+			const format = Formats.find(m => m.mod === modid);
+			ModConfig[modid].formats = format;
 			// Find formats using this mod
 			let hasSinglesFormats = false;
 			let hasDoublesFormats = false;
-			for (const i in Dex.formatsCache) {
-				const format = Dex.formats.get(i);
-				const formatMod = toID(format.mod);
+			for (const i in Dex.formats.formatsListCache) {
+				// const format = Dex.formats.get(i);
+				// const formatMod = toID(format.mod);
 				const formatid = toID(i);
-				let maxGen = format.gen;
-				if (formatMod === modid) {
-					console.log("creating formats data for " + formatid)
-					formats[formatid] = {
-						name: formatMod,
-						teambuilderFormat: '',
-						formatType: '',
-						gameType: '',
-						bans: [],
-						unbans: [],
-						banlist: format.banlist.concat(format.teambuilderBans),
-					};
-					if (!!format.teambuilderFormat) formats[formatid].teambuilderFormat = format.teambuilderFormat;
-					if (format.ruleset?.includes('Standard NatDex')) formats[formatid].formatType = 'natdex';
-					if (format.gameType === 'doubles') {
-						formats[formatid].gameType = 'doubles';
-						hasDoublesFormats = true;
-					} else hasSinglesFormats = true;
-					for (const name of formats[formatid].banlist) {
+				let maxGen = 
+					formatid.substr(0, 3) === 'gen' && formatid.substr(3, 4).parseInt() < 10 ? formatid.substr(3, 4).parseInt() : 9;
+
+				if (format.banlist === undefined) format.banlist = [];
+				if (!!format[banlist]) {
+					for (const name of format[banlist]) {
 						const id = toID(name);
-						if (id in Dex.data.Pokedex || id in modData.Pokedex) formats[formatid].bans.push(id);
+						if (id in Dex.data.Pokedex || id in modData.Pokedex) format[bans].push(id);
 					}
-					if (!!format.banlist && format.banlist.includes("All Pokemon")) {
-						formats[formatid].bans.push('All Pokemon');
-						for (const name of format.unbanlist) {
+					if (!!format[banlist] && format[banlist].includes("All Pokemon")) {
+						format[bans].push('All Pokemon');
+						for (const name of format[unbanlist]) {
 							const id = toID(name);
-							if (id in Dex.data.Pokedex || id in modData.Pokedex) formats[formatid].unbans.push(id);
+							if (id in Dex.data.Pokedex || id in modData.Pokedex) format[unbans].push(id);
 						}
 					}
-
-					if (formatid.startsWith('gen') && maxGen < Number(formatid.charAt(3))) maxGen = Number(formatid.charAt(3));
 				}
+				if (formatid.startsWith('gen') && maxGen < Number(formatid.charAt(3))) maxGen = Number(formatid.charAt(3));
 				if (maxGen !== 9) modGen = maxGen;
 			}
 			// Find any nonstandard tiers used by this mod
@@ -1312,13 +1303,11 @@ function buildTeambuilderTables() {
 				}
 			}
 			for (const tier in tierTable) {
-				for (const formatid in formats) {
-					const banlist = formats[formatid].banlist;
-					if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
-						for (const i in tierTable[tier]) {
-							const speciesid = tierTable[tier][i];
-							if (!formats[formatid].bans.includes(speciesid)) formats[formatid].bans.push(speciesid);
-						}
+				const banlist = format?.banlist;
+				if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
+					for (const i in tierTable[tier]) {
+						const speciesid = tierTable[tier][i];
+						if (!format.banlist.includes(speciesid)) format[bans].push(speciesid);
 					}
 				}
 			}
@@ -1406,7 +1395,7 @@ function buildTeambuilderTables() {
 				}
 			}
 			let itemTable = BattleTeambuilderTable.items;
-			modGen === 9 ? itemTable = BattleTeambuilderTable.items : itemTable = BattleTeambuilderTable['gen' + modGen].items;
+			modGen === 0 ? itemTable = BattleTeambuilderTable.items : itemTable = BattleTeambuilderTable['gen' + modGen].items;
 			items.push(...itemTable.slice(1));
 			//moves
 			const overrideMoveInfo = {};
