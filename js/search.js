@@ -339,8 +339,6 @@
 			buf += Dex.getTypeIcon(types[i], null, this.mod);
 		}
 		buf += '</span> ';
-		console.log("search.js");
-		console.log(pokemon);
 		// abilities
 		if (gen >= 3) {
 			var abilities = pokemon.abilities;

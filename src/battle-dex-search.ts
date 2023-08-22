@@ -639,7 +639,8 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			let modFormatType = '';
 			for (const modid in (ClientMods)) {
 				for (const formatid in ClientMods[modid].formats) {
-					if (formatid === format) {
+					if (formatid === format || format.slice(4) === formatid) {
+						if (format.slice(4) === formatid) this.modFormat = formatid;
 						mod = modid;
 						const formatTable = ClientMods[modid].formats[formatid];
 						if (mod && formatTable.teambuilderFormat) overrideFormat = toID(formatTable.teambuilderFormat);
@@ -1080,7 +1081,6 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 				});
 			}
 		}
-
 		if (this.mod && !table.customTierSet) {
 			table.customTierSet = table.customTiers.map((r: any) => {
 				if (typeof r === 'string') return ['pokemon', r];

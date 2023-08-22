@@ -1216,29 +1216,36 @@ function buildTeambuilderTables() {
 			const modData = modDex.data;
 			if (modData.Scripts.teambuilderConfig) ModConfig[modid] = modData.Scripts.teambuilderConfig;
 			let modGen = modDex.gen;
-			const format = Formats.find(m => m.mod === modid);
-			ModConfig[modid].formats = format;
+			const formats = {};
+			ModConfig[modid].formats = formats;
 			// Find formats using this mod
-			let hasSinglesFormats = false;
+			let hasSinglesFormats = true;
 			let hasDoublesFormats = false;
 			for (const i in Dex.formats.formatsListCache) {
 				// const format = Dex.formats.get(i);
 				// const formatMod = toID(format.mod);
-				const formatid = toID(i);
+				const formatid = toID(Dex.formats.formatsListCache[i].mod);
+				if (formatid !== modid) continue;
+				formats[formatid] = Formats.find(m => m.mod === modid);
+				const format = formats[formatid];
 				let maxGen = 
-					formatid.substr(0, 3) === 'gen' && formatid.substr(3, 4).parseInt() < 10 ? formatid.substr(3, 4).parseInt() : 9;
-
-				if (format.banlist === undefined) format.banlist = [];
-				if (!!format[banlist]) {
-					for (const name of format[banlist]) {
+					formatid.substr(0, 3) === 'gen' && parseInt(formatid.substr(3, 1)) < 10 ? parseInt(formatid.substr(3, 1)) : 9;
+				format.name = formatid;
+				if (!format.banlist) format.banlist = [];
+				if (!format.unbanlist) format.unbanlist = [];
+				if (!format.teambuilderFormat) format.teambuilderFormat = '';
+				format.bans = [];
+				format.unbans = [];
+				if (!!format.banlist) {
+					for (const name of format.banlist) {
 						const id = toID(name);
-						if (id in Dex.data.Pokedex || id in modData.Pokedex) format[bans].push(id);
+						if (id in Dex.data.Pokedex || id in modData.Pokedex) format.bans.push(id);
 					}
-					if (!!format[banlist] && format[banlist].includes("All Pokemon")) {
-						format[bans].push('All Pokemon');
-						for (const name of format[unbanlist]) {
+					if (!!format.banlist && format.banlist.includes("All Pokemon")) {
+						format.bans.push('All Pokemon');
+						for (const name of format.unbanlist) {
 							const id = toID(name);
-							if (id in Dex.data.Pokedex || id in modData.Pokedex) format[unbans].push(id);
+							if (id in Dex.data.Pokedex || id in modData.Pokedex) format.unbans.push(id);
 						}
 					}
 				}
@@ -1303,11 +1310,13 @@ function buildTeambuilderTables() {
 				}
 			}
 			for (const tier in tierTable) {
-				const banlist = format?.banlist;
-				if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
-					for (const i in tierTable[tier]) {
-						const speciesid = tierTable[tier][i];
-						if (!format.banlist.includes(speciesid)) format[bans].push(speciesid);
+				for (const formatid in formats) {
+					const banlist = formats[formatid].banlist;
+					if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
+						for (const i in tierTable[tier]) {
+							const speciesid = tierTable[tier][i];
+							if (!formats[formatid].banlist.includes(speciesid)) formats[formatid].bans.push(speciesid);
+						}
 					}
 				}
 			}
@@ -1395,7 +1404,7 @@ function buildTeambuilderTables() {
 				}
 			}
 			let itemTable = BattleTeambuilderTable.items;
-			modGen === 0 ? itemTable = BattleTeambuilderTable.items : itemTable = BattleTeambuilderTable['gen' + modGen].items;
+			modGen === 9 ? itemTable = BattleTeambuilderTable.items : itemTable = BattleTeambuilderTable['gen' + modGen].items;
 			items.push(...itemTable.slice(1));
 			//moves
 			const overrideMoveInfo = {};
