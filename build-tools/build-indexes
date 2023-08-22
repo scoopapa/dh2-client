@@ -1225,12 +1225,14 @@ function buildTeambuilderTables() {
 				// const format = Dex.formats.get(i);
 				// const formatMod = toID(format.mod);
 				const formatCacheMod = toID(Dex.formats.formatsListCache[i].mod);
+				const formatCacheName = toID(Dex.formats.formatsListCache[i].name);
 				if (formatCacheMod !== modConfigId) continue;
-				petModFormats[formatCacheMod] = Formats.find(m => m.mod === modConfigId);
-				const format = petModFormats[formatCacheMod];
+				// petModFormats[formatCacheMod] = Formats.find(m => m.mod === modConfigId);
+				petModFormats[formatCacheName] = Formats.find(m => toID(m.name) === formatCacheName);
+				const format = petModFormats[formatCacheName];
 				let maxGen = 
-					formatCacheMod.substr(0, 3) === 'gen' && parseInt(formatCacheMod.substr(3, 1)) < 10 ? parseInt(formatCacheMod.substr(3, 1)) : 9;
-				format.name = formatCacheMod;
+				formatCacheName.substr(0, 3) === 'gen' && parseInt(formatCacheMod.substr(3, 1)) < 10 ? parseInt(formatCacheMod.substr(3, 1)) : 9;
+				// format.name = formatCacheMod;
 				if (!format.banlist) format.banlist = [];
 				if (!format.unbanlist) format.unbanlist = [];
 				if (!format.teambuilderFormat) format.teambuilderFormat = '';
