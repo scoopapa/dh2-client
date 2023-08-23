@@ -20,8 +20,8 @@ Config.whitelist = [
 Config.defaultserver = {
 	id: 'dragonheaven',
 	host: '191.101.232.116',
-	port: 80,
-	httpport: 8000,
+	port: 8000,
+	httpport: 80,
 	altport: 80,
 	registered: true
 };
