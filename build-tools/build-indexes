@@ -16,13 +16,10 @@ if (!fs.existsSync('DH2')) {
 }
 
 process.stdout.write("Syncing data from Git repository... ");
-// child_process.execSync('git submodule update --remote');
 child_process.execSync('npm run build', {cwd: 'DH2'});
 
 // some part of the build script edits this file, so we'll undo that here.
 child_process.execSync('git restore tools/simulate/index.js', {cwd: 'DH2'});
-// submodule needs reinitializing after this.
-// child_process.execSync('git submodule update --init');
 
 console.log("DONE");
 
