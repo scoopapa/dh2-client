@@ -831,7 +831,7 @@ const Dex = new class implements ModdedDex {
 		const shiny = (data.shiny ? '-shiny' : '');
 		let resourcePrefix = Dex.resourcePrefix;
 		if (data.spriteDir.includes('front')) resourcePrefix = Dex.modResourcePrefix;
-		return 'background-image:url(' + Dex.resourcePrefix + data.spriteDir + shiny + '/' + data.spriteid + '.png);background-position:' + data.x + 'px ' + data.y + 'px;background-repeat:no-repeat';
+		return 'background-image:url(' + resourcePrefix + data.spriteDir + shiny + '/' + data.spriteid + '.png);background-position:' + data.x + 'px ' + data.y + 'px;background-repeat:no-repeat';
 	}
 
 	getItemIcon(item: any, mod: string = '') {
