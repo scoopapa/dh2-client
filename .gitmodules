@@ -1,4 +1,0 @@
-[submodule "DH2"]
-	path = DH2
-	url = https://github.com/scoopapa/DH2.git
-	branch = main
