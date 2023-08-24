@@ -11,7 +11,7 @@ process.chdir(rootDir);
 const debug = true;
 
 if (!fs.existsSync('DH2')) {
-	child_process.execSync('git clone https://github.com/scoopapa/DH2.git DH2', {
+	child_process.execSync('git submodule update --init --recursive', {
 	});
 }
 
