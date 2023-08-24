@@ -11,15 +11,13 @@ process.chdir(rootDir);
 const debug = true;
 
 if (!fs.existsSync('DH2')) {
-	child_process.execSync('git submodule update --init --recursive', {
+	child_process.execSync('git clone https://github.com/scoopapa/DH2.git DH2', {
 	});
 }
 
 process.stdout.write("Syncing data from Git repository... ");
+child_process.execSync("git pull https://github.com/scoopapa/DH2.git", {cwd: 'DH2'});
 child_process.execSync('npm run build', {cwd: 'DH2'});
-
-// some part of the build script edits this file, so we'll undo that here.
-// child_process.execSync('git restore tools/simulate/index.js', {cwd: 'DH2'});
 
 console.log("DONE");
 
