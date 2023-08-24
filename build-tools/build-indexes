@@ -19,7 +19,7 @@ process.stdout.write("Syncing data from Git repository... ");
 child_process.execSync('npm run build', {cwd: 'DH2'});
 
 // some part of the build script edits this file, so we'll undo that here.
-child_process.execSync('git restore tools/simulate/index.js', {cwd: 'DH2'});
+// child_process.execSync('git restore tools/simulate/index.js', {cwd: 'DH2'});
 
 console.log("DONE");
 
