@@ -918,7 +918,7 @@ function buildTeambuilderTables() {
 		if (gens.indexOf(6) >= 0) learnsetStr += 'p';
 		if (gens.indexOf(7) >= 0 && !vcOnly) learnsetStr += 'q';
 		if (gens.indexOf(8) >= 0 && !vcOnly) learnsetStr += 'g';
-		if (gens.indexOf(9) >= 0 && !vcOnly) learnsetStr += 'w';
+		if (gens.indexOf(9) >= 0 && !vcOnly) learnsetStr += 'a';
 		return learnsetStr;
 	}
 
