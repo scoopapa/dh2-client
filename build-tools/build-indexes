@@ -10,13 +10,13 @@ process.chdir(rootDir);
 
 const debug = true;
 
+process.stdout.write("Syncing data from Git repository... ");
 if (!fs.existsSync('DH2')) {
 	child_process.execSync('git clone https://github.com/scoopapa/DH2.git DH2', {
 	});
+	child_process.execSync("git pull https://github.com/scoopapa/DH2.git", {cwd: 'DH2'});
 }
 
-process.stdout.write("Syncing data from Git repository... ");
-child_process.execSync("git pull https://github.com/scoopapa/DH2.git", {cwd: 'DH2'});
 child_process.execSync('npm run build', {cwd: 'DH2'});
 
 console.log("DONE");
