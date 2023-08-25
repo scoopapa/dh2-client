@@ -1689,10 +1689,15 @@ function buildModSprites() {
 			const spriteDir = fs.existsSync(spritePath) ? fs.readdirSync(spritePath) : '';
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
+				const ext = id.split(".")[1];
 				id = toID(id.slice(0, id.length - 4));
 				if (!modSprites[id]) modSprites[id] = {};
 				if (!modSprites[id][modName]) modSprites[id][modName] = [];
-				modSprites[id][modName].push(subF);
+				if (ext === "gif") {
+					modSprites[id][modName].push(subF + "-gif");
+				} else {
+					modSprites[id][modName].push(subF);
+				}
 			}
 		}
 	}

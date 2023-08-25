@@ -468,6 +468,7 @@ const Dex = new class implements ModdedDex {
 		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) {
 			for (const modName in window.ModSprites[id]) {
 				if (window.ModSprites[id][modName].includes(folder)) return modName;
+				if (window.ModSprites[id][modName].includes(folder + '-gif')) return modName;
 			}
 		}
 		if (mod && window.ModSprites[id][mod] && window.ModSprites[id][mod].includes(folder)) return mod;
@@ -653,9 +654,12 @@ const Dex = new class implements ModdedDex {
 			spriteData.cryurl = `sprites/${options.mod}/audio/${toID(species.baseSpecies)}`;
 			spriteData.cryurl += '.mp3';
 		}
-
+		
+		let fakeAnim = false;
+		if (fakeSprite && window.ModSprites[id][options.mod].includes(facing + '-gif')) fakeAnim = true;
+		
 		if (animationData[facing + 'f'] && options.gender === 'F') facing += 'f';
-		let allowAnim = !fakeSprite && !Dex.prefs('noanim') && !Dex.prefs('nogif');
+		let allowAnim = (!fakeSprite || (fakeSprite && fakeAnim)) && !Dex.prefs('noanim') && !Dex.prefs('nogif');
 		if (allowAnim && spriteData.gen >= 6) spriteData.pixelated = false;
 		if (allowAnim && animationData[facing] && spriteData.gen >= 5) {
 			if (facing.slice(-1) === 'f') name += '-f';
