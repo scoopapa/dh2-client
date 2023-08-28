@@ -3010,7 +3010,7 @@
 				} else if (id in BattleMovedex && format && format.endsWith("trademarked")) {
 					val = BattleMovedex[id].name;
 				} else {
-					val = (id in BattleAbilities ? BattleAbilities[id].name : '');
+					val = (id in BattleAbilities ? this.curTeam.dex.abilities.get(e.currentTarget.value).name : '');
 				}
 				break;
 			case 'item':
@@ -3019,11 +3019,11 @@
 				} else if (id in BattleAbilities && format && format.endsWith("multibility")) {
 					val = BattleAbilities[id].name;
 				} else {
-					val = (id in BattleItems ? BattleItems[id].name : '');
+					val = (id in BattleItems ? this.curTeam.dex.items.get(e.currentTarget.value).name : '');
 				}
 				break;
 			case 'move1': case 'move2': case 'move3': case 'move4':
-				val = (id in BattleMovedex ? BattleMovedex[id].name : '');
+				val = (id in BattleMovedex ? this.curTeam.dex.moves.get(e.currentTarget.value).name : '');
 				break;
 			}
 			if (!val) {
@@ -3121,6 +3121,7 @@
 				break;
 			case 'ability':
 				this.curSet.ability = val;
+				console.log(val);
 				if (selectNext) this.$('input[name=move1]').select();
 				break;
 			case 'move1':
