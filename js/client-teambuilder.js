@@ -1389,6 +1389,7 @@
 			}
 		},
 		addPokemon: function () {
+			console.log("add pokemon");
 			if (!this.curTeam) return;
 			var team = this.curSetList;
 			if (!team.length || team[team.length - 1].species) {
@@ -1566,7 +1567,7 @@
 			var buf = '';
 			for (var i = 0; i < this.clipboardCount(); i++) {
 				var res = this.clipboard[i];
-				var species = Dex.species.get(res.species);
+				var species = this.curTeam.dex.species.get(res.species);
 
 				buf += '<div class="result" data-id="' + i + '">';
 				buf += '<div class="section"><span class="icon" style="' + Dex.getPokemonIcon(species.name, false, this.curTeam.mod) + '"></span>';
@@ -3121,7 +3122,6 @@
 				break;
 			case 'ability':
 				this.curSet.ability = val;
-				console.log(val);
 				if (selectNext) this.$('input[name=move1]').select();
 				break;
 			case 'move1':
@@ -3514,9 +3514,9 @@
 			this.$el.html(buf).css({'max-width': (4 + spriteSize) * width, 'height': 42 + (4 + spriteSize) * height});
 		},
 		setForm: function (form) {
-			var species = Dex.species.get(this.curSet.species);
+			var species = this.room.curTeam.dex.species.get(this.curSet.species);
 			if (form && form !== species.form) {
-				this.curSet.species = Dex.species.get(species.baseSpecies + form).name;
+				this.curSet.species = this.room.curTeam.dex.species.get(species.baseSpecies + form).name;
 			} else if (!form) {
 				this.curSet.species = species.baseSpecies;
 			}

@@ -802,7 +802,15 @@ Storage.fastUnpackTeam = function (buf) {
 	while (true) {
 		var set = {};
 		team.push(set);
-
+		
+		var thisDex = Dex;
+		for (var teamid in this.teams) {
+			var teamData = this.teams[teamid];
+			if (teamData.team === buf && teamData.mod) {
+				thisDex = Dex.mod(teamData.mod);
+			}
+		}
+		
 		// name
 		j = buf.indexOf('|', i);
 		set.name = buf.substring(i, j);
@@ -821,7 +829,7 @@ Storage.fastUnpackTeam = function (buf) {
 		// ability
 		j = buf.indexOf('|', i);
 		var ability = buf.substring(i, j);
-		var species = Dex.species.get(set.species);
+		var species = thisDex.species.get(set.species);
 		if (species.baseSpecies === 'Zygarde' && ability === 'H') ability = 'Power Construct';
 		set.ability = (species.abilities && ['', '0', '1', 'H', 'S'].includes(ability) ? species.abilities[ability] || '!!!ERROR!!!' : ability);
 		i = j + 1;
@@ -935,25 +943,25 @@ Storage.unpackTeam = function (buf) {
 
 		// species
 		j = buf.indexOf('|', i);
-		set.species = Dex.species.get(buf.substring(i, j)).name || set.name;
+		set.species = thisDex.species.get(buf.substring(i, j)).name || set.name;
 		i = j + 1;
 
 		// item
 		j = buf.indexOf('|', i);
-		set.item = Dex.items.get(buf.substring(i, j)).name;
+		set.item = thisDex.items.get(buf.substring(i, j)).name;
 		i = j + 1;
 
 		// ability
 		j = buf.indexOf('|', i);
-		var ability = Dex.abilities.get(buf.substring(i, j)).name;
-		var species = Dex.species.get(set.species);
+		var ability = thisDex.abilities.get(buf.substring(i, j)).name;
+		var species = thisDex.species.get(set.species);
 		set.ability = (species.abilities && ability in {'':1, 0:1, 1:1, H:1} ? species.abilities[ability || '0'] : ability);
 		i = j + 1;
 
 		// moves
 		j = buf.indexOf('|', i);
 		set.moves = buf.substring(i, j).split(',').map(function (moveid) {
-			return Dex.moves.get(moveid).name;
+			return thisDex.moves.get(moveid).name;
 		});
 		i = j + 1;
 
@@ -1201,6 +1209,8 @@ Storage.importTeam = function (buffer, teams) {
 						}
 					}
 				}
+				console.log(curSet);
+				console.log(line);
 				curSet.species = thisDex.species.get(line).name;
 				curSet.name = '';
 			}
