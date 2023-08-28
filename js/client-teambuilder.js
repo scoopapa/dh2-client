@@ -3326,7 +3326,6 @@
 				set.item = '';
 			}
 			set.ability = species.abilities['0'];
-
 			set.moves = [];
 			set.evs = {};
 			set.ivs = {};

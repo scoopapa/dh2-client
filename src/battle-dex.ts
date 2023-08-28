@@ -975,7 +975,7 @@ class ModdedDex {
 			if (this.cache.Abilities.hasOwnProperty(id)) return this.cache.Abilities[id];
 
 			let data = {...Dex.abilities.get(name)};
-
+			
 			for (let i = Dex.gen - 1; i >= this.gen; i--) {
 				const table = window.BattleTeambuilderTable[`gen${i}`];
 				if (id in table.overrideAbilityData) {
@@ -987,8 +987,15 @@ class ModdedDex {
 				if (table.overrideAbilityData && id in table.overrideAbilityData) {
 					Object.assign(data, table.overrideAbilityData[id]);
 				}
+				if (table.overrideAbilityDesc && id in table.overrideAbilityDesc) {
+					data.shortDesc = table.overrideAbilityDesc[id];
+				}
+				if (table.fullAbilityName && id in table.fullAbilityName) {
+					data.name = table.fullAbilityName[id];
+					data.exists = true;
+				}
 			}
-
+			console.log( data );
 			const ability = new Ability(id, name, data);
 			this.cache.Abilities[id] = ability;
 			return ability;
