@@ -995,7 +995,6 @@ class ModdedDex {
 					data.exists = true;
 				}
 			}
-			console.log( data );
 			const ability = new Ability(id, name, data);
 			this.cache.Abilities[id] = ability;
 			return ability;
