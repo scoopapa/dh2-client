@@ -1484,7 +1484,7 @@ export class Battle {
 
 				if (
 					!target && this.gameType === 'singles' &&
-					!['self', 'allies', 'allySide', 'adjacentAlly', 'adjacentAllyOrSelf', 'allyTeam'].includes(moveTarget)
+					!['self', 'allies', 'allySide', 'adjacentAlly', 'adjacentAllyOrSelf', 'anyAlly', 'allyTeam'].includes(moveTarget)
 				) {
 					// Hardcode for moves without a target in singles
 					foeTargets.push(pokemon.side.foe.active[0]);

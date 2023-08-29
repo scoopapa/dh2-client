@@ -1256,7 +1256,7 @@ function buildTeambuilderTables() {
 			if (!ModConfig[modConfigId].customTiers) ModConfig[modConfigId].customTiers = [];
 			if (!ModConfig[modConfigId].customDoublesTiers) ModConfig[modConfigId].customDoublesTiers = [];
 			for (const speciesid in modData.FormatsData) {
-				if (modData.FormatsData[speciesid] === undefined && debug) {
+				if (!modData.FormatsData[speciesid] && debug) {
 					console.log('Warning: ' + speciesid + ' does not have tiering data in ' + modConfigId);
 					continue;
 				}

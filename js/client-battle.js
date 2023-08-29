@@ -583,7 +583,7 @@
 					var tooltipArgs = 'activepokemon|1|' + i;
 
 					var disabled = false;
-					if (moveTarget === 'adjacentAlly' || moveTarget === 'adjacentAllyOrSelf') {
+					if (moveTarget === 'adjacentAlly' || moveTarget === 'adjacentAllyOrSelf' || moveTarget === 'anyAlly') {
 						disabled = true;
 					} else if (moveTarget === 'normal' || moveTarget === 'adjacentFoe') {
 						if (Math.abs(farSlot - i) > 1) disabled = true;
@@ -607,7 +607,7 @@
 					} else if (moveTarget === 'normal' || moveTarget === 'adjacentAlly' || moveTarget === 'adjacentAllyOrSelf') {
 						if (Math.abs(activePos - i) > 1) disabled = true;
 					}
-					if (moveTarget !== 'adjacentAllyOrSelf' && activePos == i) disabled = true;
+					if (moveTarget !== 'adjacentAllyOrSelf' && moveTarget !== 'anyAlly' && activePos == i) disabled = true;
 
 					if (disabled) {
 						targetMenus[1] += '<button disabled="disabled" style="visibility:hidden"></button> ';
@@ -1214,7 +1214,7 @@
 				var isTerastal = !!(this.$('input[name=terastallize]')[0] || '').checked;
 
 				var target = e.getAttribute('data-target');
-				var choosableTargets = {normal: 1, any: 1, adjacentAlly: 1, adjacentAllyOrSelf: 1, adjacentFoe: 1};
+				var choosableTargets = {normal: 1, any: 1, adjacentAlly: 1, adjacentAllyOrSelf: 1, anyAlly: 1, adjacentFoe: 1};
 
 				this.choice.choices.push('move ' + pos + (isMega ? ' mega' : '') + (isZMove ? ' zmove' : '') + (isUltraBurst ? ' ultra' : '') + (isDynamax ? ' dynamax' : '') + (isTerastal ? ' terastallize' : ''));
 				if (nearActive.length > 1 && target in choosableTargets) {

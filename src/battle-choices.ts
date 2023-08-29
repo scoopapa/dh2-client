@@ -183,7 +183,7 @@ class BattleChoiceBuilder {
 		}
 		if (choice.choiceType === 'move') {
 			if (!choice.targetLoc && this.requestLength() > 1) {
-				const choosableTargets = ['normal', 'any', 'adjacentAlly', 'adjacentAllyOrSelf', 'adjacentFoe'];
+				const choosableTargets = ['normal', 'any', 'adjacentAlly', 'adjacentAllyOrSelf', 'anyAlly', 'adjacentFoe'];
 				if (choosableTargets.includes(this.getChosenMove(choice, this.index()).target)) {
 					this.current.move = choice.move;
 					this.current.mega = choice.mega;
