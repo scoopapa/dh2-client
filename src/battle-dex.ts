@@ -468,7 +468,7 @@ const Dex = new class implements ModdedDex {
 		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) {
 			for (const modName in window.ModSprites[id]) {
 				if (window.ModSprites[id][modName].includes(folder)) return modName;
-				if (window.ModSprites[id][modName].includes(folder + '-gif')) return modName;
+				if (window.ModSprites[id][modName].includes('ani' + folder)) return modName;
 			}
 		}
 		if (mod && window.ModSprites[id][mod] && window.ModSprites[id][mod].includes(folder)) return mod;
@@ -656,8 +656,12 @@ const Dex = new class implements ModdedDex {
 		}
 		
 		let fakeAnim = false;
-		if (fakeSprite && window.ModSprites[id][options.mod].includes(facing + '-gif')) fakeAnim = true;
-		
+		if (fakeSprite && window.ModSprites[id][options.mod].includes('ani' + facing)){
+			fakeAnim = true;
+			animationData[facing] = {};
+			animationData[facing].w = 192;
+			animationData[facing].h = 192;
+		}
 		if (animationData[facing + 'f'] && options.gender === 'F') facing += 'f';
 		let allowAnim = (!fakeSprite || (fakeSprite && fakeAnim)) && !Dex.prefs('noanim') && !Dex.prefs('nogif');
 		if (allowAnim && spriteData.gen >= 6) spriteData.pixelated = false;
@@ -668,6 +672,7 @@ const Dex = new class implements ModdedDex {
 			spriteData.w = animationData[facing].w;
 			spriteData.h = animationData[facing].h;
 			spriteData.url += dir + '/' + name + '.gif';
+			console.log(animationData[facing]);
 		} else {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
