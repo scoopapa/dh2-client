@@ -1403,8 +1403,7 @@ Storage.exportTeam = function (team, gen, hidestats) {
 							continue;
 						}
 						for (var stat in BattleStatNames) {
-							if ((curSet.ivs[stat] === undefined ? 31 : curSet.ivs[stat]) !== (exports.BattleTypeChart[hpType].HPivs[stat] || 31)) {
-								defaultIvs = false;
+							if ((curSet.ivs[stat] === undefined ? 31 : curSet.ivs[stat]) !== (Dex.types.get(hpType).HPivs[stat] || 31)) {
 								break;
 							}
 						}
