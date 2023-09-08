@@ -1120,7 +1120,12 @@ function buildTeambuilderTables() {
 				const baseString = JSON.stringify(baseEntry[key]);
 				if (modString !== baseString) {
 					if (!overrideDexInfo[id]) overrideDexInfo[id] = {};
-					overrideDexInfo[id][key] = JSON.parse(modString);
+					try {
+						overrideDexInfo[id][key] = JSON.parse(modString);
+					} catch (e) {
+						console.log(modString + " " + id + " " + key + " parsed an invalid value: " + modString);
+						continue;
+					}
 				}
 			}
 		}
