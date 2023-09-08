@@ -91,6 +91,7 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 	prevItem = '';
 	prevItemEffect = '';
 	terastallized: string | '' = '';
+	teraType = '';
 
 	boosts: {[stat: string]: number} = {};
 	status: StatusName | 'tox' | '' | '???' = '';
@@ -861,15 +862,19 @@ export class Side {
 			pokemon.maxhp = oldpokemon.maxhp;
 			pokemon.hpcolor = oldpokemon.hpcolor;
 			pokemon.status = oldpokemon.status;
-			pokemon.terastallized = oldpokemon.terastallized;
 			pokemon.copyVolatileFrom(oldpokemon, true);
 			pokemon.statusData = {...oldpokemon.statusData};
+			if (oldpokemon.terastallized) {
+				pokemon.terastallized = oldpokemon.terastallized;
+				pokemon.teraType = oldpokemon.terastallized;
+				oldpokemon.terastallized = '';
+				oldpokemon.teraType = '';
+			}
 			// we don't know anything about the illusioned pokemon except that it's not fainted
 			// technically we also know its status but only at the end of the turn, not here
 			oldpokemon.fainted = false;
 			oldpokemon.hp = oldpokemon.maxhp;
 			oldpokemon.status = '???';
-			oldpokemon.terastallized = '';
 		}
 		this.active[slot] = pokemon;
 		pokemon.slot = slot;
@@ -1108,6 +1113,7 @@ export class Battle {
 	ignoreSpects = !!Dex.prefs('ignorespects');
 	debug: boolean;
 	joinButtons = false;
+	autoresize: boolean;
 
 	/**
 	 * The actual pause state. Will only be true if playback is actually
@@ -1119,11 +1125,13 @@ export class Battle {
 		$frame?: JQuery<HTMLElement>,
 		$logFrame?: JQuery<HTMLElement>,
 		id?: ID,
-		log?: string[],
+		log?: string[] | string,
 		paused?: boolean,
 		isReplay?: boolean,
 		debug?: boolean,
 		subscription?: Battle['subscription'],
+		/** autoresize `$frame` for browsers below 640px width (mobile) */
+		autoresize?: boolean,
 	} = {}) {
 		this.id = options.id || '';
 
@@ -1151,8 +1159,10 @@ export class Battle {
 		this.paused = !!options.paused;
 		this.started = !this.paused;
 		this.debug = !!options.debug;
+		if (typeof options.log === 'string') options.log = options.log.split('\n');
 		this.stepQueue = options.log || [];
 		this.subscription = options.subscription || null;
+		this.autoresize = !!options.autoresize;
 
 		this.p1 = new Side(this, 0);
 		this.p2 = new Side(this, 1);
@@ -1163,7 +1173,29 @@ export class Battle {
 		this.farSide = this.p2;
 
 		this.resetStep();
+		if (this.autoresize) {
+			window.addEventListener('resize', this.onResize);
+			this.onResize();
+		}
 	}
+
+	onResize = () => {
+		const width = $(window).width()!;
+		if (width < 950 || this.hardcoreMode) {
+			this.messageShownTime = 500;
+		} else {
+			this.messageShownTime = 1;
+		}
+		if (width && width < 640) {
+			const scale = (width / 640);
+			this.scene.$frame?.css('transform', 'scale(' + scale + ')');
+			this.scene.$frame?.css('transform-origin', 'top left');
+			// this.$foeHint.css('transform', 'scale(' + scale + ')');
+		} else {
+			this.scene.$frame?.css('transform', 'none');
+			// this.$foeHint.css('transform', 'none');
+		}
+	};
 
 	subscribe(listener: Battle['subscription']) {
 		this.subscription = listener;
@@ -1258,6 +1290,9 @@ export class Battle {
 		this.nextStep();
 	}
 	destroy() {
+		if (this.autoresize) {
+			window.removeEventListener('resize', this.onResize);
+		}
 		this.scene.destroy();
 
 		for (let i = 0; i < this.sides.length; i++) {
@@ -1717,7 +1752,7 @@ export class Battle {
 			break;
 		}
 		case '-heal': {
-			let poke = this.getPokemon(args[1])!;
+			let poke = this.getPokemon(args[1], Dex.getEffect(kwArgs.from).id === 'revivalblessing')!;
 			let damage = poke.healthParse(args[2], true, true);
 			if (damage === null) break;
 			let range = poke.getDamageRange(damage);
@@ -2408,6 +2443,14 @@ export class Battle {
 				newSpeciesForme = args[2].substr(0, commaIndex);
 			}
 			let species = this.dex.species.get(newSpeciesForme);
+			if (nextArgs) {
+				if (nextArgs[0] === '-mega') {
+					species = this.dex.species.get(this.dex.items.get(nextArgs[3]).megaStone);
+				} else if (nextArgs[0] === '-primal' && nextArgs.length > 2) {
+					if (nextArgs[2] === 'Red Orb') species = this.dex.species.get('Groudon-Primal');
+					if (nextArgs[2] === 'Blue Orb') species = this.dex.species.get('Kyogre-Primal');
+				}
+			}
 
 			poke.speciesForme = newSpeciesForme;
 			poke.ability = poke.baseAbility = (species.abilities ? species.abilities['0'] : '');
@@ -2486,6 +2529,7 @@ export class Battle {
 			let poke = this.getPokemon(args[1])!;
 			let type = Dex.types.get(args[2]).name;
 			poke.removeVolatile('typeadd' as ID);
+			poke.teraType = type;
 			poke.terastallized = type;
 			poke.details += `, tera:${type}`;
 			poke.searchid += `, tera:${type}`;
@@ -3254,7 +3298,7 @@ export class Battle {
 		}
 		return null;
 	}
-	getPokemon(pokemonid: string | undefined) {
+	getPokemon(pokemonid: string | undefined, faintedOnly = false) {
 		if (!pokemonid || pokemonid === '??' || pokemonid === 'null' || pokemonid === 'false') {
 			return null;
 		}
@@ -3270,6 +3314,7 @@ export class Battle {
 
 		for (const pokemon of side.pokemon) {
 			if (isInactive && side.active.includes(pokemon)) continue;
+			if (faintedOnly && pokemon.hp) continue;
 			if (pokemon.ident === pokemonid) { // name matched, good enough
 				if (slot >= 0) pokemon.slot = slot;
 				return pokemon;
@@ -3723,13 +3768,19 @@ export class Battle {
 		this.subscription?.('playing');
 	}
 	skipTurn() {
-		this.seekTurn(this.turn + 1);
+		this.seekBy(1);
+	}
+	seekBy(deltaTurn: number) {
+		if (this.seeking === Infinity && deltaTurn < 0) {
+			return this.seekTurn(this.turn + 1);
+		}
+		this.seekTurn((this.seeking ?? this.turn) + deltaTurn);
 	}
 	seekTurn(turn: number, forceReset?: boolean) {
 		if (isNaN(turn)) return;
 		turn = Math.max(Math.floor(turn), 0);
 
-		if (this.seeking !== null && this.seeking > turn && !forceReset) {
+		if (this.seeking !== null && turn > this.turn && !forceReset) {
 			this.seeking = turn;
 			return;
 		}
@@ -3768,9 +3819,11 @@ export class Battle {
 	nextStep() {
 		if (!this.shouldStep()) return;
 
+		let time = Date.now();
 		this.scene.startAnimations();
 		let animations = undefined;
 
+		let interruptionCount: number;
 		do {
 			this.waitForAnimations = true;
 			if (this.currentStep >= this.stepQueue.length) {
@@ -3791,6 +3844,16 @@ export class Battle {
 			} else if (this.waitForAnimations === 'simult') {
 				this.scene.timeOffset = 0;
 			}
+
+			if (Date.now() - time > 300) {
+				interruptionCount = this.scene.interruptionCount;
+				setTimeout(() => {
+					if (interruptionCount === this.scene.interruptionCount) {
+						this.nextStep();
+					}
+				}, 1);
+				return;
+			}
 		} while (!animations && this.shouldStep());
 
 		if (this.paused && this.turn >= 0 && this.seeking === null) {
@@ -3801,7 +3864,7 @@ export class Battle {
 
 		if (!animations) return;
 
-		const interruptionCount = this.scene.interruptionCount;
+		interruptionCount = this.scene.interruptionCount;
 		animations.done(() => {
 			if (interruptionCount === this.scene.interruptionCount) {
 				this.nextStep();
