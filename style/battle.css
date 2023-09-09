@@ -14,6 +14,7 @@ License: GPLv2
 	left: -1px;
 	border: 1px solid #AAAAAA;
 	background: #CFD5DA;
+	color: black;
 	width: 640px;
 	height: 360px;
 	overflow: hidden;
@@ -315,11 +316,22 @@ License: GPLv2
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 102px;
+	bottom: 75px;
 }
-.rightbar .trainer {
+
+.trainer-near {
+	bottom: 75px;
+}
+.trainer-far {
 	bottom: 232px;
 }
+.trainer-near2 {
+	bottom: 232px;
+}
+.trainer-far2 {
+	bottom: 75px;
+}
+
 .trainer strong {
 	display: block;
 	font-size: 8pt;
@@ -334,8 +346,9 @@ License: GPLv2
 	background: transparent none no-repeat scroll center top;
 }
 .trainer div.teamicons {
-	width: 96px;
+	width: 100px;
 	height: 30px;
+	margin: 0 0 0 2px;
 }
 .teamicons span {
 	float: left;
@@ -425,6 +438,7 @@ License: GPLv2
 	background: #E6E0AC url(../fx/weather-sandstorm.png) no-repeat scroll left top;
 	color: #554433;
 }
+.snowweather,
 .hailweather {
 	background: #AADDEE url(../fx/weather-hail.png) no-repeat scroll left top;
 	color: #114455;
@@ -449,8 +463,20 @@ License: GPLv2
 	background: #CCAAEE url(../fx/weather-psychicterrain.png) no-repeat scroll left top;
 	color: #441155;
 }
-.pseudoweather {
+.gravityweather {
+	background: #DDAAEE url(../fx/weather-gravity.png) no-repeat scroll left top;
+	color: #661155;
+}
+.magicroomweather {
+	background: #DDAAEE url(../fx/weather-magicroom.png) no-repeat scroll left top;
+	color: #661155;
+}
+.trickroomweather {
 	background: #DDAAEE url(../fx/weather-trickroom.png) no-repeat scroll left top;
+	color: #661155;
+}
+.wonderroomweather {
+	background: #DDAAEE url(../fx/weather-wonderroom.png) no-repeat scroll left top;
 	color: #661155;
 }
 
@@ -762,6 +788,9 @@ License: GPLv2
 }
 #tooltipwrapper .tooltip p.section {
 	border-top: 1px solid #888888;
+}
+#tooltipwrapper .tooltip .textaligned-typeicons img {
+	vertical-align: text-bottom;
 }
 #tooltipwrapper.tooltip-locked {
 	pointer-events: auto;
