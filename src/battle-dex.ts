@@ -319,6 +319,16 @@ const Dex = new class implements ModdedDex {
 			'Fire', 'Water', 'Grass', 'Electric', 'Ice', 'Psychic', 'Dark', 'Dragon',
 		].includes(type) ? 'Special' : 'Physical';
 	}
+	getKEPCategory(type: string) {
+		return [
+			'Fire', 'Water', 'Grass', 'Electric', 'Ice', 'Psychic', 'Dark', 'Dragon', 'Fairy'
+		].includes(type) ? 'Special' : 'Physical';
+	}
+	getCSICategory(type: string) {
+		return [
+			'Fire', 'Water', 'Grass', 'Electric', 'Ice', 'Psychic', 'Dark', 'Dragon', 'Cosmic'
+		].includes(type) ? 'Special' : 'Physical';
+	}
 
 	items = {
 		get: (nameOrItem: string | Item | null | undefined): Item => {
@@ -930,9 +940,18 @@ class ModdedDex {
 				}
 			}
 			if (this.gen <= 3 && data.category !== 'Status') {
-				data.category = Dex.getGen3Category(data.type);
+				switch(this.modid) {
+					case 'gen1expansionpack':
+						data.category = Dex.getKEPCategory(data.type);
+						break;
+					case 'gen2crystalseviiislands':
+						data.category = Dex.getCSICategory(data.type);	
+						break;
+					default: 
+						data.category = Dex.getGen3Category(data.type);
+						break;
+				}
 			}
-
 			const move = new Move(id, name, data);
 			this.cache.Moves[id] = move;
 			return move;
