@@ -872,6 +872,17 @@ abstract class BattleTypedSearch<T extends SearchType> {
 					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
 				return true;
 			}
+			// The function it borrows from above is ugly af, so I'm just going to do it this way to compensate without deleting code
+			if (learnset && (moveid in learnset) && ((this.mod !== 'gen1expansionpack') ? learnset[moveid].includes(genChar) :
+			learnset[moveid].includes(genChar) ||
+				(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
+			return true;
+			}
+			if (learnset && (moveid in learnset) && ((this.mod !== 'gen1burgundy') ? learnset[moveid].includes(genChar) :
+			learnset[moveid].includes(genChar) ||
+				(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
+			return true;
+			}
 			learnsetid = this.nextLearnsetid(learnsetid, speciesid);
 		}
 		return false;
@@ -1425,7 +1436,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				}
 			}
 			// KEP Integrations. This acts as a "correctional" patch.
-			if (this.formatType === 'gen1expansionpack') {
+			if (this.mod === 'gen1expansionpack') {
 				if (['bulletpunch', 'irondefense', 'ironhead', 'metalsound', 'drainingkiss', 'charm'].includes(id)) return true;
 				if (['magnetbomb', 'disarmingvoice', 'brutalswing'].includes(id)) return false;
 				switch (id) {
@@ -1641,7 +1652,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		const format = this.format;
 		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
 		const isSTABmons = (format.includes('stabmons') || format === 'staaabmons');
-		const isTradebacks = format.includes('tradebacks');
+		const isTradebacks = (format.includes('tradebacks') || this.mod === 'gen1expansionpack' || this.mod === 'gen1burgundy');
 		const regionBornLegality = dex.gen >= 6 &&
 			/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
 			(dex.gen === 9 && this.formatType !== 'natdex');

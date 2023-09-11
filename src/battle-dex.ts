@@ -870,7 +870,7 @@ const Dex = new class implements ModdedDex {
 		if (!type) type = '???';
 		let sanitizedType = type.replace(/\?/g, '%3f');
 		mod = this.getSpriteMod(mod, toID(type), 'types');
-		if (mod) {
+		if (mod && (type !== '???')) {
 			return `<img src="${this.modResourcePrefix}${mod}/sprites/types/${toID(type)}.png" alt="${type}" class="pixelated${b ? ' b' : ''}" />`;
 		} else {
 			return `<img src="${Dex.resourcePrefix}sprites/types/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
