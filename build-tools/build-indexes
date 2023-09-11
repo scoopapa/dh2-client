@@ -4,6 +4,7 @@
 const fs = require("fs");
 const path = require('path');
 const child_process = require("child_process");
+const server_repo = require("./server-repo");
 
 const rootDir = path.resolve(__dirname, '..');
 process.chdir(rootDir);
@@ -12,9 +13,9 @@ const debug = true;
 
 process.stdout.write("Syncing data from Git repository... ");
 if (!fs.existsSync('DH2')) {
-	child_process.execSync('git clone https://github.com/scoopapa/DH2.git DH2', {
+	child_process.execSync('git clone ' + server_repo + ' DH2', {
 	});
-	child_process.execSync("git pull https://github.com/scoopapa/DH2.git", {cwd: 'DH2'});
+	child_process.execSync("git pull " + server_repo, {cwd: 'DH2'});
 }
 
 child_process.execSync('npm run build', {cwd: 'DH2'});
