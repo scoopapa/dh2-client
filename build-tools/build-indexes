@@ -491,8 +491,8 @@ function buildTeambuilderTables() {
 					if (species.isNonstandard && species.isNonstandard !== 'Gigantamax') return 'Illegal';
 					// these are breaking certain mods, disable them for now.
 
-					// if (baseSpecies.tags.includes('Mythical')) return 'Mythical';
-					// if (baseSpecies.tags.includes('Restricted Legendary')) return 'Restricted Legendary';
+					if (baseSpecies.tags.includes('Mythical')) return 'Mythical';
+					if (baseSpecies.tags.includes('Restricted Legendary')) return 'Restricted Legendary';
 					if (species.tier === 'NFE') return 'NFE';
 					if (species.tier === 'LC') return 'LC';
 					return 'Regular';
