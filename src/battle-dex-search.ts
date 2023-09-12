@@ -26,6 +26,7 @@ declare const BattleSearchIndex: [ID, SearchType, number?, number?][];
 declare const BattleSearchIndexOffset: any;
 declare const BattleTeambuilderTable: any;
 
+
 /**
  * Backend for search UIs.
  */
@@ -79,6 +80,7 @@ class DexSearch {
 	 * (format and species).
 	 */
 	filters: SearchFilter[] | null = null;
+
 
 	constructor(searchType: SearchType | '' = '', formatid = '' as ID, species = '' as ID) {
 		this.setType(searchType, formatid, species);
@@ -867,21 +869,12 @@ abstract class BattleTypedSearch<T extends SearchType> {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid] && overrideLearnsets[learnsetid][moveid]) learnset = overrideLearnsets[learnsetid];
 			}
-			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') ? learnset[moveid].includes(genChar) :
+			// Inverted this function to account for pet mods with tradebacks enabled
+			const modData = require('../DH2/dist/sim/dex').Dex.mod(toID(this.mod)).data;
+			if (learnset && (moveid in learnset) && (!modData.Scripts.rbyTradebacks ? learnset[moveid].includes(genChar) :
 				learnset[moveid].includes(genChar) ||
 					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
 				return true;
-			}
-			// The function it borrows from above is ugly af, so I'm just going to do it this way to compensate without deleting code
-			if (learnset && (moveid in learnset) && ((this.mod !== 'gen1expansionpack') ? learnset[moveid].includes(genChar) :
-			learnset[moveid].includes(genChar) ||
-				(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
-			return true;
-			}
-			if (learnset && (moveid in learnset) && ((this.mod !== 'gen1burgundy') ? learnset[moveid].includes(genChar) :
-			learnset[moveid].includes(genChar) ||
-				(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
-			return true;
 			}
 			learnsetid = this.nextLearnsetid(learnsetid, speciesid);
 		}
