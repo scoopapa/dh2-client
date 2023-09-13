@@ -1599,7 +1599,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 			return true;
 		}
 		// Custom move added by a mod
-		if (this.mod && id in BattleTeambuilderTable[this.mod].overrideMoveInfo && !BattleTeambuilderTable[this.mod].overrideMoveInfo[id].unviable) return true;
+		if (this.mod && id in BattleTeambuilderTable[this.mod].overrideMoveInfo && BattleTeambuilderTable[this.mod].overrideMoveInfo[id].customUseful) return true;
 		const modMoveData = BattleMovedex[id];
 		if (!modMoveData) return true;
 		if (modMoveData.category === 'Status') {
