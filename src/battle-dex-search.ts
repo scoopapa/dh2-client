@@ -869,9 +869,9 @@ abstract class BattleTypedSearch<T extends SearchType> {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid] && overrideLearnsets[learnsetid][moveid]) learnset = overrideLearnsets[learnsetid];
 			}
-			// Inverted this function to account for pet mods with tradebacks enabled
-			const modData = require('../DH2/dist/sim/dex').Dex.mod(toID(this.mod)).data;
-			if (learnset && (moveid in learnset) && (!modData.Scripts.rbyTradebacks ? learnset[moveid].includes(genChar) :
+			// Modified this function to account for pet mods with tradebacks enabled
+			const tradebacksMod = ['gen1expansionpack', 'gen1burgundy'];
+			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') || !(tradebacksMod.includes(this.mod)) ? learnset[moveid].includes(genChar) :
 				learnset[moveid].includes(genChar) ||
 					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
 				return true;
