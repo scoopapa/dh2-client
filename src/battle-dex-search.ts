@@ -26,6 +26,7 @@ declare const BattleSearchIndex: [ID, SearchType, number?, number?][];
 declare const BattleSearchIndexOffset: any;
 declare const BattleTeambuilderTable: any;
 
+
 /**
  * Backend for search UIs.
  */
@@ -79,6 +80,7 @@ class DexSearch {
 	 * (format and species).
 	 */
 	filters: SearchFilter[] | null = null;
+
 
 	constructor(searchType: SearchType | '' = '', formatid = '' as ID, species = '' as ID) {
 		this.setType(searchType, formatid, species);
@@ -867,7 +869,9 @@ abstract class BattleTypedSearch<T extends SearchType> {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid] && overrideLearnsets[learnsetid][moveid]) learnset = overrideLearnsets[learnsetid];
 			}
-			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') ? learnset[moveid].includes(genChar) :
+			// Inverted this function to account for pet mods with tradebacks enabled
+			const modData = require('../DH2/dist/sim/dex').Dex.mod(toID(this.mod)).data;
+			if (learnset && (moveid in learnset) && (!modData.Scripts.rbyTradebacks ? learnset[moveid].includes(genChar) :
 				learnset[moveid].includes(genChar) ||
 					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
 				return true;
@@ -1425,7 +1429,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				}
 			}
 			// KEP Integrations. This acts as a "correctional" patch.
-			if (this.formatType === 'gen1expansionpack') {
+			if (this.mod === 'gen1expansionpack') {
 				if (['bulletpunch', 'irondefense', 'ironhead', 'metalsound', 'drainingkiss', 'charm'].includes(id)) return true;
 				if (['magnetbomb', 'disarmingvoice', 'brutalswing'].includes(id)) return false;
 				switch (id) {
@@ -1641,7 +1645,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		const format = this.format;
 		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
 		const isSTABmons = (format.includes('stabmons') || format === 'staaabmons');
-		const isTradebacks = format.includes('tradebacks');
+		const isTradebacks = (format.includes('tradebacks') || this.mod === 'gen1expansionpack' || this.mod === 'gen1burgundy');
 		const regionBornLegality = dex.gen >= 6 &&
 			/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
 			(dex.gen === 9 && this.formatType !== 'natdex');
