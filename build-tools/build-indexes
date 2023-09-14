@@ -1398,7 +1398,7 @@ function buildTeambuilderTables() {
 				for (const moveid in learnset) {
 					const newLearnsetEntry = getLearnsetStr(moveid, learnset[moveid], id, modConfigId);
 					let baseLearnsetEntry = learnsets[id][moveid];
-					if (modGen === 'gen2' || modGen === 'gen1') baseLearnsetEntry = G2Learnsets[id][moveid];
+					if (modGen === '2' || modGen === '1') baseLearnsetEntry = G2Learnsets[id][moveid];
 					const baseLsetNoEarlyGen = baseLearnsetEntry ? baseLearnsetEntry.replace(1, '').replace(2, '') : '';
 					if (newLearnsetEntry !== baseLearnsetEntry && newLearnsetEntry !== baseLsetNoEarlyGen) {
 						if (!overrideLearnsets[id]) overrideLearnsets[id] = {};
@@ -1441,7 +1441,8 @@ function buildTeambuilderTables() {
 			BattleTeambuilderTable[modConfigId].overrideMoveInfo = overrideMoveInfo;
 			for (const id in modData.Moves) {
 				const modEntry = modData.Moves[id];
-				const baseEntry = Dex.data.Moves[id];
+				let baseEntry = Dex.data.Moves[id];
+				if (modGen !== 9) baseEntry = Dex.mod('gen'+modGen).data.Moves[id];
 				if (typeof baseEntry === 'undefined') {
 					overrideMoveInfo[id] = {};
 					overrideMoveInfo[id] = modEntry;
@@ -1496,7 +1497,7 @@ function buildTeambuilderTables() {
 	}
 
 	//
-	// Mods
+	// (not pet) Mods
 	//
 
 	for (const mod of ['gen7letsgo', 'gen8bdsp']) {
