@@ -1437,29 +1437,36 @@ function buildTeambuilderTables() {
 			items.push(...itemTable.slice(1));
 			//moves
 			const overrideMoveInfo = {};
-			const overrideMoveKeys = ['basePower', 'accuracy', 'category', 'pp', 'isNonstandard', 'shortDesc', 'type', 'unviable'];
+			const overrideMoveKeys = ['basePower', 'accuracy', 'category', 'pp', 'isNonstandard', 'shortDesc', 'type', 'unviable', 'isViable'];
 			BattleTeambuilderTable[modConfigId].overrideMoveInfo = overrideMoveInfo;
 			for (const id in modData.Moves) {
 				const modEntry = modData.Moves[id];
-				let baseEntry = Dex.data.Moves[id];
-				if (modGen !== 9) baseEntry = Dex.mod('gen'+modGen).data.Moves[id];
+				const baseEntry = Dex.data.Moves[id];
+				const genEntry = modGen !== 9 ? Dex.mod('gen'+modGen).data.Moves[id] : null;
 				if (typeof baseEntry === 'undefined') {
 					overrideMoveInfo[id] = {};
 					overrideMoveInfo[id] = modEntry;
 					overrideMoveInfo[id].exists = true;
 					continue;
 				}
+				let moddedMoveIsOldGen = true;
 				for (const key in modEntry) {
 					if (!overrideMoveKeys.includes(key)) continue;
 					const modString = JSON.stringify(modEntry[key]);
 					const baseString = JSON.stringify(baseEntry[key]);
-					// if (modid === "cleanslate") console.log(modString);
 					if (modString !== baseString) {
+						if (genEntry && moddedMoveIsOldGen) {
+							const genString = JSON.stringify(genEntry[key]);
+							if (genString !== modString) {
+								moddedMoveIsOldGen = false;
+							}
+						}
 						if (!overrideMoveInfo[id]) overrideMoveInfo[id] = {};
 						if (modString === undefined) overrideMoveInfo[id][key] = undefined;
 						else overrideMoveInfo[id][key] = JSON.parse(modString);
 					}
 				}
+				if (overrideMoveInfo[id] && moddedMoveIsOldGen) overrideMoveInfo[id].modMoveFromOldGen = true;
 			}
 			//abilities
 			const fullAbilityName = {};
