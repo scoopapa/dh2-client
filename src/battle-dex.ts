@@ -734,7 +734,7 @@ const Dex = new class implements ModdedDex {
 			num = BattlePokedex[id].num;
 		}
 		if (num < 0) num = 0;
-		if (num > 1010) num = 0;
+		if (num > 1017) num = 0;
 
 		if (window.BattlePokemonIconIndexes?.[id]) {
 			num = BattlePokemonIconIndexes[id];
@@ -784,7 +784,7 @@ const Dex = new class implements ModdedDex {
 		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
 		mod = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
 		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
-		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v11) no-repeat scroll -${left}px -${top}px${fainted}`;
+		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v14) no-repeat scroll -${left}px -${top}px${fainted}`;
 	}
 
 	getTeambuilderSpriteData(pokemon: any, gen: number = 0, mod: string = ''): TeambuilderSpriteData {
@@ -863,7 +863,7 @@ const Dex = new class implements ModdedDex {
 
 		let top = Math.floor(num / 16) * 24;
 		let left = (num % 16) * 24;
-		return 'background:transparent url(' + Dex.resourcePrefix + 'sprites/itemicons-sheet.png?g9) no-repeat scroll -' + left + 'px -' + top + 'px';
+		return 'background:transparent url(' + Dex.resourcePrefix + 'sprites/itemicons-sheet.png?v1) no-repeat scroll -' + left + 'px -' + top + 'px';
 	}
 
 	getTypeIcon(type: string | null, b?: boolean, mod: string = '') { // b is just for utilichart.js

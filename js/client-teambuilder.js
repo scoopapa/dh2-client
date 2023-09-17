@@ -1257,7 +1257,7 @@
 					}
 				}
 				if (this.curTeam.gen === 9) {
-					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.types[0]) + '</span>';
+					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
 				}
 			}
 			buf += '</button></div></div>';
@@ -2722,13 +2722,19 @@
 			}
 
 			if (this.curTeam.gen === 9) {
-				buf += '<div class="formrow"><label class="formlabel" title="Tera Type">Tera Type:</label><div><select name="teratype">';
-				var types = Dex.types.all();
-				var teraType = set.teraType || species.types[0];
-				for (var i = 0; i < types.length; i++) {
-					buf += '<option value="' + types[i].name + '"' + (teraType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
+				buf += '<div class="formrow"><label class="formlabel" title="Tera Type">Tera Type:</label><div>';
+				if (species.forceTeraType) {
+					buf += species.forceTeraType;
+				} else {
+					buf += '<select name="teratype">';
+					var types = Dex.types.all();
+					var teraType = set.teraType || species.types[0];
+					for (var i = 0; i < types.length; i++) {
+						buf += '<option value="' + types[i].name + '"' + (teraType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
+					}
+					buf += '</select>';
 				}
-				buf += '</select></div></div>';
+				buf += '</div></div>';
 			}
 
 			buf += '</form>';
@@ -2839,7 +2845,7 @@
 					}
 				}
 				if (this.curTeam.gen === 9) {
-					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.types[0]) + '</span>';
+					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
 				}
 			}
 			this.$('button[name=details]').html(buf);
