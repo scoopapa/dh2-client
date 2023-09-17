@@ -472,10 +472,11 @@ const Dex = new class implements ModdedDex {
 		}
 		return false;
 	}
-
-	getSpriteMod(mod: string, id: string, folder: string, overrideStandard: boolean = false) {
+	// getSpriteMod is used to find the correct mod folder for the sprite url to use
+	// id is the name of the pokemon, type, or item. folder refers to "front", or "back-shiny" etc. overrideStandard is false for custom elements and true for canon elements
+	getSpriteMod(mod: string, id: string, folder: string, overrideStandard: boolean = false) { 
 		if (!window.ModSprites[id]) return '';
-		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) {
+		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
 			for (const modName in window.ModSprites[id]) {
 				if (window.ModSprites[id][modName].includes(folder)) return modName;
 				if (window.ModSprites[id][modName].includes('ani' + folder)) return modName;
