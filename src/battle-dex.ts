@@ -1070,8 +1070,9 @@ class ModdedDex {
 			if (this.gen < 3 || this.modid === 'gen7letsgo') {
 				data.abilities = {0: "None"};
 			}
-	
-			if (id in table.overrideTier) data.tier = table.overrideTier[id];
+			
+			if (table.overrideTier && id in table.overrideTier) data.tier = table.overrideTier[id];
+			if (table.doubles?.overrideTier && id in table.doubles.overrideTier) data.doublesTier = table.doubles.overrideTier[id];
 			if (!data.tier && id.slice(-5) === 'totem') {
 				data.tier = this.species.get(id.slice(0, -5)).tier;
 			}

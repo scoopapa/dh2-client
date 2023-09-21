@@ -1295,7 +1295,7 @@ function buildTeambuilderTables() {
 			const petModFormats = {};
 			ModConfig[modConfigId].formats = petModFormats;
 			// Find formats using this mod
-			let hasSinglesFormats = true;
+			let hasSinglesFormats = false;
 			let hasDoublesFormats = false;
 			for (const i in Dex.formats.formatsListCache) {
 				// const format = Dex.formats.get(i);
@@ -1308,6 +1308,8 @@ function buildTeambuilderTables() {
 				const format = petModFormats[formatCacheName];
 				let maxGen = 
 				formatCacheName.substr(0, 3) === 'gen' && parseInt(formatCacheMod.substr(3, 1)) < 10 ? parseInt(formatCacheMod.substr(3, 1)) : 9;
+				if(format.gameType === 'doubles') hasDoublesFormats = true;
+				else hasSinglesFormats = true;
 				// format.name = formatCacheMod;
 				if (!format.banlist) format.banlist = [];
 				if (!format.unbanlist) format.unbanlist = [];
@@ -1337,8 +1339,8 @@ function buildTeambuilderTables() {
 			if (!ModConfig[modConfigId].customTiers) ModConfig[modConfigId].customTiers = [];
 			if (!ModConfig[modConfigId].customDoublesTiers) ModConfig[modConfigId].customDoublesTiers = [];
 			for (const speciesid in modData.FormatsData) {
-				if (!modData.FormatsData[speciesid] && debug) {
-					console.log('Warning: ' + speciesid + ' does not have tiering data in ' + modConfigId);
+				if (!modData.FormatsData[speciesid]) {
+					if(debug && !(speciesid in Dex.data.Pokedex)) console.log('Warning: ' + speciesid + ' does not have tiering data in ' + modConfigId);
 					continue;
 				}
 				const tier = modData.FormatsData[speciesid].tier;
@@ -1359,7 +1361,9 @@ function buildTeambuilderTables() {
 			const pokemon = Object.keys(modData.Pokedex);
 			pokemon.sort();
 			const overrideTier = {};
-			BattleTeambuilderTable[modConfigId].overrideTier = overrideTier;
+			if(hasSinglesFormats) {
+				BattleTeambuilderTable[modConfigId].overrideTier = overrideTier;
+			}
 			const doublesOverrideTier = {};
 			if (hasDoublesFormats) {
 				BattleTeambuilderTable[modConfigId].doubles = {};
