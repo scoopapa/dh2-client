@@ -1379,7 +1379,7 @@ class BattleTooltips {
 
 		let minNature = (isRandomBattle || gen < 3) ? 1 : 0.9;
 		let maxNature = (isRandomBattle || gen < 3) ? 1 : 1.1;
-		let maxIv = (gen < 3) ? 30 : 15;
+		let maxIv = (gen < 3) ? 30 : 31;
 
 		let min;
 		let max;
@@ -2231,7 +2231,7 @@ interface PokemonSet {
 	gender?: string;
 	/** Defaults to flat 252's (200's/0's in Let's Go) (error in gen 3+) */
 	evs?: StatsTable;
-	/** Defaults to whatever makes sense - flat 15's unless you have Gyro Ball etc */
+	/** Defaults to whatever makes sense - flat 31's unless you have Gyro Ball etc */
 	ivs?: StatsTable;
 	/** Defaults as you'd expect (100 normally, 50 in VGC-likes, 5 in LC) */
 	level?: number;
@@ -2822,7 +2822,7 @@ class BattleStatGuesser {
 		let baseStat = species.baseStats[stat];
 
 		let iv = (set.ivs && set.ivs[stat]);
-		if (typeof iv !== 'number') iv = 15;
+		if (typeof iv !== 'number') iv = 31;
 		if (this.dex.gen <= 2) iv &= 30;
 
 		let ev = (set.evs && set.evs[stat]);

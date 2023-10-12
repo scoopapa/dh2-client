@@ -20,20 +20,90 @@
 type ID = string & {__isID: true};
 
 const BattleNatures: {[k in NatureName]: {plus?: StatName, minus?: StatName}} = {
-	Red: {
-		plus: "atk"
+	Adamant: {
+		plus: 'atk',
+		minus: 'spa',
 	},
-	Blue: {
-		plus: "def"
+	Bashful: {},
+	Bold: {
+		plus: 'def',
+		minus: 'atk',
 	},
-	Black: {
-		plus: "spa"
+	Brave: {
+		plus: 'atk',
+		minus: 'spe',
 	},
-	White: {
-		plus: "spd"
+	Calm: {
+		plus: 'spd',
+		minus: 'atk',
 	},
-	Green: {
-		plus: "spe"
+	Careful: {
+		plus: 'spd',
+		minus: 'spa',
+	},
+	Docile: {},
+	Gentle: {
+		plus: 'spd',
+		minus: 'def',
+	},
+	Hardy: {},
+	Hasty: {
+		plus: 'spe',
+		minus: 'def',
+	},
+	Impish: {
+		plus: 'def',
+		minus: 'spa',
+	},
+	Jolly: {
+		plus: 'spe',
+		minus: 'spa',
+	},
+	Lax: {
+		plus: 'def',
+		minus: 'spd',
+	},
+	Lonely: {
+		plus: 'atk',
+		minus: 'def',
+	},
+	Mild: {
+		plus: 'spa',
+		minus: 'def',
+	},
+	Modest: {
+		plus: 'spa',
+		minus: 'atk',
+	},
+	Naive: {
+		plus: 'spe',
+		minus: 'spd',
+	},
+	Naughty: {
+		plus: 'atk',
+		minus: 'spd',
+	},
+	Quiet: {
+		plus: 'spa',
+		minus: 'spe',
+	},
+	Quirky: {},
+	Rash: {
+		plus: 'spa',
+		minus: 'spd',
+	},
+	Relaxed: {
+		plus: 'def',
+		minus: 'spe',
+	},
+	Sassy: {
+		plus: 'spd',
+		minus: 'spe',
+	},
+	Serious: {},
+	Timid: {
+		plus: 'spe',
+		minus: 'atk',
 	},
 };
 const BattleStatIDs: {[k: string]: StatName | undefined} = {
@@ -934,16 +1004,13 @@ const BattleAvatarNumbers: {[k: string]: string} = {
 };
 
 type StatName = 'hp' | 'atk' | 'def' | 'spa' | 'spd' | 'spe';
-type NatureName = 'Red' | 'Blue' | 'Black' | 'White' | 'Green';
+type NatureName = 'Adamant' | 'Bashful' | 'Bold' | 'Brave' | 'Calm' | 'Careful' | 'Docile' | 'Gentle' |
+	'Hardy' | 'Hasty' | 'Impish' | 'Jolly' | 'Lax' | 'Lonely' | 'Mild' | 'Modest' | 'Naive' | 'Naughty' |
+	'Quiet' | 'Quirky' | 'Rash' | 'Relaxed' | 'Sassy' | 'Serious' | 'Timid';
 type StatNameExceptHP = 'atk' | 'def' | 'spa' | 'spd' | 'spe';
-type TypeName = 'Void' | 'Fire' | 'Water' | 'Nature' | 'Earth' | 'Steel' | 'Wind' | 'Electric' | 'Light' | 'Dark' | 'Nether' | 'Poison' | 'Fighting' | 'Illusion' | 'Sound' | 'Warped' | 'Dream';
-type StatusName = 
-'brn' | 'hvybrn' | 'par' | 'shk' | 'dark' | 'fear' | 'stp' | 'psn' | 'tox' | 'weak' | 'weakheavy' | 
-'brnpsn' | 'brndark' | 'brnfear' | 'brnpar' | 'brnweak' | 
-'psnbrn' | 'psndark' | 'psnfear' | 'psnpar' | 'psnweak' |
-'darkbrn' | 'darkpsn' | 'darkfear' | 'darkpar' | 'darkweak' |
-'fearbrn' | 'fearpsn' | 'feardark' | 'fearpar' | 'fearweak' |
-'weakbrn' | 'weakpsn' | 'weakdark' | 'weakfear' | 'weakpar';
+type TypeName = 'Normal' | 'Fighting' | 'Flying' | 'Poison' | 'Ground' | 'Rock' | 'Bug' | 'Ghost' | 'Steel' |
+	'Fire' | 'Water' | 'Grass' | 'Electric' | 'Psychic' | 'Ice' | 'Dragon' | 'Dark' | 'Fairy' | '???';
+type StatusName = 'par' | 'psn' | 'frz' | 'slp' | 'brn';
 type BoostStatName = 'atk' | 'def' | 'spa' | 'spd' | 'spe' | 'evasion' | 'accuracy' | 'spc';
 type GenderName = 'M' | 'F' | 'N';
 

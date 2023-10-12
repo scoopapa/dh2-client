@@ -2166,7 +2166,7 @@
 			var stats = {hp:'', atk:'', def:'', spa:'', spd:'', spe:''};
 			if (this.curTeam.gen === 1) delete stats.spd;
 			if (!set) return;
-			var nature = BattleNatures[set.nature || 'Red'];
+			var nature = BattleNatures[set.nature || 'Serious'];
 			if (!nature) nature = {};
 
 			var supportsEVs = !this.curTeam.format.includes('letsgo');
@@ -2245,9 +2245,9 @@
 				buf += '<div class="col ivcol"><div><strong>IVs</strong></div>';
 				if (!set.ivs) set.ivs = {};
 				for (var i in stats) {
-					if (set.ivs[i] === undefined || isNaN(set.ivs[i])) set.ivs[i] = 15;
+					if (set.ivs[i] === undefined || isNaN(set.ivs[i])) set.ivs[i] = 31;
 					var val = '' + (set.ivs[i]);
-					buf += '<div><input type="number" name="iv-' + i + '" value="' + BattleLog.escapeHTML(val) + '" class="textbox inputform numform" min="0" max="15" step="1" /></div>';
+					buf += '<div><input type="number" name="iv-' + i + '" value="' + BattleLog.escapeHTML(val) + '" class="textbox inputform numform" min="0" max="31" step="1" /></div>';
 				}
 				var hpType = '';
 				if (set.moves) {
@@ -2346,16 +2346,16 @@
 					buf += '<option value="" selected>IV spreads</option>';
 
 					buf += '<optgroup label="min Atk">';
-					buf += '<option value="15/0/15/15/15/15">15/0/15/15/15/15</option>';
+					buf += '<option value="31/0/31/31/31/31">31/0/31/31/31/31</option>';
 					buf += '</optgroup>';
 					buf += '<optgroup label="min Atk, min Spe">';
-					buf += '<option value="15/0/15/15/15/0">15/0/15/15/15/0</option>';
+					buf += '<option value="31/0/31/31/31/0">31/0/31/31/31/0</option>';
 					buf += '</optgroup>';
 					buf += '<optgroup label="max all">';
-					buf += '<option value="15/15/15/15/15/15">15/15/15/15/15/15</option>';
+					buf += '<option value="31/31/31/31/31/31">31/31/31/31/31/31</option>';
 					buf += '</optgroup>';
 					buf += '<optgroup label="min Spe">';
-					buf += '<option value="15/15/15/15/15/0">15/15/15/15/15/0</option>';
+					buf += '<option value="31/31/31/31/31/0">31/31/31/31/31/0</option>';
 					buf += '</optgroup>';
 
 					buf += '</select></div>';
@@ -2365,7 +2365,7 @@
 				buf += '<div class="col ivcol"><div><strong>DVs</strong></div>';
 				if (!set.ivs) set.ivs = {};
 				for (var i in stats) {
-					if (set.ivs[i] === undefined || isNaN(set.ivs[i])) set.ivs[i] = 15;
+					if (set.ivs[i] === undefined || isNaN(set.ivs[i])) set.ivs[i] = 31;
 					var val = '' + Math.floor(set.ivs[i] / 2);
 					buf += '<div><input type="number" name="iv-' + i + '" value="' + BattleLog.escapeHTML(val) + '" class="textbox inputform numform" min="0" max="15" step="1" /></div>';
 				}
@@ -2384,13 +2384,13 @@
 					var curNature = BattleNatures[i];
 					buf += '<option value="' + i + '"' + (curNature === nature ? 'selected="selected"' : '') + '>' + i;
 					if (curNature.plus) {
-						buf += ' (+' + BattleStatNames[curNature.plus] + ')';
+						buf += ' (+' + BattleStatNames[curNature.plus] + ', -' + BattleStatNames[curNature.minus] + ')';
 					}
 					buf += '</option>';
 				}
 				buf += '</select></p>';
 
-				buf += '<p><em>Protip:</em> You can also set natures by typing "+" next to a stat.</p>';
+				buf += '<p><em>Protip:</em> You can also set natures by typing "+" and "-" next to a stat.</p>';
 			}
 
 			buf += '</div>';
@@ -2410,7 +2410,7 @@
 				set.nature = 'Serious';
 			} else {
 				for (var i in BattleNatures) {
-					if (BattleNatures[i].plus === this.plus) {
+					if (BattleNatures[i].plus === this.plus && BattleNatures[i].minus === this.minus) {
 						set.nature = i;
 						break;
 					}
@@ -2475,10 +2475,10 @@
 
 				if (this.curTeam.gen <= 2) {
 					val *= 2;
-					if (val === 30) val = 15;
+					if (val === 30) val = 31;
 				}
 
-				if (val > 15 || isNaN(val)) val = 15;
+				if (val > 31 || isNaN(val)) val = 31;
 				if (val < 0) val = 0;
 
 				if (!set.ivs) set.ivs = {};
@@ -2513,15 +2513,15 @@
 				var expectedHpDV = (atkDV % 2) * 8 + (defDV % 2) * 4 + (speDV % 2) * 2 + (spcDV % 2);
 				if (expectedHpDV !== hpDV) {
 					set.ivs.hp = expectedHpDV * 2;
-					if (set.ivs.hp === 30) set.ivs.hp = 15;
+					if (set.ivs.hp === 30) set.ivs.hp = 31;
 					this.$chart.find('input[name=iv-hp]').val(expectedHpDV);
 				}
 			} else {
 				var hpTypeX = 0;
 				var i = 1;
-				var stats = {hp: 15, atk: 15, def: 15, spe: 15, spa: 15, spd: 15};
+				var stats = {hp: 31, atk: 31, def: 31, spe: 31, spa: 31, spd: 31};
 				for (var s in stats) {
-					if (set.ivs[s] === undefined) set.ivs[s] = 15;
+					if (set.ivs[s] === undefined) set.ivs[s] = 31;
 					hpTypeX += i * (set.ivs[s] % 2);
 					i *= 2;
 				}
@@ -3186,7 +3186,7 @@
 			if (moveName.substr(0, 13) === 'Hidden Power ') {
 				if (set.ivs) {
 					for (var i in set.ivs) {
-						if (set.ivs[i] === 30) set.ivs[i] = 15;
+						if (set.ivs[i] === 30) set.ivs[i] = 31;
 						if (set.ivs[i] <= 3) set.ivs[i] = 0;
 					}
 				}
@@ -3218,7 +3218,7 @@
 				if (!this.canHyperTrain(set)) {
 					var hpType = moveName.substr(13);
 
-					set.ivs = {hp: 15, atk: 15, def: 15, spa: 15, spd: 15, spe: 15};
+					set.ivs = {hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31};
 					if (this.curTeam.gen > 2) {
 						var HPivs = this.curTeam.dex.types.get(hpType).HPivs;
 						for (var i in exports.BattleTypeChart[hpType].HPivs) {
@@ -3235,7 +3235,7 @@
 						var spcDV = Math.floor(set.ivs.spa / 2);
 						var expectedHpDV = (atkDV % 2) * 8 + (defDV % 2) * 4 + (speDV % 2) * 2 + (spcDV % 2);
 						set.ivs.hp = expectedHpDV * 2;
-						if (set.ivs.hp === 30) set.ivs.hp = 15;
+						if (set.ivs.hp === 30) set.ivs.hp = 31;
 					}
 				}
 			} else if (moveName === 'Return') {
@@ -3249,7 +3249,7 @@
 			if (this.curTeam.format === 'gen7hiddentype') return;
 
 			var minAtk = true;
-			// only available through an event with 15 Atk IVs
+			// only available through an event with 31 Atk IVs
 			if (set.ability === 'Battle Bond' || ['Koraidon', 'Miraidon'].includes(set.species)) minAtk = false;
 			var hpModulo = (this.curTeam.gen >= 6 ? 2 : 4);
 			var hasHiddenPower = false;
@@ -3287,22 +3287,22 @@
 				if (minSpe === undefined && (!minAtk || gen < 3)) return;
 				set.ivs = {};
 			}
-			if (!set.ivs['spe'] && set.ivs['spe'] !== 0) set.ivs['spe'] = 15;
+			if (!set.ivs['spe'] && set.ivs['spe'] !== 0) set.ivs['spe'] = 31;
 			if (minSpe) {
 				// min Spe
 				set.ivs['spe'] = (hasHiddenPower ? set.ivs['spe'] % hpModulo : 0);
 			} else if (minSpe === false) {
 				// max Spe
-				set.ivs['spe'] = (hasHiddenPower ? 30 + (set.ivs['spe'] % 2) : 15);
+				set.ivs['spe'] = (hasHiddenPower ? 30 + (set.ivs['spe'] % 2) : 31);
 			}
 			if (gen < 3) return;
-			if (!set.ivs['atk'] && set.ivs['atk'] !== 0) set.ivs['atk'] = 15;
+			if (!set.ivs['atk'] && set.ivs['atk'] !== 0) set.ivs['atk'] = 31;
 			if (minAtk) {
 				// min Atk
 				set.ivs['atk'] = (hasHiddenPower ? set.ivs['atk'] % hpModulo : 0);
 			} else {
 				// max Atk
-				set.ivs['atk'] = (hasHiddenPower ? 30 + (set.ivs['atk'] % 2) : 15);
+				set.ivs['atk'] = (hasHiddenPower ? 30 + (set.ivs['atk'] % 2) : 31);
 			}
 		},
 		setPokemon: function (val, selectNext) {
@@ -3372,12 +3372,12 @@
 			if (!set) return 0;
 
 			if (!set.ivs) set.ivs = {
-				hp: 15,
-				atk: 15,
-				def: 15,
-				spa: 15,
-				spd: 15,
-				spe: 15
+				hp: 31,
+				atk: 31,
+				def: 31,
+				spa: 31,
+				spd: 31,
+				spe: 31
 			};
 			if (!set.evs) set.evs = {};
 
@@ -3389,7 +3389,7 @@
 			if (!species || !species.exists) return 0;
 
 			if (!set.level) set.level = 100;
-			if (typeof set.ivs[stat] === 'undefined') set.ivs[stat] = 15;
+			if (typeof set.ivs[stat] === 'undefined') set.ivs[stat] = 31;
 
 			var baseStat = species.baseStats[stat];
 			var iv = (set.ivs[stat] || 0);
