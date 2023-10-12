@@ -2651,7 +2651,7 @@ class BattleStatGuesser {
 			// no change
 		} else if (this.ignoreEVLimits) {
 			// Gen 1-2, hackable EVs (like Hackmons)
-			evs = {hp: 64, atk: 64, def: 64, spa: 64, spd: 64, spe: 64};
+			evs = {hp: 252, atk: 252, def: 252, spa: 252, spd: 252, spe: 252};
 			if (!moveCount['PhysicalAttack']) evs.atk = 0;
 			if (!moveCount['SpecialAttack'] && this.dex.gen > 1) evs.spa = 0;
 			if (hasMove['gyroball'] || hasMove['trickroom']) evs.spe = 0;
@@ -2664,17 +2664,17 @@ class BattleStatGuesser {
 			let evTotal = 0;
 
 			let primaryStat = statChart[role][0];
-			let stat = this.getStat(primaryStat, set, 64, plusStat === primaryStat ? 1.1 : 1.0);
-			let ev = 64;
-			while (ev > 0 && stat <= this.getStat(primaryStat, set, ev - 1, plusStat === primaryStat ? 1.1 : 1.0)) ev -= 4;
+			let stat = this.getStat(primaryStat, set, 252, plusStat === primaryStat ? 1.1 : 1.0);
+			let ev = 252;
+			while (ev > 0 && stat <= this.getStat(primaryStat, set, ev - 4, plusStat === primaryStat ? 1.1 : 1.0)) ev -= 4;
 			evs[primaryStat] = ev;
 			evTotal += ev;
 
 			let secondaryStat: StatName | null = statChart[role][1];
 			if (secondaryStat === 'hp' && set.level && set.level < 20) secondaryStat = 'spd';
-			stat = this.getStat(secondaryStat, set, 64, plusStat === secondaryStat ? 1.1 : 1.0);
-			ev = 64;
-			while (ev > 0 && stat <= this.getStat(secondaryStat, set, ev - 1, plusStat === secondaryStat ? 1.1 : 1.0)) ev -= 4;
+			stat = this.getStat(secondaryStat, set, 252, plusStat === secondaryStat ? 1.1 : 1.0);
+			ev = 252;
+			while (ev > 0 && stat <= this.getStat(secondaryStat, set, ev - 4, plusStat === secondaryStat ? 1.1 : 1.0)) ev -= 4;
 			evs[secondaryStat] = ev;
 			evTotal += ev;
 
@@ -2716,7 +2716,7 @@ class BattleStatGuesser {
 			}
 
 			if (hpDivisibility) {
-				while (hp < 64 && evTotal < 130 && !(stat % hpDivisibility) !== hpShouldBeDivisible) {
+				while (hp < 252 && evTotal < 508 && !(stat % hpDivisibility) !== hpShouldBeDivisible) {
 					hp += 4;
 					stat = this.getStat('hp', set, hp, 1);
 					evTotal += 4;
@@ -2726,16 +2726,32 @@ class BattleStatGuesser {
 					stat = this.getStat('hp', set, hp, 1);
 					evTotal -= 4;
 				}
-				while (hp > 0 && stat === this.getStat('hp', set, hp - 1, 1)) {
+				while (hp > 0 && stat === this.getStat('hp', set, hp - 4, 1)) {
 					hp -= 4;
 					evTotal -= 4;
 				}
 				if (hp || evs['hp']) evs['hp'] = hp;
 			}
 
-			if (evTotal < 130) {
-				let remaining = 130 - evTotal;
-				if (remaining > 64) remaining = 64;
+			if (species.id === 'tentacruel') {
+				evTotal = this.ensureMinEVs(evs, 'spe', 16, evTotal);
+			} else if (species.id === 'skarmory') {
+				evTotal = this.ensureMinEVs(evs, 'spe', 24, evTotal);
+			} else if (species.id === 'jirachi') {
+				evTotal = this.ensureMinEVs(evs, 'spe', 32, evTotal);
+			} else if (species.id === 'celebi') {
+				evTotal = this.ensureMinEVs(evs, 'spe', 36, evTotal);
+			} else if (species.id === 'volcarona') {
+				evTotal = this.ensureMinEVs(evs, 'spe', 52, evTotal);
+			} else if (species.id === 'gliscor') {
+				evTotal = this.ensureMinEVs(evs, 'spe', 72, evTotal);
+			} else if (species.id === 'dragonite' && evs['hp']) {
+				evTotal = this.ensureMaxEVs(evs, 'spe', 220, evTotal);
+			}
+
+			if (evTotal < 508) {
+				let remaining = 508 - evTotal;
+				if (remaining > 252) remaining = 252;
 				secondaryStat = null;
 				if (!evs['atk'] && moveCount['PhysicalAttack'] >= 1) {
 					secondaryStat = 'atk';
@@ -2753,14 +2769,14 @@ class BattleStatGuesser {
 				if (secondaryStat) {
 					ev = remaining;
 					stat = this.getStat(secondaryStat, set, ev);
-					while (ev > 0 && stat === this.getStat(secondaryStat, set, ev - 1)) ev -= 4;
+					while (ev > 0 && stat === this.getStat(secondaryStat, set, ev - 4)) ev -= 4;
 					if (ev) evs[secondaryStat] = ev;
 					remaining -= ev;
 				}
 				if (remaining && !evs['spe']) {
 					ev = remaining;
 					stat = this.getStat('spe', set, ev);
-					while (ev > 0 && stat === this.getStat('spe', set, ev - 1)) ev -= 4;
+					while (ev > 0 && stat === this.getStat('spe', set, ev - 4)) ev -= 4;
 					if (ev) evs['spe'] = ev;
 				}
 			}
@@ -2810,15 +2826,15 @@ class BattleStatGuesser {
 		if (this.dex.gen <= 2) iv &= 30;
 
 		let ev = (set.evs && set.evs[stat]);
-		if (typeof ev !== 'number') ev = (this.dex.gen > 2 ? 0 : 64);
+		if (typeof ev !== 'number') ev = (this.dex.gen > 2 ? 0 : 252);
 		if (evOverride !== undefined) ev = evOverride;
 
 		if (stat === 'hp') {
 			if (baseStat === 1) return 1;
 			if (!this.supportsEVs) return ~~(~~(2 * baseStat + iv + 100) * level / 100 + 10) + (this.supportsAVs ? ev : 0);
-			return ~~(~~(2 * baseStat + iv + ~~(ev) + 100) * level / 100 + 10);
+			return ~~(~~(2 * baseStat + iv + ~~(ev / 4) + 100) * level / 100 + 10);
 		}
-		let val = ~~(~~(2 * baseStat + iv + ~~(ev)) * level / 100 + 5);
+		let val = ~~(~~(2 * baseStat + iv + ~~(ev / 4)) * level / 100 + 5);
 		if (!this.supportsEVs) {
 			val = ~~(~~(2 * baseStat + iv) * level / 100 + 5);
 		}

@@ -1303,7 +1303,7 @@
 			buf += '<div class="setcol setcol-stats"><div class="setrow"><label>Stats</label><button class="textbox setstats" name="stats">';
 			buf += '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (!isLetsGo ? 'EV' : 'AV') + '</em></span>';
 			var stats = {};
-			var defaultEV = ((this.curTeam.gen > 2 && !this.ignoreEVLimits) ? 0 : 64);
+			var defaultEV = ((this.curTeam.gen > 2 && !this.ignoreEVLimits) ? 0 : 252);
 			for (var j in BattleStatNames) {
 				if (j === 'spd' && this.curTeam.gen === 1) continue;
 				stats[j] = this.getStat(j, set);
@@ -1514,6 +1514,12 @@
 			this.curTeam.gen = this.getGen(this.curTeam.format);
 			this.curTeam.dex = Dex.forGen(this.curTeam.gen);
 			this.curTeam.mod = 0;
+			if (this.curTeam.format.includes('letsgo')) {
+				this.curTeam.dex = Dex.mod('gen7letsgo');
+			}
+			if (this.curTeam.format.includes('bdsp')) {
+				this.curTeam.dex = Dex.mod('gen8bdsp');
+			}
 			var ClientMods = ModConfig;
 			for (var modid in (ClientMods)) {
 				for (var formatid in ClientMods[modid].formats) {
@@ -1902,7 +1908,7 @@
 
 			// stat cell
 			var buf = '<span class="statrow statrow-head"><label></label> <span class="statgraph"></span> <em>' + (supportsEVs ? 'EV' : 'AV') + '</em></span>';
-			var defaultEV = (this.curTeam.gen > 2 ? 0 : 64);
+			var defaultEV = (this.curTeam.gen > 2 ? 0 : 252);
 			for (var stat in stats) {
 				if (stat === 'spd' && this.curTeam.gen === 1) continue;
 				stats[stat] = this.getStat(stat, set);
@@ -1950,7 +1956,7 @@
 
 			if (this.curTeam.gen <= 2) return;
 			if (supportsEVs) {
-				var maxEv = 130;
+				var maxEv = 510;
 				if (totalev <= maxEv) {
 					this.$chart.find('.totalev').html('<em>' + (totalev > (maxEv - 2) ? 0 : (maxEv - 2) - totalev) + '</em>');
 				} else {
@@ -2165,9 +2171,9 @@
 
 			var supportsEVs = !this.curTeam.format.includes('letsgo');
 			// var supportsAVs = !supportsEVs && this.curTeam.format.endsWith('norestrictions');
-			var defaultEV = (this.curTeam.gen > 2 && !this.ignoreEVLimits) ? 0 : 64;
-			var maxEV = supportsEVs ? 64 : 200;
-			var stepEV = 1;
+			var defaultEV = (this.curTeam.gen > 2 && !this.ignoreEVLimits) ? 0 : 252;
+			var maxEV = supportsEVs ? 252 : 200;
+			var stepEV = supportsEVs ? 4 : 1;
 
 
 			// label column
@@ -2219,7 +2225,7 @@
 				totalev += (set.evs[i] || 0);
 			}
 			if (this.curTeam.gen > 2 && supportsEVs) {
-				var maxTotalEVs = 130;
+				var maxTotalEVs = 510;
 				if (totalev <= maxTotalEVs) {
 					buf += '<div class="totalev"><em>' + (totalev > (maxTotalEVs - 2) ? 0 : (maxTotalEVs - 2) - totalev) + '</em></div>';
 				} else {
@@ -2446,13 +2452,13 @@
 				}
 
 				// cap
-				if (val > 64) val = 64;
+				if (val > 252) val = 252;
 				if (val < 0 || isNaN(val)) val = 0;
 
 				if (set.evs[stat] !== val || natureChange) {
 					set.evs[stat] = val;
 					if (this.ignoreEVLimits) {
-						var evNum = supportsEVs ? 64 : supportsAVs ? 200 : 0;
+						var evNum = supportsEVs ? 252 : supportsAVs ? 200 : 0;
 						if (set.evs['hp'] === undefined) set.evs['hp'] = evNum;
 						if (set.evs['atk'] === undefined) set.evs['atk'] = evNum;
 						if (set.evs['def'] === undefined) set.evs['def'] = evNum;
@@ -2547,10 +2553,10 @@
 				for (var i in set.evs) {
 					total += (i === stat ? val : set.evs[i]);
 				}
-				var totalLimit = 130;
-				var limit = 64;
+				var totalLimit = 508;
+				var limit = 252;
 				if (total > totalLimit && val - total + totalLimit >= 0) {
-					// don't allow dragging beyond 130 EVs
+					// don't allow dragging beyond 508 EVs
 					val = val - total + totalLimit;
 
 					// make sure val is a legal value
@@ -2566,7 +2572,7 @@
 
 			if (!set.evs) set.evs = {};
 			if (this.ignoreEVLimits) {
-				var evNum = supportsEVs ? 64 : supportsAVs ? 200 : 0;
+				var evNum = supportsEVs ? 252 : supportsAVs ? 200 : 0;
 				if (set.evs['hp'] === undefined) set.evs['hp'] = evNum;
 				if (set.evs['atk'] === undefined) set.evs['atk'] = evNum;
 				if (set.evs['def'] === undefined) set.evs['def'] = evNum;
@@ -2594,7 +2600,7 @@
 			}
 			this.plus = '';
 			this.minus = '';
-			var nature = BattleNatures[set.nature || 'Red'];
+			var nature = BattleNatures[set.nature || 'Serious'];
 			for (var i in BattleStatNames) {
 				var val = '' + (set.evs[i] || '');
 				if (nature.plus === i) {
@@ -3078,7 +3084,7 @@
 				set.item = 'Starf Berry';
 				set.ability = 'Harvest';
 				set.moves = ['Substitute', 'Horn Leech', 'Earthquake', 'Phantom Force'];
-				set.evs = {hp: 2, atk: 64, def: 0, spa: 0, spd: 0, spe: 64};
+				set.evs = {hp: 36, atk: 252, def: 0, spa: 0, spd: 0, spe: 220};
 				set.ivs = {};
 				set.nature = 'Jolly';
 				this.updateSetTop();
@@ -3390,14 +3396,14 @@
 			if (this.curTeam.gen <= 2) iv &= 30;
 			var ev = set.evs[stat];
 			if (evOverride !== undefined) ev = evOverride;
-			if (ev === undefined) ev = (this.curTeam.gen > 2 ? 0 : 64);
+			if (ev === undefined) ev = (this.curTeam.gen > 2 ? 0 : 252);
 
 			if (stat === 'hp') {
 				if (baseStat === 1) return 1;
 				if (!supportsEVs) return Math.floor(Math.floor(2 * baseStat + iv + 100) * set.level / 100 + 10) + (supportsAVs ? ev : 0);
-				return Math.floor(((2 * (baseStat + iv) + ev) / 100 + 1) * set.level + 10);
+				return Math.floor(Math.floor(2 * baseStat + iv + Math.floor(ev / 4) + 100) * set.level / 100 + 10);
 			}
-			var val = Math.floor((2 * (baseStat + iv) + ev) / 100 * set.level + 5);
+			var val = Math.floor(Math.floor(2 * baseStat + iv + Math.floor(ev / 4)) * set.level / 100 + 5);
 			if (!supportsEVs) {
 				val = Math.floor(Math.floor(2 * baseStat + iv) * set.level / 100 + 5);
 			}
