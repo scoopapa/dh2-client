@@ -1670,7 +1670,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		let species = dex.species.get(this.species);
 		const format = this.format;
 		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
-		const isSTABmons = (format.includes('stabmons') || format.includes('stylemons')|| format === 'staaabmons');
+		const isSTABmons = (format.includes('stabmons') || format === 'staaabmons');
 		const isTradebacks = (format.includes('tradebacks') || this.mod === 'gen1expansionpack' || this.mod === 'gen1burgundy');
 		const regionBornLegality = dex.gen >= 6 &&
 			/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
