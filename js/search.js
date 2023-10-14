@@ -553,7 +553,7 @@
 
 		// type
 		buf += '<span class="col typecol">';
-		buf += Dex.getTypeIcon(move.type, null, this.mod);
+		buf += Dex.getTypeIcon(move.type, null, this.engine.dex.modid);
 		buf += Dex.getCategoryIcon(move.category);
 		buf += '</span> ';
 
@@ -565,6 +565,9 @@
 		buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
 
 		// desc
+		if (this.engine.dex.gen < 9 && !BattleTeambuilderTable[this.engine.dex.modid]?.overrideMoveInfo?.[id]?.shortDesc) {
+			move.shortDesc = Dex.mod("gen" + this.engine.dex.gen).moves.get(id).shortDesc; // this does not correctly give the gen 1 description, but if it did this would be a fix
+		}
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc) + '</span> ';
 
 		buf += '</a></li>';
@@ -590,7 +593,7 @@
 
 		// type
 		buf += '<span class="col typecol">';
-		buf += Dex.getTypeIcon(move.type, null, this.mod);
+		buf += Dex.getTypeIcon(move.type, null, this.engine.dex.modid);
 		buf += Dex.getCategoryIcon(move.category);
 		buf += '</span> ';
 

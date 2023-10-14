@@ -26,6 +26,7 @@ declare const BattleSearchIndex: [ID, SearchType, number?, number?][];
 declare const BattleSearchIndexOffset: any;
 declare const BattleTeambuilderTable: any;
 
+
 /**
  * Backend for search UIs.
  */
@@ -79,6 +80,7 @@ class DexSearch {
 	 * (format and species).
 	 */
 	filters: SearchFilter[] | null = null;
+
 
 	constructor(searchType: SearchType | '' = '', formatid = '' as ID, species = '' as ID) {
 		this.setType(searchType, formatid, species);
@@ -605,7 +607,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	mod = '';
 
 	protected formatType: 'doubles' | 'bdsp' | 'bdspdoubles' | 'letsgo' | 'metronome' | 'natdex' | 'nfe' |
-	'dlc1' | 'dlc1doubles' | 'stadium' | 'lc' | null = null;
+	'ssdlc1' | 'ssdlc1doubles' | 'predlc' | 'predlcdoubles' | 'predlcnatdex' | 'stadium' | 'lc' | null = null;
 
 	/**
 	 * Cached copy of what the results list would be with only base filters
@@ -664,11 +666,21 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		}
 		if (format.startsWith('dlc1')) {
 			if (format.includes('doubles')) {
-				this.formatType = 'dlc1doubles';
+				this.formatType = 'ssdlc1doubles';
 			} else {
-				this.formatType = 'dlc1';
+				this.formatType = 'ssdlc1';
 			}
 			format = format.slice(4) as ID;
+		}
+		if (format.startsWith('predlc')) {
+			if (format.includes('doubles') && !format.includes('nationaldex')) {
+				this.formatType = 'predlcdoubles';
+			} else if (format.includes('nationaldex')) {
+				this.formatType = 'predlcnatdex';
+			} else {
+				this.formatType = 'predlc';
+			}
+			format = format.slice(6) as ID;
 		}
 		if (format.startsWith('stadium')) {
 			this.formatType = 'stadium';
@@ -676,7 +688,8 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			if (!format) format = 'ou' as ID;
 		}
 		if (format.startsWith('vgc')) this.formatType = 'doubles';
-		if (format === 'vgc2020') this.formatType = 'dlc1doubles';
+		if (format === 'vgc2020') this.formatType = 'ssdlc1doubles';
+		if (format === 'vgc2023regulationd') this.formatType = 'predlcdoubles';
 		if (format.includes('bdsp')) {
 			if (format.includes('doubles')) {
 				this.formatType = 'bdspdoubles';
@@ -686,7 +699,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			format = format.slice(4) as ID;
 			this.dex = Dex.mod('gen8bdsp' as ID);
 		}
-		if (format.includes('doubles') && this.dex.gen > 4 && !this.formatType) this.formatType = 'doubles';
 		if (format === 'partnersincrime') this.formatType = 'doubles';
 		if (format.startsWith('ffa') || format === 'freeforall') this.formatType = 'doubles';
 		if (format.includes('letsgo')) {
@@ -699,6 +711,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			this.formatType = 'natdex';
 			if (!format) format = 'ou' as ID;
 		}
+		if (format.includes('doubles') && this.dex.gen > 4 && !this.formatType) this.formatType = 'doubles';
 		if (this.formatType === 'letsgo') format = format.slice(6) as ID;
 		if (format.includes('metronome')) {
 			this.formatType = 'metronome';
@@ -867,7 +880,9 @@ abstract class BattleTypedSearch<T extends SearchType> {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid] && overrideLearnsets[learnsetid][moveid]) learnset = overrideLearnsets[learnsetid];
 			}
-			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') ? learnset[moveid].includes(genChar) :
+			// Modified this function to account for pet mods with tradebacks enabled
+			const tradebacksMod = ['gen1expansionpack', 'gen1burgundy'];
+			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') || !(tradebacksMod.includes(this.mod)) ? learnset[moveid].includes(genChar) :
 				learnset[moveid].includes(genChar) ||
 					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
 				return true;
@@ -890,8 +905,11 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			this.formatType === 'bdspdoubles' ? 'gen8bdspdoubles' :
 			this.formatType === 'nfe' ? `gen${gen}nfe` :
 			this.formatType === 'lc' ? `gen${gen}lc` :
-			this.formatType === 'dlc1' ? 'gen8dlc1' :
-			this.formatType === 'dlc1doubles' ? 'gen8dlc1doubles' :
+			this.formatType === 'ssdlc1' ? 'gen8dlc1' :
+			this.formatType === 'ssdlc1doubles' ? 'gen8dlc1doubles' :
+			this.formatType === 'predlc' ? 'gen9predlc' :
+			this.formatType === 'predlcdoubles' ? 'gen9predlcdoubles' :
+			this.formatType === 'predlcnatdex' ? 'gen9predlcnatdex' :
 			this.formatType === 'natdex' ? `gen${gen}natdex` :
 			this.formatType === 'stadium' ? `gen${gen}stadium${gen > 1 ? gen : ''}` :
 			`gen${gen}`;
@@ -990,7 +1008,8 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 			table = table['bh'];
 		} else if (
 			table['gen' + dex.gen + 'doubles'] && dex.gen > 4 &&
-			this.formatType !== 'letsgo' && this.formatType !== 'bdspdoubles' && this.formatType !== 'dlc1doubles' &&
+			this.formatType !== 'letsgo' && this.formatType !== 'bdspdoubles' &&
+			this.formatType !== 'ssdlc1doubles' && this.formatType !== 'predlcdoubles' &&
 			(
 				format.includes('doubles') || format.includes('triples') ||
 				format === 'freeforall' || format.startsWith('ffa') ||
@@ -1018,6 +1037,14 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 				table = table['gen8dlc1doubles'];
 			} else {
 				table = table['gen8dlc1'];
+			}
+		} else if (this.formatType?.startsWith('predlc')) {
+			if (this.formatType.includes('doubles')) {
+				table = table['gen9predlcdoubles'];
+			} else if (this.formatType.includes('natdex')) {
+				table = table['gen9predlcnatdex'];
+			} else {
+				table = table['gen9predlc'];
 			}
 		} else if (this.formatType === 'stadium') {
 			table = table['gen' + dex.gen + 'stadium' + (dex.gen > 1 ? dex.gen : '')];
@@ -1425,7 +1452,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				}
 			}
 			// KEP Integrations. This acts as a "correctional" patch.
-			if (this.formatType === 'gen1expansionpack') {
+			if (this.mod === 'gen1expansionpack') {
 				if (['bulletpunch', 'irondefense', 'ironhead', 'metalsound', 'drainingkiss', 'charm'].includes(id)) return true;
 				if (['magnetbomb', 'disarmingvoice', 'brutalswing'].includes(id)) return false;
 				switch (id) {
@@ -1595,7 +1622,10 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 			return true;
 		}
 		// Custom move added by a mod
-		if (this.mod && id in BattleTeambuilderTable[this.mod].overrideMoveInfo && !BattleTeambuilderTable[this.mod].overrideMoveInfo[id].unviable) return true;
+		if (this.mod && id in BattleTeambuilderTable[this.mod].overrideMoveInfo 
+			&& !BattleTeambuilderTable[this.mod].overrideMoveInfo[id].unviable
+			&& !BattleTeambuilderTable[this.mod].overrideMoveInfo[id].modMoveFromOldGen
+			) return true;
 		const modMoveData = BattleMovedex[id];
 		if (!modMoveData) return true;
 		if (modMoveData.category === 'Status') {
@@ -1641,7 +1671,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		const format = this.format;
 		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
 		const isSTABmons = (format.includes('stabmons') || format === 'staaabmons');
-		const isTradebacks = format.includes('tradebacks');
+		const isTradebacks = (format.includes('tradebacks') || this.mod === 'gen1expansionpack' || this.mod === 'gen1burgundy');
 		const regionBornLegality = dex.gen >= 6 &&
 			/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
 			(dex.gen === 9 && this.formatType !== 'natdex');
@@ -1657,6 +1687,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (this.formatType?.startsWith('bdsp')) lsetTable = lsetTable['gen8bdsp'];
 		if (this.formatType === 'letsgo') lsetTable = lsetTable['gen7letsgo'];
 		if (this.formatType?.startsWith('dlc1')) lsetTable = lsetTable['gen8dlc1'];
+		if (this.formatType?.startsWith('predlc')) lsetTable = lsetTable['gen9predlc'];
 		while (learnsetid) {
 			let learnset = lsetTable.learnsets[learnsetid];
 			if (this.mod) {
@@ -1686,6 +1717,12 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 					if (
 						this.formatType?.startsWith('dlc1') &&
 						BattleTeambuilderTable['gen8dlc1']?.nonstandardMoves.includes(moveid)
+					) {
+						continue;
+					}
+					if (
+						this.formatType?.includes('predlc') && this.formatType !== 'predlcnatdex' &&
+						BattleTeambuilderTable['gen9predlc']?.nonstandardMoves.includes(moveid)
 					) {
 						continue;
 					}
