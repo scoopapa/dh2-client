@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -16,15 +16,24 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: Zarel/setup-node@patch-1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
-    - run: npm run test
+    - run: npm run build --if-present
+    - run: node build full
+    - name: Build DH2
+      run: npm run build --if-present
+    - name: start DH2 server instance
+      run: |
+        node DH2/pokemon-showdown &
+        while ! curl -s http://localhost:8000 -o /dev/null; do
+        sleep 60
+        done
       env:
         CI: true
