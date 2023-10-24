@@ -1046,6 +1046,7 @@ class Item implements Effect {
 	readonly id: ID;
 	readonly name: string;
 	readonly gen: number;
+	readonly isNonstandard: string;
 	readonly exists: boolean;
 
 	readonly num: number;
@@ -1073,6 +1074,7 @@ class Item implements Effect {
 		this.name = Dex.sanitizeName(name);
 		this.id = id;
 		this.gen = data.gen || 0;
+		this.isNonstandard = data.isNonstandard || undefined;
 		this.exists = ('exists' in data ? !!data.exists : true);
 
 		this.num = data.num || 0;

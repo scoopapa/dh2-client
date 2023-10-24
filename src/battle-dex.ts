@@ -306,8 +306,8 @@ const Dex = new class implements ModdedDex {
 					basePower: Number(id.slice(11)),
 				};
 			}
-
 			if (!data) data = {exists: false};
+			
 			let move = new Move(id, name, data);
 			window.BattleMovedex[id] = move;
 			return move;
@@ -974,14 +974,14 @@ class ModdedDex {
 				data.name = table.fullItemName[id];
 				data.exists = true;
 			}
-			if (id in table.overrideItemDesc) data.shortDesc = table.overrideItemDesc[id];
-	
-			for (let i = this.gen; i < 9; i++) {
-				const table = window.BattleTeambuilderTable['gen' + i];
-				if (table.overrideItemDesc && id in table.overrideItemDesc) {
-					data.shortDesc = table.overrideItemDesc[id];
-					break;
+			for(let i = 9; i > this.gen; i--) {
+				const genTable = window.BattleTeambuilderTable['gen' + (i-1)];
+				if (genTable.overrideItemInfo[id]) {
+					data = {...Dex.items.get(name), ...genTable.overrideItemInfo[id]};
 				}
+			}
+			if (this.modid && table.overrideItemInfo[id]) {
+				data = {...Dex.items.get(name), ...table.overrideItemInfo[id]};
 			}
 
 			const item = new Item(id, name, data);

@@ -415,7 +415,7 @@ class DexSearch {
 						) continue;
 						else if (
 							typeIndex === 5 && (!BattleItems[id] || BattleItems[id].exists === false) &&
-							(!table || !table.overrideItemDesc || id in table.overrideItemDesc === false)
+							(!table || !table.overrideItemInfo || id in table.overrideItemInfo === false)
 						) continue;
 						else if (
 							typeIndex === 4 && (!BattleMovedex[id] || BattleMovedex[id].exists === false) &&
@@ -814,8 +814,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	}
 	protected firstLearnsetid(speciesid: ID) {
 		let table = BattleTeambuilderTable;
-		let learnsets = table.learnsets;
-		if (speciesid in learnsets) return speciesid;
 		if (this.formatType?.startsWith('bdsp')) table = table['gen8bdsp'];
 		if (this.formatType === 'letsgo') table = table['gen7letsgo'];
 		if (speciesid in table.learnsets) return speciesid;
@@ -878,13 +876,18 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			let learnset = table.learnsets[learnsetid];
 			if (this.mod) {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
-				if (overrideLearnsets[learnsetid] && overrideLearnsets[learnsetid][moveid]) learnset = overrideLearnsets[learnsetid];
+				if (overrideLearnsets[learnsetid]) {
+					if(!learnset) learnset = overrideLearnsets[learnsetid]; //Didn't have learnset and mod gave it one
+					else {
+						for (const learnedMove in overrideLearnsets[learnsetid]) learnset[learnedMove] = overrideLearnsets[learnsetid][learnedMove];
+					}
+				}
 			}
 			// Modified this function to account for pet mods with tradebacks enabled
 			const tradebacksMod = ['gen1expansionpack', 'gen1burgundy'];
-			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') || !(tradebacksMod.includes(this.mod)) ? learnset[moveid].includes(genChar) :
-				learnset[moveid].includes(genChar) ||
-					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen))) {
+			if (learnset && (moveid in learnset) && (!(this.format.startsWith('tradebacks') || tradebacksMod.includes(this.mod)) ? learnset[moveid].includes(genChar) :
+				(learnset[moveid].includes(genChar) ||
+					(learnset[moveid].includes(`${gen + 1}`) && move.gen === gen)))) {
 				return true;
 			}
 			learnsetid = this.nextLearnsetid(learnsetid, speciesid);
@@ -1322,7 +1325,7 @@ class BattleAbilitySearch extends BattleTypedSearch<'ability'> {
 class BattleItemSearch extends BattleTypedSearch<'item'> {
 	getTable() {
 		if (!this.mod) return BattleItems;
-		else return {...BattleTeambuilderTable[this.mod].fullItemName, ...BattleItems};
+		else return {...BattleTeambuilderTable[this.mod].overrideItemInfo, ...BattleItems};
 	}
 	getDefaultResults(): SearchRow[] {
 		let table = BattleTeambuilderTable;
@@ -1349,19 +1352,30 @@ class BattleItemSearch extends BattleTypedSearch<'item'> {
 		return table.itemSet;
 	}
 	getBaseResults(): SearchRow[] {
-		if (!this.species) return this.getDefaultResults();
-		const speciesName = this.dex.species.get(this.species).name;
 		const results = this.getDefaultResults();
+		const species = this.dex.species.get(this.species);
 		const speciesSpecific: SearchRow[] = [];
-		for (const row of results) {
+		for (let i = results.length - 1; i > 0; i--) {
+			const row = results[i];
 			if (row[0] !== 'item') continue;
-			if (this.dex.items.get(row[1]).itemUser?.includes(speciesName)) {
+			const id = row[1];
+			let item = this.dex.items.get(id);
+			if (!item.exists || item.isNonstandard){
+				if(item.isNonstandard != "Past" || this.formatType != "natdex"){
+					results.splice(i, 1);
+					continue;
+				}
+			}
+			if (item.itemUser?.includes(species.name)) {
+				speciesSpecific.push(row);
+			}
+			if(id === 'boosterenergy' && species.tags?.includes('Paradox')) {
 				speciesSpecific.push(row);
 			}
 		}
 		if (speciesSpecific.length) {
 			return [
-				['header', "Specific to " + speciesName],
+				['header', "Specific to " + species.name],
 				...speciesSpecific,
 				...results,
 			];
@@ -1395,7 +1409,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 	getDefaultResults(): SearchRow[] {
 		let results: SearchRow[] = [];
 		results.push(['header', "Moves"]);
-		for (let id in BattleMovedex) {
+		for (let id in this.getTable()) {
 			switch (id) {
 			case 'paleowave':
 				results.push(['header', "CAP moves"]);
@@ -1412,6 +1426,12 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 
 		let abilityid: ID = set ? toID(set.ability) : '' as ID;
 		const itemid: ID = set ? toID(set.item) : '' as ID;
+		
+		// Check if mod declared forced viability
+		if (this.mod && id in BattleTeambuilderTable[this.mod].overrideMoveInfo) {
+			if(BattleTeambuilderTable[this.mod].overrideMoveInfo[id].viable === true) return true;
+			if(BattleTeambuilderTable[this.mod].overrideMoveInfo[id].viable === false) return false;
+		}
 
 		if (dex.gen === 1) {
 			// Usually not useless for Gen 1
@@ -1479,7 +1499,9 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 
 		if (itemid === 'pidgeotite') abilityid = 'noguard' as ID;
 		if (itemid === 'blastoisinite') abilityid = 'megalauncher' as ID;
-		if (itemid === 'aerodactylite') abilityid = 'toughclaws' as ID;
+		if (itemid === 'heracronite') abilityid = 'skilllink' as ID;
+		if (itemid === 'cameruptite') abilityid = 'sheerforce' as ID;
+		if (itemid === 'aerodactylite' || itemid === 'charizardmegax') abilityid = 'toughclaws' as ID;
 		if (itemid === 'glalitite') abilityid = 'refrigerate' as ID;
 
 		switch (id) {
@@ -1526,17 +1548,15 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		case 'hex':
 			return !moves.includes('infernalparade');
 		case 'hiddenpowerelectric':
-			return (dex.gen < 4 && !moves.includes('thunderpunch')) && !moves.includes('thunderbolt');
+			return !(moves.includes('thunderbolt') || (dex.gen < 4 && moves.includes('thunderpunch')));
 		case 'hiddenpowerfighting':
-			return (dex.gen < 4 && !moves.includes('brickbreak')) && !moves.includes('aurasphere') && !moves.includes('focusblast');
+			return !(moves.includes('aurasphere') || moves.includes('focusblast') || (dex.gen < 4 && moves.includes('brickbreak')));
 		case 'hiddenpowerfire':
-			return (dex.gen < 4 && !moves.includes('firepunch')) && !moves.includes('flamethrower') &&
-				!moves.includes('mysticalfire') && !moves.includes('burningjealousy');
+			return !(moves.includes('flamethrower') || moves.includes('mysticalfire') || (dex.gen < 4 && moves.includes('firepunch')));
 		case 'hiddenpowergrass':
-			return !moves.includes('energyball') && !moves.includes('grassknot') && !moves.includes('gigadrain');
+			return !(moves.includes('energyball') || moves.includes('grassknot') || moves.includes('gigadrain'));
 		case 'hiddenpowerice':
-			return !moves.includes('icebeam') && (dex.gen < 4 && !moves.includes('icepunch')) ||
-				(dex.gen > 5 && !moves.includes('aurorabeam') && !moves.includes('glaciate'));
+			return !(moves.includes('icebeam') || (dex.gen > 5 && (moves.includes('aurorabeam') || moves.includes('glaciate'))) || (dex.gen < 4 && moves.includes('icepunch')));
 		case 'hiddenpowerflying':
 			return dex.gen < 4 && !moves.includes('drillpeck');
 		case 'hiddenpowerbug':
@@ -1577,7 +1597,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		case 'petaldance':
 			return abilityid === 'owntempo';
 		case 'phantomforce':
-			return (!moves.includes('poltergeist') && !moves.includes('shadowclaw')) || this.formatType === 'doubles';
+			return !(moves.includes('shadowforce') || moves.includes('poltergeist') || moves.includes('shadowclaw')) || this.formatType === 'doubles';
 		case 'poisonfang':
 			return species.types.includes('Poison') && !moves.includes('gunkshot') && !moves.includes('poisonjab');
 		case 'relicsong':
@@ -1621,26 +1641,11 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (this.formatType === 'doubles' && BattleMoveSearch.GOOD_DOUBLES_MOVES.includes(id)) {
 			return true;
 		}
-		// Custom move added by a mod
-		if (this.mod && id in BattleTeambuilderTable[this.mod].overrideMoveInfo 
-			&& !BattleTeambuilderTable[this.mod].overrideMoveInfo[id].unviable
-			&& !BattleTeambuilderTable[this.mod].overrideMoveInfo[id].modMoveFromOldGen
-			) return true;
-		const modMoveData = BattleMovedex[id];
-		if (!modMoveData) return true;
-		if (modMoveData.category === 'Status') {
-			return BattleMoveSearch.GOOD_STATUS_MOVES.includes(id);
-		}
 		const moveData = BattleMovedex[id];
 		if (!moveData) return true;
 		if (moveData.category === 'Status') {
 			return BattleMoveSearch.GOOD_STATUS_MOVES.includes(id);
 		}
-		if (moveData.basePower < 75) {
-			return BattleMoveSearch.GOOD_WEAK_MOVES.includes(id);
-		}
-		if (id === 'skydrop') return true;
-		// strong moves
 		if (moveData.flags?.charge) {
 			return itemid === 'powerherb';
 		}
@@ -1650,13 +1655,16 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (moveData.flags?.slicing && abilityid === 'sharpness') {
 			return true;
 		}
+		if (moveData.basePower < 75) {
+			return BattleMoveSearch.GOOD_WEAK_MOVES.includes(id);
+		}
 		return !BattleMoveSearch.BAD_STRONG_MOVES.includes(id);
 	}
 	static readonly GOOD_STATUS_MOVES = [
 		'acidarmor', 'agility', 'aromatherapy', 'auroraveil', 'autotomize', 'banefulbunker', 'batonpass', 'bellydrum', 'bulkup', 'calmmind', 'chillyreception', 'clangoroussoul', 'coil', 'cottonguard', 'courtchange', 'curse', 'defog', 'destinybond', 'detect', 'disable', 'dragondance', 'encore', 'extremeevoboost', 'filletaway', 'geomancy', 'glare', 'haze', 'healbell', 'healingwish', 'healorder', 'heartswap', 'honeclaws', 'kingsshield', 'leechseed', 'lightscreen', 'lovelykiss', 'lunardance', 'magiccoat', 'maxguard', 'memento', 'milkdrink', 'moonlight', 'morningsun', 'nastyplot', 'naturesmadness', 'noretreat', 'obstruct', 'painsplit', 'partingshot', 'perishsong', 'protect', 'quiverdance', 'recover', 'reflect', 'reflecttype', 'rest', 'revivalblessing', 'roar', 'rockpolish', 'roost', 'shedtail', 'shellsmash', 'shiftgear', 'shoreup', 'silktrap', 'slackoff', 'sleeppowder', 'sleeptalk', 'softboiled', 'spikes', 'spikyshield', 'spore', 'stealthrock', 'stickyweb', 'strengthsap', 'substitute', 'switcheroo', 'swordsdance', 'synthesis', 'tailglow', 'tailwind', 'taunt', 'thunderwave', 'tidyup', 'toxic', 'transform', 'trick', 'victorydance', 'whirlwind', 'willowisp', 'wish', 'yawn',
 	] as ID[] as readonly ID[];
 	static readonly GOOD_WEAK_MOVES = [
-		'accelerock', 'acrobatics', 'aquacutter', 'avalanche', 'barbbarrage', 'bonemerang', 'bouncybubble', 'bulletpunch', 'buzzybuzz', 'ceaselessedge', 'circlethrow', 'clearsmog', 'doubleironbash', 'dragondarts', 'dragontail', 'drainingkiss', 'endeavor', 'facade', 'firefang', 'flipturn', 'flowertrick', 'freezedry', 'frustration', 'geargrind', 'grassknot', 'gyroball', 'icefang', 'iceshard', 'iciclespear', 'infernalparade', 'knockoff', 'lastrespects', 'lowkick', 'machpunch', 'mortalspin', 'mysticalpower', 'naturesmadness', 'nightshade', 'nuzzle', 'pikapapow', 'populationbomb', 'psychocut', 'psyshieldbash', 'pursuit', 'quickattack', 'ragefist', 'rapidspin', 'return', 'rockblast', 'ruination', 'saltcure', 'scorchingsands', 'seismictoss', 'shadowclaw', 'shadowsneak', 'sizzlyslide', 'stoneaxe', 'storedpower', 'stormthrow', 'suckerpunch', 'superfang', 'surgingstrikes', 'tailslap', 'trailblaze', 'tripleaxel', 'tripledive', 'twinbeam', 'uturn', 'veeveevolley', 'voltswitch', 'watershuriken', 'weatherball',
+		'accelerock', 'acrobatics', 'aquacutter', 'avalanche', 'barbbarrage', 'bonemerang', 'bouncybubble', 'bulletpunch', 'buzzybuzz', 'ceaselessedge', 'circlethrow', 'clearsmog', 'doubleironbash', 'dragondarts', 'dragontail', 'drainingkiss', 'endeavor', 'facade', 'firefang', 'flipturn', 'flowertrick', 'freezedry', 'frustration', 'geargrind', 'grassknot', 'gyroball', 'icefang', 'iceshard', 'iciclespear', 'infernalparade', 'jetpunch', 'knockoff', 'lastrespects', 'lowkick', 'machpunch', 'mortalspin', 'mysticalpower', 'naturesmadness', 'nightshade', 'nuzzle', 'pikapapow', 'populationbomb', 'psychocut', 'psyshieldbash', 'pursuit', 'quickattack', 'ragefist', 'rapidspin', 'return', 'rockblast', 'ruination', 'saltcure', 'scorchingsands', 'seismictoss', 'shadowclaw', 'shadowsneak', 'sizzlyslide', 'skydrop', 'stoneaxe', 'storedpower', 'stormthrow', 'suckerpunch', 'superfang', 'surgingstrikes', 'tailslap', 'trailblaze', 'tripleaxel', 'tripledive', 'twinbeam', 'uturn', 'veeveevolley', 'voltswitch', 'watershuriken', 'weatherball',
 	] as ID[] as readonly ID[];
 	static readonly BAD_STRONG_MOVES = [
 		'belch', 'burnup', 'crushclaw', 'dragonrush', 'dreameater', 'eggbomb', 'firepledge', 'flyingpress', 'grasspledge', 'hyperbeam', 'hyperfang', 'hyperspacehole', 'jawlock', 'landswrath', 'megakick', 'megapunch', 'mistyexplosion', 'muddywater', 'nightdaze', 'pollenpuff', 'rockclimb', 'selfdestruct', 'shelltrap', 'skyuppercut', 'slam', 'strength', 'submission', 'synchronoise', 'takedown', 'thrash', 'uproar', 'waterpledge',
@@ -1676,7 +1684,20 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 			/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
 			(dex.gen === 9 && this.formatType !== 'natdex');
 		// Hoenn Gaiden Baton Pass Gaiden Declaration
-		const isHoennGaiden = this.modFormat === 'gen3hoenngaiden' || this.modFormat.endsWith('hoenngaiden');
+		const isHoennGaiden = this.modFormat.endsWith('hoenngaiden');
+		
+		let hasOwnUsefulCheck = false;
+		switch(typeof window.ModConfig[this.mod]?.moveIsNotUseless){
+			case 'string':
+				hasOwnUsefulCheck = true;
+				const usefulCheck = JSON.parse(window.ModConfig[this.mod].moveIsNotUseless);
+				const checkParameters = usefulCheck.substring(usefulCheck.indexOf('(')+1,usefulCheck.indexOf(')')).split(',');
+				window.ModConfig[this.mod].moveIsNotUseless = new Function(...checkParameters, usefulCheck.substring(usefulCheck.indexOf('{')));
+				break;
+			case 'function':
+				hasOwnUsefulCheck = true;
+				break;
+		}
 
 		let learnsetid = this.firstLearnsetid(species.id);
 		let moves: string[] = [];
@@ -1691,10 +1712,12 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		while (learnsetid) {
 			let learnset = lsetTable.learnsets[learnsetid];
 			if (this.mod) {
-				learnset = JSON.parse(JSON.stringify(learnset));
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid]) {
-					for (const moveid in overrideLearnsets[learnsetid]) learnset[moveid] = overrideLearnsets[learnsetid][moveid];
+					if(!learnset) learnset = overrideLearnsets[learnsetid]; //Didn't have learnset and mod gave it one
+					else {
+						for (const moveid in overrideLearnsets[learnsetid]) learnset[moveid] = overrideLearnsets[learnsetid][moveid];
+					}
 				}
 			}
 			if (learnset) {
@@ -1744,22 +1767,22 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		}
 		if (sketch || isHackmons) {
 			if (isHackmons) moves = [];
-			for (let id in BattleMovedex) {
+			for (let id in this.getTable()) {
 				if (!format.startsWith('cap') && (id === 'paleowave' || id === 'shadowstrike')) continue;
-				const move = dex.moves.get(id);
-				if (move.gen > dex.gen) continue;
+				let move = dex.moves.get(id);
+				if (!move.exists || moves.includes(id) || move.gen > dex.gen) continue;
 				if (sketch) {
 					if (move.noSketch || move.isMax || move.isZ) continue;
 					if (move.isNonstandard && move.isNonstandard !== 'Past') continue;
 					if (move.isNonstandard === 'Past' && this.formatType !== 'natdex') continue;
-					sketchMoves.push(move.id);
+					sketchMoves.push(id);
 				} else {
 					if (!(dex.gen < 8 || this.formatType === 'natdex') && move.isZ) continue;
 					if (typeof move.isMax === 'string') continue;
 					if (move.isMax && dex.gen > 8) continue;
 					if (move.isNonstandard === 'Past' && this.formatType !== 'natdex') continue;
 					if (move.isNonstandard === 'LGPE' && this.formatType !== 'letsgo') continue;
-					moves.push(move.id);
+					moves.push(id);
 				}
 			}
 		}
@@ -1817,7 +1840,11 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		let usableMoves: SearchRow[] = [];
 		let uselessMoves: SearchRow[] = [];
 		for (const id of moves) {
-			const isUsable = this.moveIsNotUseless(id as ID, species, moves, this.set);
+			let isUsable = this.moveIsNotUseless(id as ID, species, moves, this.set);
+			if(hasOwnUsefulCheck){
+				const modIsUsable = window.ModConfig[this.mod].moveIsNotUseless.apply(window.ModConfig[this.mod], [id as ID, species, moves, this.set]);
+				if(typeof modIsUsable === 'boolean' && modIsUsable !== isUsable) isUsable = modIsUsable;
+			}
 			if (isUsable) {
 				if (!usableMoves.length) usableMoves.push(['header', "Moves"]);
 				usableMoves.push(['move', id as ID]);
@@ -1831,7 +1858,11 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 			uselessMoves.push(['header', "Useless sketched moves"]);
 		}
 		for (const id of sketchMoves) {
-			const isUsable = this.moveIsNotUseless(id as ID, species, sketchMoves, this.set);
+			let isUsable = this.moveIsNotUseless(id as ID, species, sketchMoves, this.set);
+			if(hasOwnUsefulCheck){
+				const modIsUsable = window.ModConfig[this.mod].moveIsNotUseless.apply(window.ModConfig[this.mod], [id as ID, species, moves, this.set]);
+				if(typeof modIsUsable === 'boolean' && modIsUsable !== isUsable) isUsable = modIsUsable;
+			}
 			if (isUsable) {
 				usableMoves.push(['move', id as ID]);
 			} else {
@@ -1872,30 +1903,24 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				fissure: 1500, horndrill: 1500, guillotine: 1500,
 			};
 			return results.sort(([rowType1, id1], [rowType2, id2]) => {
-				const modPow1 = this.mod ? BattleTeambuilderTable[this.mod].overrideBP[id1] : null;
-				const modPow2 = this.mod ? BattleTeambuilderTable[this.mod].overrideBP[id2] : null;
 				let move1 = this.dex.moves.get(id1);
 				let move2 = this.dex.moves.get(id2);
-				let pow1 = modPow1 || move1.basePower || powerTable[id1] || (move1.category === 'Status' ? -1 : 1400);
-				let pow2 = modPow2 || move2.basePower || powerTable[id2] || (move2.category === 'Status' ? -1 : 1400);
+				let pow1 = move1.basePower || powerTable[id1] || (move1.category === 'Status' ? -1 : 1400);
+				let pow2 = move2.basePower || powerTable[id2] || (move2.category === 'Status' ? -1 : 1400);
 				return (pow2 - pow1) * sortOrder;
 			});
 		case 'accuracy':
 			return results.sort(([rowType1, id1], [rowType2, id2]) => {
-				const modAcc1 = this.mod ? BattleTeambuilderTable[this.mod].overrideAcc[id1] : null;
-				const modAcc2 = this.mod ? BattleTeambuilderTable[this.mod].overrideAcc[id2] : null;
-				let accuracy1 = modAcc1 || BattleMovedex[id1].accuracy || 0;
-				let accuracy2 = modAcc2 || BattleMovedex[id2].accuracy || 0;
+				let accuracy1 = this.dex.moves.get(id1).accuracy || 0;
+				let accuracy2 = this.dex.moves.get(id2).accuracy || 0;
 				if (accuracy1 === true) accuracy1 = 101;
 				if (accuracy2 === true) accuracy2 = 101;
 				return (accuracy2 - accuracy1) * sortOrder;
 			});
 		case 'pp':
 			return results.sort(([rowType1, id1], [rowType2, id2]) => {
-				const modPP1 = this.mod ? BattleTeambuilderTable[this.mod].overridePP[id1] : null;
-				const modPP2 = this.mod ? BattleTeambuilderTable[this.mod].overridePP[id2] : null;
-				let pp1 = modPP1 || BattleMovedex[id1].pp || 0;
-				let pp2 = modPP2 || BattleMovedex[id2].pp || 0;
+				let pp1 = this.dex.moves.get(id1).pp || 0;
+				let pp2 = this.dex.moves.get(id2).pp || 0;
 				return (pp2 - pp1) * sortOrder;
 			});
 		case 'name':
