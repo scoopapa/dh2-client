@@ -33,3 +33,7 @@ package-lock.json
 /website/ads.txt
 
 /DH2/*
+/DH2/
+/website/replays/index.html
+/website/replays/js/
+node_modules

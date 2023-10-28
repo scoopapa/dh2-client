@@ -37,7 +37,7 @@
 				} else {
 					buf += '<p class="error"><strong>Pok&eacute;mon Showdown is offline due to technical difficulties!</strong></p>';
 				}
-				buf += '<p><div style="text-align:center"><img width="96" height="96" src="//play.pokemonshowdown.com/sprites/gen5/teddiursa.png" alt="" /></div> Bear with us as we freak out.</p>';
+				buf += '<p><div style="text-align:center"><img width="96" height="96" src="//play.pokemonshowdown.com/sprites/gen5/teddiursa.png" alt="" class="pixelated" /></div> Bear with us as we freak out.</p>';
 				buf += '<p>(We\'ll be back up in a few hours.)</p>';
 				buf += '</div>';
 			} else {
@@ -1224,27 +1224,73 @@
 	});
 
 	var FormatPopup = this.FormatPopup = this.Popup.extend({
+		events: {
+			'keyup input[name=search]': 'updateSearch',
+			'click details': 'updateOpen',
+			'click i.fa': 'updateStar',
+		},
 		initialize: function (data) {
-			var curFormat = data.format;
+			this.data = data;
+			if (!this.open) {
+				// todo: maybe make this configurable? not sure since it will cache what users toggle.
+				// avoiding that decision for now because it requires either an ugly hack
+				// or an overhaul of BattleFormats.
+				this.open = Storage.prefs('openformats') || {
+					"S/V Singles": true, "S/V Doubles": true, "National Dex": true, "OM of the Month": true,
+					"Other Metagames": true, "Randomized Format Spotlight": true, "RoA Spotlight": true,
+				};
+			}
+			if (!this.starred) this.starred = Storage.prefs('starredformats') || {};
+			if (!this.search) this.search = "";
 			this.onselect = data.onselect;
-			var selectType = data.selectType;
-			if (!selectType) selectType = (this.sourceEl.closest('form').data('search') ? 'search' : 'challenge');
+			this.selectType = data.selectType;
+			if (!this.selectType) this.selectType = (this.sourceEl.closest('form').data('search') ? 'search' : 'challenge');
+
+
+			var html = '<p><ul class="popupmenu"><li><input name="search" placeholder="Search formats" value="' + this.search + '"/>';
+			html += '</li></ul></p><span name="formats">';
+			html += this.renderFormats();
+			html += '</span><div style="clear:left"></div><p></p>';
+			this.$el.html(html);
+		},
+		renderFormats: function () {
+			var data = this.data;
+			var curFormat = data.format;
 			var bufs = [];
 			var curBuf = 0;
-			if (selectType === 'watch') {
+			if (this.selectType === 'watch' && !this.search) {
 				bufs[1] = '<li><button name="selectFormat" value=""' + (curFormat === '' ? ' class="sel"' : '') + '>(All formats)</button></li>';
 			}
+
+			for (var i in this.starred) {
+				if (!bufs[1]) bufs[1] = '';
+				var format = BattleFormats[i];
+				if (!format) {
+					delete this.starred[i];
+					continue;
+				}
+				if (!this.shouldDisplayFormat(format)) continue;
+				if (this.search && !i.includes(toID(this.search))) {
+					continue;
+				}
+				// <i class="fa fa-star"></i>
+				var formatName = BattleLog.escapeFormat(BattleFormats[i].id);
+				bufs[1] += (
+					'<li><button name="selectFormat" value="' + i +
+					'"' + (curFormat === i ? ' class="sel"' : '') + '>' + formatName +
+					'<i class="fa fa-star" style="float: right; color: #FFD700; text-shadow: 0 0 1px #000;"></i></button></li>'
+				);
+			}
+
 			var curSection = '';
 			for (var i in BattleFormats) {
 				var format = BattleFormats[i];
-				if (selectType === 'teambuilder') {
-					if (!format.isTeambuilderFormat) continue;
-				} else {
-					if (format.effectType !== 'Format' || format.battleFormat) continue;
-					if (selectType != 'watch' && !format[selectType + 'Show']) continue;
-				}
+				if (!this.shouldDisplayFormat(format)) continue;
+				if (this.search && !format.id.includes(toID(this.search))) continue;
+				if (this.starred[i]) continue; // only show it in the starred section
 
 				if (format.section && format.section !== curSection) {
+					if (curSection) bufs[curBuf] += '</details></p>';
 					curSection = format.section;
 					if (!app.supports['formatColumns']) {
 						curBuf = (curSection === 'Doubles' || curSection === 'Past Generations') ? 2 : 1;
@@ -1254,7 +1300,10 @@
 					if (!bufs[curBuf]) {
 						bufs[curBuf] = '';
 					}
-					bufs[curBuf] += '<li><h3>' + BattleLog.escapeHTML(curSection) + '</li>';
+					var open = (this.open[curSection] || toID(this.search)) ? ' open' : '';
+					bufs[curBuf] += '<p><details' + open + ' section="' + curSection + '">';
+					bufs[curBuf] += '<summary><strong style="color: #579">';
+					bufs[curBuf] += BattleLog.escapeHTML(curSection) + '</strong></summary>';
 				}
 				var formatName = BattleLog.escapeFormat(format.id);
 				if (formatName.charAt(0) !== '[') formatName = '[Gen 6] ' + formatName;
@@ -1262,23 +1311,65 @@
 				formatName = formatName.replace('[Gen 9 ', '[');
 				formatName = formatName.replace('[Gen 8 ', '[');
 				formatName = formatName.replace('[Gen 7 ', '[');
-				bufs[curBuf] += '<li><button name="selectFormat" value="' + i + '"' + (curFormat === i ? ' class="sel"' : '') + '>' + formatName + '</button></li>';
+				bufs[curBuf] += (
+					'<li><button name="selectFormat" value="' + i +
+					'"' + (curFormat === i ? ' class="sel"' : '') + '>' + formatName +
+					'<i class="fa fa-star subtle" style="float: right;"></i></button></li>'
+				);
 			}
-
 			var html = '';
-			for (var i = 1, l = bufs.length; i < l; i++) {
-				html += '<ul class="popupmenu"';
-				if (l > 1) {
-					html += ' style="float:left';
-					if (i > 0) {
-						html += ';padding-left:5px';
+			if (!bufs.length) {
+				html = '<ul class="popupmenu"><em>No formats found</em></ul>';
+			} else {
+				for (var i = 1, l = bufs.length; i < l; i++) {
+					if (!bufs[i]) continue;
+					html += '<ul class="popupmenu"';
+					if (l > 1) {
+						html += ' style="float:left';
+						if (i > 0) {
+							html += ';padding-left:5px';
+						}
+						html += '"';
 					}
-					html += '"';
+					html += '>' + bufs[i] + '</ul>';
 				}
-				html += '>' + bufs[i] + '</ul>';
 			}
-			html += '<div style="clear:left"></div>';
-			this.$el.html(html);
+			return html;
+		},
+		update: function () {
+			var $formatEl = this.$el.find('span[name=formats]');
+			$formatEl.empty();
+			$formatEl.html(this.renderFormats());
+		},
+		updateStar: function (ev) {
+			ev.preventDefault();
+			ev.stopPropagation();
+			var format = $(ev.target).parent().attr('value');
+			if (this.starred[format]) {
+				delete this.starred[format];
+			} else {
+				this.starred[format] = true;
+			}
+			Storage.prefs('starredformats', this.starred);
+			this.update();
+		},
+		updateOpen: function (ev) {
+			var section = $(ev.currentTarget).attr('section');
+			this.open[section] = !this.open[section];
+			Storage.prefs('openformats', this.open);
+		},
+		updateSearch: function (event) {
+			this.search = $(event.currentTarget).val();
+			this.update();
+		},
+		shouldDisplayFormat: function (format) {
+			if (this.selectType === 'teambuilder') {
+				if (!format.isTeambuilderFormat) return false;
+			} else {
+				if (format.effectType !== 'Format' || format.battleFormat) return false;
+				if (this.selectType != 'watch' && !format[this.selectType + 'Show']) return false;
+			}
+			return true;
 		},
 		selectFormat: function (format) {
 			if (this.onselect) {

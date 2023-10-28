@@ -1673,8 +1673,8 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		const isSTABmons = (format.includes('stabmons') || format.includes('stylemons')|| format === 'staaabmons');
 		const isTradebacks = (format.includes('tradebacks') || this.mod === 'gen1expansionpack' || this.mod === 'gen1burgundy');
 		const regionBornLegality = dex.gen >= 6 &&
-			/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
-			(dex.gen === 9 && this.formatType !== 'natdex');
+		(/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
+		(dex.gen === 9 && this.formatType !== 'natdex'));
 		// Hoenn Gaiden Baton Pass Gaiden Declaration
 		const isHoennGaiden = this.modFormat === 'gen3hoenngaiden' || this.modFormat.endsWith('hoenngaiden');
 
