@@ -1173,7 +1173,9 @@ function buildTeambuilderTables() {
 					try {
 						overrideDexInfo[id][key] = JSON.parse(modString);
 					} catch (e) {
-						console.log(modString + " " + id + " " + key + " parsed an invalid value: " + modString);
+						// Vivillon-Fancy coded with intentional undefined fields in the source, so we'll escape it
+						if (id === 'vivillonfancy') continue;
+						console.log(gen + " " + id + " " + key + " parsed an invalid value: " + modString);
 						continue;
 					}
 				}
