@@ -1186,6 +1186,7 @@ class Move implements Effect {
 	readonly desc: string;
 	readonly shortDesc: string;
 	readonly isNonstandard: string | null;
+	readonly viable: boolean | null;
 	readonly isZ: ID;
 	readonly zMove?: {
 		basePower?: number,
@@ -1194,7 +1195,7 @@ class Move implements Effect {
 	};
 	readonly isMax: boolean | string;
 	readonly maxMove: {basePower: number};
-	readonly ohko: true | 'Ice' | null;
+	readonly ohko: true | TypeName | null;
 	readonly recoil: number[] | null;
 	readonly heal: number[] | null;
 	readonly multihit: number[] | number | null;
@@ -1227,6 +1228,7 @@ class Move implements Effect {
 		this.desc = data.desc;
 		this.shortDesc = data.shortDesc;
 		this.isNonstandard = data.isNonstandard || null;
+		this.viable = ('viable' in data ? !!data.viable : null);
 		this.isZ = data.isZ || '';
 		this.zMove = data.zMove || {};
 		this.ohko = data.ohko || null;

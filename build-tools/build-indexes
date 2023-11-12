@@ -705,11 +705,11 @@ function buildTeambuilderTables() {
 				const banlist = Dex.formats.getRuleTable(Dex.formats.get(gen + 'metronomebattle'));
 				if (banlist.isBanned('item:' + item.id)) continue;
 			}
-			if(item.itemUser || item.megaStone || id === 'boosterenergy'){
+			if (item.itemUser || item.megaStone || id === 'boosterenergy') {
 				specificItems.push(id);
 				continue;
 			}
-			if(item.isPokeball || item.name.startsWith("TR")){
+			if (item.isPokeball || item.name.startsWith("TR")) {
 				badItems.push(id);
 				continue;
 			}
@@ -1039,7 +1039,7 @@ function buildTeambuilderTables() {
 				const baseString = JSON.stringify(baseEntry[key]);
 				if (modString !== baseString) {
 					if (!overrideMoveInfo[id]) overrideMoveInfo[id] = {};
-					if (modString === undefined) overrideMoveInfo[id][key] = null;
+					//if (modString === undefined) overrideMoveInfo[id][key] = null;
 					overrideMoveInfo[id][key] = JSON.parse(modString);
 				}
 			}
@@ -1346,11 +1346,11 @@ function buildTeambuilderTables() {
 					}
 				}
 				
-				if(modEntry.itemUser || modEntry.megaStone || id === 'boosterenergy'){
+				if (modEntry.itemUser || modEntry.megaStone || id === 'boosterenergy') {
 					specificItems.push(id);
 					continue;
 				}
-				if(modEntry.isPokeball || modEntry.name.startsWith("TR")){
+				if (modEntry.isPokeball || modEntry.name.startsWith("TR")) {
 					badItems.push(id);
 					continue;
 				}

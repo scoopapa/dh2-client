@@ -1360,8 +1360,8 @@ class BattleItemSearch extends BattleTypedSearch<'item'> {
 			if (row[0] !== 'item') continue;
 			const id = row[1];
 			let item = this.dex.items.get(id);
-			if (!item.exists || item.isNonstandard){
-				if(item.isNonstandard != "Past" || this.formatType != "natdex"){
+			if (!item.exists || item.isNonstandard) {
+				if (item.isNonstandard !== "Past" || this.formatType !== 'natdex') {
 					results.splice(i, 1);
 					continue;
 				}
@@ -1469,22 +1469,6 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				switch (id) {
 				case 'fly': return !moves.includes('drillpeck');
 				case 'dig': return !moves.includes('earthquake');
-				}
-			}
-			// KEP Integrations. This acts as a "correctional" patch.
-			if (this.mod === 'gen1expansionpack') {
-				if (['bulletpunch', 'irondefense', 'ironhead', 'metalsound', 'drainingkiss', 'charm'].includes(id)) return true;
-				if (['magnetbomb', 'disarmingvoice', 'brutalswing'].includes(id)) return false;
-				switch (id) {
-					// steel hierarchy
-					case 'smartstrike': return !moves.includes('ironhead');
-					case 'magnetbomb': return !moves.includes('ironhead') && !moves.includes('smartstrike');
-					case 'mirrorshot': return !moves.includes('ironhead') && !moves.includes('smartstrike') && !moves.includes('magnetbomb');
-					// dark hierarchy
-					case 'kowtowcleave': return !moves.includes('nightslash');
-					case 'falsesurrender': return !moves.includes('kowtowcleave') && !moves.includes('nightslash');
-					case 'feintattack': return !moves.includes('kowtowcleave') && !moves.includes('falsesurrender') && !moves.includes('nightslash');
-					case 'brutalswing': return !moves.includes('kowtowcleave') && !moves.includes('falsesurrender') && !moves.includes('nightslash') && !moves.includes('feintattack');
 				}
 			}
 		}
@@ -1641,9 +1625,10 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (this.formatType === 'doubles' && BattleMoveSearch.GOOD_DOUBLES_MOVES.includes(id)) {
 			return true;
 		}
-		const moveData = BattleMovedex[id];
+		const moveData = dex.moves.get(id);
 		if (!moveData) return true;
 		if (moveData.category === 'Status') {
+			if (!BattleMovedex[id].exists) return true; //Flag custom moves as viable by default
 			return BattleMoveSearch.GOOD_STATUS_MOVES.includes(id);
 		}
 		if (moveData.flags?.charge) {
@@ -1655,7 +1640,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (moveData.flags?.slicing && abilityid === 'sharpness') {
 			return true;
 		}
-		if (moveData.basePower < 75) {
+		if (moveData.basePower < 75 && !(abilityid === 'technician' && moveData.basePower >= 50)) {
 			return BattleMoveSearch.GOOD_WEAK_MOVES.includes(id);
 		}
 		return !BattleMoveSearch.BAD_STRONG_MOVES.includes(id);
@@ -1841,9 +1826,9 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		let uselessMoves: SearchRow[] = [];
 		for (const id of moves) {
 			let isUsable = this.moveIsNotUseless(id as ID, species, moves, this.set);
-			if(hasOwnUsefulCheck){
-				const modIsUsable = window.ModConfig[this.mod].moveIsNotUseless.apply(window.ModConfig[this.mod], [id as ID, species, moves, this.set]);
-				if(typeof modIsUsable === 'boolean' && modIsUsable !== isUsable) isUsable = modIsUsable;
+			if (hasOwnUsefulCheck) {
+				const modIsUsable = window.ModConfig[this.mod].moveIsNotUseless.apply(window.ModConfig[this.mod], [id as ID, species, moves, this.set, this.dex]);
+				if (typeof modIsUsable === 'boolean' && modIsUsable !== isUsable) isUsable = modIsUsable;
 			}
 			if (isUsable) {
 				if (!usableMoves.length) usableMoves.push(['header', "Moves"]);
@@ -1859,9 +1844,9 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		}
 		for (const id of sketchMoves) {
 			let isUsable = this.moveIsNotUseless(id as ID, species, sketchMoves, this.set);
-			if(hasOwnUsefulCheck){
-				const modIsUsable = window.ModConfig[this.mod].moveIsNotUseless.apply(window.ModConfig[this.mod], [id as ID, species, moves, this.set]);
-				if(typeof modIsUsable === 'boolean' && modIsUsable !== isUsable) isUsable = modIsUsable;
+			if (hasOwnUsefulCheck) {
+				const modIsUsable = window.ModConfig[this.mod].moveIsNotUseless.apply(window.ModConfig[this.mod], [id as ID, species, moves, this.set, this.dex]);
+				if (typeof modIsUsable === 'boolean' && modIsUsable !== isUsable) isUsable = modIsUsable;
 			}
 			if (isUsable) {
 				usableMoves.push(['move', id as ID]);

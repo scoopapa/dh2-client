@@ -974,14 +974,14 @@ class ModdedDex {
 				data.name = table.fullItemName[id];
 				data.exists = true;
 			}
-			for(let i = 9; i > this.gen; i--) {
-				const genTable = window.BattleTeambuilderTable['gen' + (i-1)];
+			for(let i = Dex.gen - 1; i >= this.gen; i--) {
+				const genTable = window.BattleTeambuilderTable[`gen${i}`];
 				if (genTable.overrideItemInfo[id]) {
-					data = {...Dex.items.get(name), ...genTable.overrideItemInfo[id]};
+					Object.assign(data, table.overrideItemInfo[id]);
 				}
 			}
-			if (this.modid && table.overrideItemInfo[id]) {
-				data = {...Dex.items.get(name), ...table.overrideItemInfo[id]};
+			if (this.modid !== `gen${this.gen}` && table.overrideItemInfo[id]) {
+					Object.assign(data, table.overrideItemInfo[id]);
 			}
 
 			const item = new Item(id, name, data);
