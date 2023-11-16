@@ -1668,8 +1668,6 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		const regionBornLegality = dex.gen >= 6 &&
 		(/^battle(spot|stadium|festival)/.test(format) || format.startsWith('vgc') ||
 		(dex.gen === 9 && this.formatType !== 'natdex'));
-		// Hoenn Gaiden Baton Pass Gaiden Declaration
-		const isHoennGaiden = this.modFormat.endsWith('hoenngaiden');
 		
 		let hasOwnUsefulCheck = false;
 		switch(typeof window.ModConfig[this.mod]?.moveIsNotUseless){
@@ -1741,10 +1739,6 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 						moves.push(
 							'hiddenpowerbug', 'hiddenpowerdark', 'hiddenpowerdragon', 'hiddenpowerelectric', 'hiddenpowerfighting', 'hiddenpowerfire', 'hiddenpowerflying', 'hiddenpowerghost', 'hiddenpowergrass', 'hiddenpowerground', 'hiddenpowerice', 'hiddenpowerpoison', 'hiddenpowerpsychic', 'hiddenpowerrock', 'hiddenpowersteel', 'hiddenpowerwater'
 						);
-					}
-					if (isHoennGaiden && moveid === 'batonpass') {
-						moves.push('batonpassgaiden');
-						moves.splice(moves.indexOf('batonpass'), 1);
 					}
 				}
 			}
