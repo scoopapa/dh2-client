@@ -877,11 +877,13 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			if (this.mod) {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid]) {
-					if(!learnset) learnset = overrideLearnsets[learnsetid]; //Didn't have learnset and mod gave it one
-					else {
-						for (const learnedMove in overrideLearnsets[learnsetid]) learnset[learnedMove] = overrideLearnsets[learnsetid][learnedMove];
-					}
+					if (!learnset) learnset = overrideLearnsets[learnsetid]; //Didn't have learnset and mod gave it one
+					learnset = JSON.parse(JSON.stringify(learnset));
+					for (const learnedMove in overrideLearnsets[learnsetid]) learnset[learnedMove] = overrideLearnsets[learnsetid][learnedMove];
 				}
+			}
+			if (!Object.keys(learnset).length) { //Doesn't have learnset but one is loaded; some other mod gave it one
+				learnsetid = toID(this.dex.species.get(learnsetid).baseSpecies);
 			}
 			// Modified this function to account for pet mods with tradebacks enabled
 			const tradebacksMod = ['gen1expansionpack', 'gen1burgundy'];
@@ -1640,7 +1642,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (moveData.flags?.slicing && abilityid === 'sharpness') {
 			return true;
 		}
-		if (moveData.basePower < 75 && !(abilityid === 'technician' && moveData.basePower >= 50)) {
+		if (moveData.basePower < 75 && !(abilityid === 'technician' && moveData.basePower <= 60 && moveData.basePower >= 50)) {
 			return BattleMoveSearch.GOOD_WEAK_MOVES.includes(id);
 		}
 		return !BattleMoveSearch.BAD_STRONG_MOVES.includes(id);
@@ -1698,12 +1700,15 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				const overrideLearnsets = BattleTeambuilderTable[this.mod].overrideLearnsets;
 				if (overrideLearnsets[learnsetid]) {
 					if(!learnset) learnset = overrideLearnsets[learnsetid]; //Didn't have learnset and mod gave it one
-					else {
-						for (const moveid in overrideLearnsets[learnsetid]) learnset[moveid] = overrideLearnsets[learnsetid][moveid];
-					}
+					learnset = JSON.parse(JSON.stringify(learnset));
+					for (const moveid in overrideLearnsets[learnsetid]) learnset[moveid] = overrideLearnsets[learnsetid][moveid];
 				}
 			}
 			if (learnset) {
+				if (!Object.keys(learnset).length) { //Doesn't have learnset but one is loaded; some other mod gave it one
+					learnsetid = toID(this.dex.species.get(learnsetid).baseSpecies);
+					continue;
+				}
 				for (let moveid in learnset) {
 					let learnsetEntry = learnset[moveid];
 					const move = dex.moves.get(moveid);
