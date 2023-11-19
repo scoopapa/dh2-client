@@ -12,21 +12,21 @@ process.chdir(rootDir);
 const debug = true;
 
 process.stdout.write("Syncing data from Git repository... ");
-if (!fs.existsSync('DH2')) {
-	child_process.execSync('git clone ' + server_repo + ' DH2', {
+if (!fs.existsSync('./caches/DH2')) {
+	child_process.execSync('git clone ' + server_repo + ' caches/DH2', {
 	});
-	child_process.execSync("git pull " + server_repo, {cwd: 'DH2'});
+	child_process.execSync("git pull " + server_repo, {cwd: 'caches/DH2'});
 }
 
-child_process.execSync('npm run build', {cwd: 'DH2'});
+child_process.execSync('npm run build', {cwd: 'caches/DH2'});
 
 console.log("DONE");
 
-const Dex = require('../DH2/dist/sim/dex').Dex;
+const Dex = require('../caches/DH2/dist/sim/dex').Dex;
 const toID = Dex.toID;
 const ModConfigData = require('../config/mod-config').ModConfigData;
 const ModConfig = ModConfigData.ClientMods;
-var Formats = require('../DH2/dist/config/formats.js').Formats;
+var Formats = require('../caches/DH2/dist/config/formats.js').Formats;
 
 for (const modid in Dex.dexes) {
 	try {
@@ -382,7 +382,7 @@ function buildSearchIndex() {
 
 	buf += 'exports.BattleArticleTitles = ' + JSON.stringify(BattleArticleTitles) + ';\n\n';
 
-	fs.writeFileSync('data/search-index.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/search-index.js', buf);
 }
 
 /*********************************************************
@@ -479,7 +479,7 @@ function buildTeambuilderTables() {
 					if (!species.nfe || species.prevo || lcBanlist.isBannedSpecies(species)) {
 						tier = 'Illegal';
 					}
-					if (/^([OURNP]U(BL)?|Uber|AG)$/g.test(tier) && tier !== 'Illegal') {
+					if (/^([OURNPZ]U(BL)?|Uber|AG)$/g.test(tier) && tier !== 'Illegal') {
 						tier = 'LC';
 					}
 					return tier;
@@ -541,7 +541,7 @@ function buildTeambuilderTables() {
 			if (!tierTable[tier]) tierTable[tier] = [];
 			tierTable[tier].push(id);
 
-			if (genNum >= 5) {
+			if (genNum === 9) {
 				const zu = Dex.formats.get(gen + 'zu');
 				if (zu.exists && Dex.formats.getRuleTable(zu).isBannedSpecies(species) &&
 					["(PU)", "NFE", "LC"].includes(species.tier)) {
@@ -628,7 +628,6 @@ function buildTeambuilderTables() {
 			BattleTeambuilderTable[gen].items = items;
 			BattleTeambuilderTable[gen].formatSlices = formatSlices;
 			if (genNum >= 5) {
-				BattleTeambuilderTable[gen].zuBans = zuBans;
 				BattleTeambuilderTable[gen].monotypeBans = monotypeBans;
 			}
 			if (isSSDLC1 || isPreDLC) {
@@ -647,13 +646,13 @@ function buildTeambuilderTables() {
 			if (gen === 'gen4') {
 				return ["CAP", "CAP NFE", "CAP LC", "AG", "Uber", "OU", "(OU)", "UUBL", "UU", "NUBL", "NU", "NFE", "LC"];
 			}
-			return ["CAP", "CAP NFE", "CAP LC", "AG", "Uber", "(Uber)", "OU", "(OU)", "UUBL", "UU", "RUBL", "RU", "NUBL", "NU", "PUBL", "PU", "(PU)", "New", "NFE", "LC", "Unreleased"];
+			return ["CAP", "CAP NFE", "CAP LC", "AG", "Uber", "(Uber)", "OU", "(OU)", "UUBL", "UU", "RUBL", "RU", "NUBL", "NU", "PUBL", "PU", "ZUBL", "ZU", "(PU)", "New", "NFE", "LC", "Unreleased"];
 		})();
 
 		for (const tier of tierOrder) {
-			if (tier in {OU:1, AG:1, Uber:1, UU:1, RU:1, NU:1, PU:1, "(PU)":1, NFE:1, LC:1, DOU:1, DUU:1, "(DUU)":1, New:1, Legal:1, Regular:1, "Restricted Legendary":1, "CAP LC":1}) {
+			if (tier in {OU:1, AG:1, Uber:1, UU:1, RU:1, NU:1, PU:1, ZU: 1, "(PU)":1, NFE:1, LC:1, DOU:1, DUU:1, "(DUU)":1, New:1, Legal:1, Regular:1, "Restricted Legendary":1, "CAP LC":1}) {
 				let usedTier = tier;
-				if (usedTier === "(PU)") usedTier = "ZU";
+				if (usedTier === "(PU)" && genNum === 9) usedTier = "ZU";
 				if (usedTier === "(DUU)") usedTier = "DNU";
 				formatSlices[usedTier] = tiers.length;
 			}
@@ -1534,8 +1533,8 @@ function buildTeambuilderTables() {
 	let blockIndex = 0;
 
 	console.log("writing BattleTeambuilderTable...");
-	fs.writeFileSync('data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
-	fs.appendFileSync('data/teambuilder-tables.js', 'exports.BattleTeambuilderTable = JSON.parse(\'{')
+	fs.writeFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
+	fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', 'exports.BattleTeambuilderTable = JSON.parse(\'{')
 
 	// ChatGPT suggested to put BattleTeambuilderTable into blocks to prevent memory overload.
 	while (blockIndex < tableKeys.length) {
@@ -1546,15 +1545,15 @@ function buildTeambuilderTables() {
 		});
 		var jsonString = JSON.stringify(blockTable).replace(/['\\]/g, "\\$&");
 		jsonString = jsonString.substring(1, jsonString.length - 1);
-		fs.appendFileSync('data/teambuilder-tables.js', jsonString);
+		fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', jsonString);
 		blockIndex += blockSize;
-		if (blockIndex < tableKeys.length) fs.appendFileSync('data/teambuilder-tables.js', ',');
+		if (blockIndex < tableKeys.length) fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', ',');
 	}
-	fs.appendFileSync('data/teambuilder-tables.js', '}\');\n\n');
+	fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', '}\');\n\n');
 	console.log("DONE");
 
 	console.log("writing ModConfig...");
-	fs.writeFileSync('data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
+	fs.writeFileSync('play.pokemonshowdown.com/data/mod-config.js', 'exports.ModConfig = ' + JSON.stringify(ModConfig) + ';\n\n');
 	console.log("DONE");
 }
 
@@ -1565,7 +1564,7 @@ function buildTeambuilderTables() {
  *********************************************************/
 
 function buildPokedex() {
-	const Pokedex = requireNoCache('../DH2/dist/data/pokedex.js').Pokedex;
+	const Pokedex = requireNoCache('../caches/DH2/dist/data/pokedex.js').Pokedex;
 	for (const id in Pokedex) {
 		const entry = Pokedex[id];
 		if (Dex.data.FormatsData[id]) {
@@ -1577,8 +1576,8 @@ function buildPokedex() {
 		}
 	}
 	const buf = 'exports.BattlePokedex = ' + es3stringify(Pokedex) + ';';
-	fs.writeFileSync('data/pokedex.js', buf);
-	fs.writeFileSync('data/pokedex.json', JSON.stringify(Pokedex));
+	fs.writeFileSync('play.pokemonshowdown.com/data/pokedex.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/pokedex.json', JSON.stringify(Pokedex));
 }
 
 /*********************************************************
@@ -1586,15 +1585,15 @@ function buildPokedex() {
  *********************************************************/
 
 function buildMoves() {
-	const Moves = requireNoCache('../DH2/dist/data/moves.js').Moves;
+	const Moves = requireNoCache('../caches/DH2/dist/data/moves.js').Moves;
 	for (const id in Moves) {
 		const move = Dex.moves.get(Moves[id].name);
 		if (move.desc) Moves[id].desc = move.desc;
 		if (move.shortDesc) Moves[id].shortDesc = move.shortDesc;
 	}
 	const buf = 'exports.BattleMovedex = ' + es3stringify(Moves) + ';';
-	fs.writeFileSync('data/moves.js', buf);
-	fs.writeFileSync('data/moves.json', JSON.stringify(Moves));
+	fs.writeFileSync('play.pokemonshowdown.com/data/moves.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/moves.json', JSON.stringify(Moves));
 }
 
 /*********************************************************
@@ -1602,14 +1601,14 @@ function buildMoves() {
  *********************************************************/
 
 function buildItems() {
-	const Items = requireNoCache('../DH2/dist/data/items.js').Items;
+	const Items = requireNoCache('../caches/DH2/dist/data/items.js').Items;
 	for (const id in Items) {
 		const item = Dex.items.get(Items[id].name);
 		if (item.desc) Items[id].desc = item.desc;
 		if (item.shortDesc) Items[id].shortDesc = item.shortDesc;
 	}
 	const buf = 'exports.BattleItems = ' + es3stringify(Items) + ';';
-	fs.writeFileSync('data/items.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/items.js', buf);
 }
 
 /*********************************************************
@@ -1617,14 +1616,14 @@ function buildItems() {
  *********************************************************/
 
 function buildAbilities() {
-	const Abilities = requireNoCache('../DH2/dist/data/abilities.js').Abilities;
+	const Abilities = requireNoCache('../caches/DH2/dist/data/abilities.js').Abilities;
 	for (const id in Abilities) {
 		const ability = Dex.abilities.get(Abilities[id].name);
 		if (ability.desc) Abilities[id].desc = ability.desc;
 		if (ability.shortDesc) Abilities[id].shortDesc = ability.shortDesc;
 	}
 	const buf = 'exports.BattleAbilities = ' + es3stringify(Abilities) + ';';
-	fs.writeFileSync('data/abilities.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/abilities.js', buf);
 }
 
 /*********************************************************
@@ -1632,9 +1631,9 @@ function buildAbilities() {
  *********************************************************/
 
 function buildTypechart() {
-	const TypeChart = requireNoCache('../DH2/dist/data/typechart.js').TypeChart;
+	const TypeChart = requireNoCache('../caches/DH2/dist/data/typechart.js').TypeChart;
 	const buf = 'exports.BattleTypeChart = ' + es3stringify(TypeChart) + ';';
-	fs.writeFileSync('data/typechart.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/typechart.js', buf);
 }
 
 /*********************************************************
@@ -1642,9 +1641,9 @@ function buildTypechart() {
  *********************************************************/
 
 function buildAliases() {
-	const Aliases = requireNoCache('../DH2/dist/data/aliases.js').Aliases;
+	const Aliases = requireNoCache('../caches/DH2/dist/data/aliases.js').Aliases;
 	const buf = 'exports.BattleAliases = ' + es3stringify(Aliases) + ';';
-	fs.writeFileSync('data/aliases.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/aliases.js', buf);
 }
 
 /*********************************************************
@@ -1652,9 +1651,9 @@ function buildAliases() {
  *********************************************************/
 
 function buildFormatsData() {
-	const FormatsData = requireNoCache('../DH2/dist/data/formats-data.js').FormatsData;
+	const FormatsData = requireNoCache('../caches/DH2/dist/data/formats-data.js').FormatsData;
 	const buf = 'exports.BattleFormatsData = ' + es3stringify(FormatsData) + ';';
-	fs.writeFileSync('data/formats-data.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/formats-data.js', buf);
 }
 
 /*********************************************************
@@ -1662,9 +1661,9 @@ function buildFormatsData() {
  *********************************************************/
 
 function buildFormats() {
-	Formats = requireNoCache('../DH2/dist/config/formats.js').Formats;
+	Formats = requireNoCache('../caches/DH2/dist/config/formats.js').Formats;
 	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
-	fs.writeFileSync('data/formats.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/formats.js', buf);
 }
 
 /*********************************************************
@@ -1672,10 +1671,10 @@ function buildFormats() {
  *********************************************************/
 
 function buildLearnsets() {
-	const Learnsets = requireNoCache('../DH2/dist/data/learnsets.js').Learnsets;
+	const Learnsets = requireNoCache('../caches/DH2/dist/data/learnsets.js').Learnsets;
 	const buf = 'exports.BattleLearnsets = ' + es3stringify(Learnsets) + ';';
-	fs.writeFileSync('data/learnsets.js', buf);
-	fs.writeFileSync('data/learnsets.json', JSON.stringify(Learnsets));
+	fs.writeFileSync('play.pokemonshowdown.com/data/learnsets.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/learnsets.json', JSON.stringify(Learnsets));
 }
 
 /*********************************************************
@@ -1684,13 +1683,13 @@ function buildLearnsets() {
 
 function buildModSprites() {
 	const modSprites = {};
-	const modDir = fs.readdirSync('DH2/data/mods/');
+	const modDir = fs.readdirSync('caches/DH2/data/mods/');
 	for (const i in modDir) {
 		const modName = modDir[i];
 		const subFolders = ['anifront','aniback','front', 'front-shiny', 'back', 'back-shiny', 'icons', 'types', 'items'];
 		for (const j in subFolders) {
 			const subF = subFolders[j];
-			const spritePath = 'DH2/data/mods/' + modName + '/sprites/' + subF;
+			const spritePath = 'caches/DH2/data/mods/' + modName + '/sprites/' + subF;
 			const spriteDir = fs.existsSync(spritePath) ? fs.readdirSync(spritePath) : '';
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
@@ -1703,7 +1702,7 @@ function buildModSprites() {
 		}
 	}
 	const buf = 'exports.ModSprites = ' + es3stringify(modSprites) + ';';
-	fs.writeFileSync('data/mod-sprites.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/mod-sprites.js', buf);
 }
 
 /*********************************************************
@@ -1734,5 +1733,5 @@ function buildText() {
 	for (const id in textData.Items) assignData(id, textData.Items[id]);
 
 	const buf = 'exports.BattleText = ' + es3stringify(Text) + ';';
-	fs.writeFileSync('data/text.js', buf);
+	fs.writeFileSync('play.pokemonshowdown.com/data/text.js', buf);
 }
