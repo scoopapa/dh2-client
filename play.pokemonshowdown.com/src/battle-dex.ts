@@ -722,7 +722,15 @@ const Dex = new class implements ModdedDex {
 			spriteData.h *= 1.5;
 			spriteData.y += -11;
 		}
-
+		// Placeholder sprites for Pet Mods Fakemons with no sprite data
+		checkSpriteExists(spriteData.url, function(exists: any) {
+			if (!exists) {
+				spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
+					gen: options.gen,
+					mod: options.mod,
+				})
+			}
+		}); 
 		return spriteData;
 	}
 
@@ -1397,4 +1405,17 @@ if (typeof require === 'function') {
 	// in Node
 	(global as any).Dex = Dex;
 	(global as any).toID = toID;
+}
+
+function checkSpriteExists(url: string, callback: any) {
+	var img = new Image();
+	img.onload = function() {
+	  // The image exists
+	  callback(true);
+	};
+	img.onerror = function() {
+	  // The image does not exist or could not be loaded
+	  callback(false);
+	};
+	img.src = url;
 }
