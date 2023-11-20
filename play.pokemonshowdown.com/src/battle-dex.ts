@@ -533,14 +533,14 @@ const Dex = new class implements ModdedDex {
 		let resourcePrefix = Dex.resourcePrefix;
 		let spriteDir = 'sprites/';
 		let fakeSprite = false;
-		let modName = modSpecies.spriteid;
-		let id = toID(modName);
-		options.mod = this.getSpriteMod(options.mod, id, isFront ? 'front' : 'back', modSpecies.exists !== false);
+		let modSprite = modSpecies.spriteid;
+		let modSpriteId = toID(modSprite);
+		options.mod = this.getSpriteMod(options.mod, modSpriteId, isFront ? 'front' : 'back', modSpecies.exists);
 		if (options.mod) {
 			resourcePrefix = Dex.modResourcePrefix;
 			spriteDir = `${options.mod}/sprites/`;
 			fakeSprite = true;
-			if (this.getSpriteMod(options.mod, id, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists !== false) === '') options.shiny = false;
+			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists) === '') options.shiny = false;
 		}
 
 		const species = Dex.species.get(pokemon);
@@ -667,7 +667,7 @@ const Dex = new class implements ModdedDex {
 		}
 		
 		let fakeAnim = false;
-		if (fakeSprite && window.ModSprites[id][options.mod].includes('ani' + facing)){
+		if (fakeSprite && window.ModSprites[modSpriteId][options.mod].includes('ani' + facing)){
 			fakeAnim = true;
 			animationData[facing] = {};
 			animationData[facing].w = 192;
@@ -723,14 +723,14 @@ const Dex = new class implements ModdedDex {
 			spriteData.y += -11;
 		}
 		// Placeholder sprites for Pet Mods Fakemons with no sprite data
-		checkSpriteExists(spriteData.url, function(exists: any) {
-			if (!exists) {
-				spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
-					gen: options.gen,
-					mod: options.mod,
-				})
-			}
-		}); 
+		// window.modsprites[modSpriteId]: checks if it has custom sprite data.
+		// window.BattlePokemonSprites[modSpriteId]: checks if it is a real Pokemon.
+		if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
+			spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
+				gen: options.gen,
+				mod: options.mod,
+			});
+		}
 		return spriteData;
 	}
 
@@ -1405,17 +1405,4 @@ if (typeof require === 'function') {
 	// in Node
 	(global as any).Dex = Dex;
 	(global as any).toID = toID;
-}
-
-function checkSpriteExists(url: string, callback: any) {
-	var img = new Image();
-	img.onload = function() {
-	  // The image exists
-	  callback(true);
-	};
-	img.onerror = function() {
-	  // The image does not exist or could not be loaded
-	  callback(false);
-	};
-	img.src = url;
 }
