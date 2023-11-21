@@ -474,16 +474,19 @@ const Dex = new class implements ModdedDex {
 	}
 	// getSpriteMod is used to find the correct mod folder for the sprite url to use
 	// id is the name of the pokemon, type, or item. folder refers to "front", or "back-shiny" etc. overrideStandard is false for custom elements and true for canon elements
-	getSpriteMod(mod: string, id: string, folder: string, overrideStandard: boolean = false) { 
-		if (!window.ModSprites[id]) return '';
-		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
-			for (const modName in window.ModSprites[id]) {
-				if (window.ModSprites[id][modName].includes(folder)) return modName;
-				if (window.ModSprites[id][modName].includes('ani' + folder)) return modName;
+	getSpriteMod(mod: string, spriteId: string, folder: string, overrideStandard: boolean = false) {
+		if (!window.ModSprites[spriteId]) return '';
+		if ((!mod || !window.ModSprites[spriteId][mod]) && !overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
+			for (const modName in window.ModSprites[spriteId]) {
+				if (window.ModSprites[spriteId][modName].includes(folder)) return modName;
+				if (window.ModSprites[spriteId][modName].includes('ani' + folder)) return modName;
 			}
 		}
-		if (mod && window.ModSprites[id][mod] && window.ModSprites[id][mod].includes(folder)) return mod;
-		return '';
+		if (mod && window.ModSprites[spriteId][mod]) {
+			if (window.ModSprites[spriteId][mod].includes('ani' + folder)) return mod;
+			if (window.ModSprites[spriteId][mod].includes(folder)) return mod;
+		}
+		return ''; // must be a real Pokemon or not have custom sprite data
 	}
 
 	loadSpriteData(gen: 'xy' | 'bw') {
