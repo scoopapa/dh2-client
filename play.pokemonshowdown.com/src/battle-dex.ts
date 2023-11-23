@@ -537,13 +537,14 @@ const Dex = new class implements ModdedDex {
 		let spriteDir = 'sprites/';
 		let fakeSprite = false;
 		let modSprite = modSpecies.spriteid;
-		let modSpriteId = toID(modSprite);
+		let modSpriteId = toID(modSprite);		
 		options.mod = this.getSpriteMod(options.mod, modSpriteId, isFront ? 'front' : 'back', modSpecies.exists);
 		if (options.mod) {
 			resourcePrefix = Dex.modResourcePrefix;
 			spriteDir = `${options.mod}/sprites/`;
 			fakeSprite = true;
 			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists) === '') options.shiny = false;
+			console.log("pokemon: " + pokemon + ", modSpriteId: " + modSpriteId + ", modSpecies.exists: " + modSpecies.exists + ", isShiny: " + options.shiny);
 		}
 
 		const species = Dex.species.get(pokemon);
