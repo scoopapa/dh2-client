@@ -482,9 +482,7 @@ const Dex = new class implements ModdedDex {
 				if (window.ModSprites[spriteId][modName].includes('ani' + filepath)) return modName;
 			}
 		}
-		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {
-			console.log("filepath for " + spriteId + ": " + filepath);
-			
+		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {		
 			if (window.ModSprites[spriteId][optionsMod].includes('ani' + filepath)) return optionsMod;
 			if (window.ModSprites[spriteId][optionsMod].includes(filepath)) return optionsMod;
 		}
@@ -545,7 +543,6 @@ const Dex = new class implements ModdedDex {
 			spriteDir = `${options.mod}/sprites/`;
 			hasCustomSprite = true;
 			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists) === '') options.shiny = false;
-			console.log("pokemon: " + pokemon + ", modSpriteId: " + modSpriteId + ", modSpecies.exists: " + modSpecies.exists + ", isShiny: " + options.shiny);
 		}
 
 		const species = Dex.species.get(pokemon);
