@@ -1554,6 +1554,13 @@ function buildTeambuilderTables() {
 	console.log("DONE");
 
 	console.log("writing compressed data/teambuilder-tables.js.gz...");
+
+	var zlib = require('zlib');
+	var gzip = zlib.createGzip();
+	var tbtJs = fs.createReadStream(tableDir);
+	var tbtGz = fs.createWriteStream(tableDir + '.gz');
+	tbtJs.pipe(gzip).pipe(tbtGz);
+
 	child_process.execSync('gzip -c ' + tableDir + ' > ' + tableDir + '.gz');
 	console.log("DONE");
 
