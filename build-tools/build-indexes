@@ -1533,8 +1533,9 @@ function buildTeambuilderTables() {
 	let blockIndex = 0;
 
 	console.log("writing BattleTeambuilderTable...");
-	fs.writeFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
-	fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', 'exports.BattleTeambuilderTable = JSON.parse(\'{')
+	const tableDir = 'play.pokemonshowdown.com/data/teambuilder-tables.js';
+	fs.writeFileSync(tableDir, '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n');
+	fs.appendFileSync(tableDir, 'exports.BattleTeambuilderTable = JSON.parse(\'{')
 
 	// ChatGPT suggested to put BattleTeambuilderTable into blocks to prevent memory overload.
 	while (blockIndex < tableKeys.length) {
@@ -1545,11 +1546,15 @@ function buildTeambuilderTables() {
 		});
 		var jsonString = JSON.stringify(blockTable).replace(/['\\]/g, "\\$&");
 		jsonString = jsonString.substring(1, jsonString.length - 1);
-		fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', jsonString);
+		fs.appendFileSync(tableDir, jsonString);
 		blockIndex += blockSize;
-		if (blockIndex < tableKeys.length) fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', ',');
+		if (blockIndex < tableKeys.length) fs.appendFileSync(tableDir, ',');
 	}
-	fs.appendFileSync('play.pokemonshowdown.com/data/teambuilder-tables.js', '}\');\n\n');
+	fs.appendFileSync(tableDir, '}\');\n\n');
+	console.log("DONE");
+
+	console.log("writing compressed gz/teambuilder-tables.js.gz...");
+	child_process.execSync('gzip -c ' + tableDir + ' > ' + tableDir + '.gz');
 	console.log("DONE");
 
 	console.log("writing ModConfig...");
