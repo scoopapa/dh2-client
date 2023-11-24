@@ -1561,7 +1561,6 @@ function buildTeambuilderTables() {
 	var tbtGz = fs.createWriteStream(tableDir + '.gz');
 	tbtJs.pipe(gzip).pipe(tbtGz);
 
-	child_process.execSync('gzip -c ' + tableDir + ' > ' + tableDir + '.gz');
 	console.log("DONE");
 
 	console.log("writing ModConfig...");
