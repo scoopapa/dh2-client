@@ -1553,7 +1553,7 @@ function buildTeambuilderTables() {
 	fs.appendFileSync(tableDir, '}\');\n\n');
 	console.log("DONE");
 
-	console.log("writing compressed gz/teambuilder-tables.js.gz...");
+	console.log("writing compressed data/teambuilder-tables.js.gz...");
 	child_process.execSync('gzip -c ' + tableDir + ' > ' + tableDir + '.gz');
 	console.log("DONE");
 
