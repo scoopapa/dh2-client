@@ -474,16 +474,19 @@ const Dex = new class implements ModdedDex {
 	}
 	// getSpriteMod is used to find the correct mod folder for the sprite url to use
 	// id is the name of the pokemon, type, or item. folder refers to "front", or "back-shiny" etc. overrideStandard is false for custom elements and true for canon elements
-	getSpriteMod(mod: string, id: string, folder: string, overrideStandard: boolean = false) { 
-		if (!window.ModSprites[id]) return '';
-		if ((!mod || !window.ModSprites[id][mod]) && !overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
-			for (const modName in window.ModSprites[id]) {
-				if (window.ModSprites[id][modName].includes(folder)) return modName;
-				if (window.ModSprites[id][modName].includes('ani' + folder)) return modName;
+	getSpriteMod(optionsMod: string, spriteId: string, filepath: string, overrideStandard: boolean = false) {
+		if (!window.ModSprites[spriteId]) return '';
+		if ((!optionsMod || !window.ModSprites[spriteId][optionsMod]) && !overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
+			for (const modName in window.ModSprites[spriteId]) {
+				if (window.ModSprites[spriteId][modName].includes(filepath)) return modName;
+				if (window.ModSprites[spriteId][modName].includes('ani' + filepath)) return modName;
 			}
 		}
-		if (mod && window.ModSprites[id][mod] && window.ModSprites[id][mod].includes(folder)) return mod;
-		return '';
+		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {		
+			if (window.ModSprites[spriteId][optionsMod].includes('ani' + filepath)) return optionsMod;
+			if (window.ModSprites[spriteId][optionsMod].includes(filepath)) return optionsMod;
+		}
+		return ''; // must be a real Pokemon or not have custom sprite data
 	}
 
 	loadSpriteData(gen: 'xy' | 'bw') {
@@ -532,15 +535,14 @@ const Dex = new class implements ModdedDex {
 		const modSpecies = Dex.species.get(pokemon);
 		let resourcePrefix = Dex.resourcePrefix;
 		let spriteDir = 'sprites/';
-		let fakeSprite = false;
-		let modName = modSpecies.spriteid;
-		let id = toID(modName);
-		options.mod = this.getSpriteMod(options.mod, id, isFront ? 'front' : 'back', modSpecies.exists !== false);
+		let hasCustomSprite = false;
+		let modSpriteId = toID(modSpecies.spriteid);		
+		options.mod = this.getSpriteMod(options.mod, modSpriteId, isFront ? 'front' : 'back', modSpecies.exists);
 		if (options.mod) {
 			resourcePrefix = Dex.modResourcePrefix;
 			spriteDir = `${options.mod}/sprites/`;
-			fakeSprite = true;
-			if (this.getSpriteMod(options.mod, id, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists !== false) === '') options.shiny = false;
+			hasCustomSprite = true;
+			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists) === '') options.shiny = false;
 		}
 
 		const species = Dex.species.get(pokemon);
@@ -568,7 +570,7 @@ const Dex = new class implements ModdedDex {
 			dir = '-back';
 			facing = 'back';
 		}
-		if (fakeSprite) dir = isFront ? 'front' : 'back';
+		if (hasCustomSprite) dir = isFront ? 'front' : 'back';
 		// Decide which gen sprites to use.
 		//
 		// There are several different generations we care about here:
@@ -666,15 +668,15 @@ const Dex = new class implements ModdedDex {
 			spriteData.cryurl += '.mp3';
 		}
 		
-		let fakeAnim = false;
-		if (fakeSprite && window.ModSprites[id][options.mod].includes('ani' + facing)){
-			fakeAnim = true;
+		let hasCustomAnim = false;
+		if (hasCustomSprite && window.ModSprites[modSpriteId][options.mod].includes('ani' + facing)){
+			hasCustomAnim = true;
 			animationData[facing] = {};
 			animationData[facing].w = 192;
 			animationData[facing].h = 192;
 		}
 		if (animationData[facing + 'f'] && options.gender === 'F') facing += 'f';
-		let allowAnim = (!fakeSprite || (fakeSprite && fakeAnim)) && !Dex.prefs('noanim') && !Dex.prefs('nogif');
+		let allowAnim = (!hasCustomSprite || (hasCustomSprite && hasCustomAnim)) && !Dex.prefs('noanim') && !Dex.prefs('nogif');
 		if (allowAnim && spriteData.gen >= 6) spriteData.pixelated = false;
 		if (allowAnim && animationData[facing] && spriteData.gen >= 5) {
 			if (facing.slice(-1) === 'f') name += '-f';
@@ -687,7 +689,7 @@ const Dex = new class implements ModdedDex {
 		} else {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
-			if (!fakeSprite) dir = (baseDir || 'gen5') + dir;
+			if (!hasCustomSprite) dir = (baseDir || 'gen5') + dir;
 
 			// Gender differences don't exist prior to Gen 4,
 			// so there are no sprites for it
@@ -722,7 +724,15 @@ const Dex = new class implements ModdedDex {
 			spriteData.h *= 1.5;
 			spriteData.y += -11;
 		}
-
+		// Placeholder sprites for Pet Mods Fakemons with no sprite data
+		// window.modsprites[modSpriteId]: checks if it has custom sprite data.
+		// window.BattlePokemonSprites[modSpriteId]: checks if it is a real Pokemon.
+		if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
+			spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
+				gen: options.gen,
+				mod: options.mod,
+			});
+		}
 		return spriteData;
 	}
 
