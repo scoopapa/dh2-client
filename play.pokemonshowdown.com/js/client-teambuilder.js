@@ -1795,7 +1795,7 @@
 
 			if (!formatSets) return;
 
-			var sets = $.extend({}, formatSets['dex'][species], formatSets['stats'][species]);
+			var sets = $.extend({}, formatSets['dex'][species], (formatSets['stats'] || {})[species]);
 
 			$setDiv.text('Sample sets: ');
 			for (var set in sets) {
