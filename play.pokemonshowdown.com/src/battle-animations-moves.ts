@@ -16826,7 +16826,7 @@ export const BattleMoveAnims: AnimTable = {
 	},
 	syrupbomb: {
 		anim(scene, [attacker, defender]) {
-			const imageType = {filter: attacker.sp.shiny ? 'hue-rotate(-45deg)' : 'hue-rotate(30deg)'};
+			const imageType = {filter: !attacker.sp.shiny ? 'hue-rotate(-45deg)' : 'hue-rotate(30deg)'};
 			scene.showEffect('flareball', {
 				x: attacker.x,
 				y: attacker.y,
@@ -35887,6 +35887,7 @@ BattleMoveAnims['terablastpsychic'] = {anim: BattleMoveAnims['psychic'].anim};
 BattleMoveAnims['terablastrock'] = {anim: BattleMoveAnims['powergem'].anim};
 BattleMoveAnims['terablaststeel'] = {anim: BattleMoveAnims['flashcannon'].anim};
 BattleMoveAnims['terablastwater'] = {anim: BattleMoveAnims['hydropump'].anim};
+BattleMoveAnims['terablaststellar'] = {anim: BattleMoveAnims['dracometeor'].anim};
 BattleMoveAnims['tidyup'] = {anim: BattleMoveAnims['bulkup'].anim};
 BattleMoveAnims['trailblaze'] = {anim: BattleMoveAnims['powerwhip'].anim};
 BattleMoveAnims['tripledive'] = {anim: BattleMoveAnims['dive'].anim};

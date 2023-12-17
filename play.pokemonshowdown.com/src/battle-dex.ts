@@ -794,7 +794,8 @@ const Dex = new class implements ModdedDex {
 		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
 		mod = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
 		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
-		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v14) no-repeat scroll -${left}px -${top}px${fainted}`;
+		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v15) no-repeat scroll -${left}px -${top}px${fainted}`;
+
 	}
 
 	getTeambuilderSpriteData(pokemon: any, gen: number = 0, mod: string = ''): TeambuilderSpriteData {
