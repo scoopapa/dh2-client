@@ -1142,7 +1142,7 @@ function buildTeambuilderTables() {
 			}
 		}
 	}
-	const sliceTiers = ["OU", "AG", "Uber", "UU", "(UU)", "RU", "NU", "(NU)", "PU", "(PU)", "NFE", "LC", "DOU", "DUU", "(DUU)", "New", "Legal", "Regular", "Restricted Legendary", "CAP LC"];
+	const sliceTiers = ["OU", "AG", "Uber", "UU", "(UU)", "RU", "NU", "(NU)", "PU", "(PU)", "ZUBL", "ZU", "NFE", "LC", "DOU", "DUU", "(DUU)", "New", "Legal", "Regular", "Restricted Legendary", "CAP LC"];
 	function buildTiers(modid, tierTable, tiers, customTiers, formatSlices, tierOrder) {
 		for (const tier of tierOrder) {
 			if (ModConfig[modid].excludeStandardTiers) break;
