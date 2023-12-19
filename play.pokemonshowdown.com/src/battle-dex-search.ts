@@ -895,9 +895,14 @@ abstract class BattleTypedSearch<T extends SearchType> {
 					for (const learnedMove in overrideLearnsets[learnsetid]) learnset[learnedMove] = overrideLearnsets[learnsetid][learnedMove];
 				}
 			}
-			if (!Object.keys(learnset).length) { //Doesn't have learnset but one is loaded; some other mod gave it one
-				learnsetid = toID(this.dex.species.get(learnsetid).baseSpecies);
+			try {
+				if (!Object.keys(learnset).length) { //Doesn't have learnset but one is loaded; some other mod gave it one
+					learnsetid = toID(this.dex.species.get(learnsetid).baseSpecies);
+				}
+			} catch (e) {
+				console.log("Error: Unable to load learnset data for " + learnsetid + " in " + this.mod);
 			}
+
 			// Modified this function to account for pet mods with tradebacks enabled
 			const tradebacksMod = ['gen1expansionpack', 'gen1burgundy'];
 			if (learnset && (moveid in learnset) && (!(this.format.startsWith('tradebacks') || tradebacksMod.includes(this.mod)) ? learnset[moveid].includes(genChar) :

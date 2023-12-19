@@ -963,6 +963,7 @@ class ModdedDex {
 			if (this.gen <= 3 && data.category !== 'Status') {
 				switch(this.modid) {
 					case 'gen1expansionpack':
+					case 'gen2expansionpack':
 						data.category = Dex.getKEPCategory(data.type);
 						break;
 					case 'gen2crystalseviiislands':
