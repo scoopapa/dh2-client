@@ -645,7 +645,7 @@ const Dex = new class implements ModdedDex {
 		if (options.shiny && mechanicsGen > 1) dir += '-shiny';
 
 		// April Fool's 2014
-		if (window.Config && Config.server && Config.server.afd || options.afd) {
+		if (window.Config?.server?.afd || Dex.prefs('afd') || options.afd) {
 			dir = 'afd' + dir;
 			spriteData.url += dir + '/' + name + '.png';
 			// Duplicate code but needed to make AFD tinymax work
@@ -744,7 +744,7 @@ const Dex = new class implements ModdedDex {
 			num = BattlePokedex[id].num;
 		}
 		if (num < 0) num = 0;
-		if (num > 1017) num = 0;
+		if (num > 1025) num = 0;
 
 		if (window.BattlePokemonIconIndexes?.[id]) {
 			num = BattlePokemonIconIndexes[id];
@@ -794,7 +794,7 @@ const Dex = new class implements ModdedDex {
 		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
 		mod = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
 		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
-		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v15) no-repeat scroll -${left}px -${top}px${fainted}`;
+		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v16) no-repeat scroll -${left}px -${top}px${fainted}`;
 
 	}
 
@@ -817,6 +817,15 @@ const Dex = new class implements ModdedDex {
 			};
 		}
 		if (species.exists === false) return { spriteDir: 'sprites/gen5', spriteid: '0', x: 10, y: 5 };
+		if (window.Config?.server?.afd || Dex.prefs('afd')) {
+			return {
+				spriteid,
+				spriteDir: 'sprites/afd',
+				shiny: !!pokemon.shiny,
+				x: 10,
+				y: 5,
+			};
+		}
 		const spriteData: TeambuilderSpriteData = {
 			spriteid,
 			spriteDir: 'sprites/dex',
