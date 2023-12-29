@@ -3290,16 +3290,13 @@
 			if (resetSpeed) minSpe = false;
 			if (moveName.substr(0, 13) === 'Hidden Power ') {
 				if (!this.canHyperTrain(set)) {
-					var hpType = moveName.substr(13);
-
+					var hpType = moveName.substr(13).toLowerCase();
 					set.ivs = {hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31};
 					if (this.curTeam.gen > 2) {
-						var HPivs = this.curTeam.dex.types.get(hpType).HPivs;
 						for (var i in exports.BattleTypeChart[hpType].HPivs) {
 							set.ivs[i] = exports.BattleTypeChart[hpType].HPivs[i];
 						}
 					} else {
-						var HPdvs = this.curTeam.dex.types.get(hpType).HPdvs;
 						for (var i in exports.BattleTypeChart[hpType].HPdvs) {
 							set.ivs[i] = exports.BattleTypeChart[hpType].HPdvs[i] * 2;
 						}

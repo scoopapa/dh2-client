@@ -1368,7 +1368,7 @@ Storage.importTeam = function (buffer, teams) {
 			if (line.substr(0, 14) === 'Hidden Power [') {
 				var hptype = line.substr(14, line.length - 15);
 				line = 'Hidden Power ' + hptype;
-				var type = Dex.types.get(hptype).toLowerCase;
+				var type = Dex.types.get(hptype.toLowerCase());
 				if (!curSet.ivs && window.BattleTypeChart && window.BattleTypeChart[type]) {
 					curSet.ivs = {};
 					for (var stat in window.BattleTypeChart[type].HPivs) {
