@@ -1369,10 +1369,10 @@ Storage.importTeam = function (buffer, teams) {
 				var hptype = line.substr(14, line.length - 15);
 				line = 'Hidden Power ' + hptype;
 				var type = Dex.types.get(hptype);
-				if (!curSet.ivs && window.BattleTypeChart && window.BattleTypeChart[hptype]) {
+				if (!curSet.ivs && type) {
 					curSet.ivs = {};
-					for (var stat in window.BattleTypeChart[hptype].HPivs) {
-						curSet.ivs[stat] = window.BattleTypeChart[hptype].HPivs[stat];
+					for (var stat in type.HPivs) {
+						curSet.ivs[stat] = type.HPivs[stat];
 					}
 				}
 			}
@@ -1491,6 +1491,7 @@ Storage.exportTeam = function (team, gen, hidestats) {
 						}
 						for (var stat in BattleStatNames) {
 							if ((curSet.ivs[stat] === undefined ? 31 : curSet.ivs[stat]) !== (Dex.types.get(hpType).HPivs[stat] || 31)) {
+								defaultIvs = false;
 								break;
 							}
 						}
