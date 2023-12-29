@@ -888,15 +888,7 @@ Storage.fastUnpackTeam = function (buf) {
 	while (true) {
 		var set = {};
 		team.push(set);
-		
-		var thisDex = Dex;
-		for (var teamid in this.teams) {
-			var teamData = this.teams[teamid];
-			if (teamData.team === buf && teamData.mod) {
-				thisDex = Dex.mod(teamData.mod);
-			}
-		}
-		
+
 		// name
 		j = buf.indexOf('|', i);
 		set.name = buf.substring(i, j);
@@ -915,7 +907,7 @@ Storage.fastUnpackTeam = function (buf) {
 		// ability
 		j = buf.indexOf('|', i);
 		var ability = buf.substring(i, j);
-		var species = thisDex.species.get(set.species);
+		var species = Dex.species.get(set.species);
 		if (species.baseSpecies === 'Zygarde' && ability === 'H') ability = 'Power Construct';
 		set.ability = (species.abilities && ['', '0', '1', 'H', 'S'].includes(ability) ? species.abilities[ability] || '!!!ERROR!!!' : ability);
 		i = j + 1;
@@ -1007,14 +999,6 @@ Storage.fastUnpackTeam = function (buf) {
 Storage.unpackTeam = function (buf) {
 	if (!buf) return [];
 
-	var thisDex = Dex;
-	for (var teamid in this.teams) {
-		var teamData = this.teams[teamid];
-		if (teamData.team === buf && teamData.mod) {
-			thisDex = Dex.mod(teamData.mod);
-		}
-	}
-
 	var team = [];
 	var i = 0, j = 0;
 
@@ -1029,25 +1013,25 @@ Storage.unpackTeam = function (buf) {
 
 		// species
 		j = buf.indexOf('|', i);
-		set.species = thisDex.species.get(buf.substring(i, j)).name || set.name;
+		set.species = Dex.species.get(buf.substring(i, j)).name || set.name;
 		i = j + 1;
 
 		// item
 		j = buf.indexOf('|', i);
-		set.item = thisDex.items.get(buf.substring(i, j)).name;
+		set.item = Dex.items.get(buf.substring(i, j)).name;
 		i = j + 1;
 
 		// ability
 		j = buf.indexOf('|', i);
-		var ability = thisDex.abilities.get(buf.substring(i, j)).name;
-		var species = thisDex.species.get(set.species);
+		var ability = Dex.abilities.get(buf.substring(i, j)).name;
+		var species = Dex.species.get(set.species);
 		set.ability = (species.abilities && ability in {'':1, 0:1, 1:1, H:1} ? species.abilities[ability || '0'] : ability);
 		i = j + 1;
 
 		// moves
 		j = buf.indexOf('|', i);
 		set.moves = buf.substring(i, j).split(',').map(function (moveid) {
-			return thisDex.moves.get(moveid).name;
+			return Dex.moves.get(moveid).name;
 		});
 		i = j + 1;
 
@@ -1213,7 +1197,6 @@ Storage.importTeam = function (buffer, teams) {
 	} else if (text.length === 1 || (text.length === 2 && !text[1])) {
 		return Storage.unpackTeam(text[0]);
 	}
-	const mod = (window.room.curTeam && window.room.curTeam.mod) ? window.room.curTeam.mod : "";
 	for (var i = 0; i < text.length; i++) {
 		var line = $.trim(text[i]);
 		if (line === '' || line === '---') {
@@ -1275,29 +1258,11 @@ Storage.importTeam = function (buffer, teams) {
 			var parenIndex = line.lastIndexOf(' (');
 			if (line.substr(line.length - 1) === ')' && parenIndex !== -1) {
 				line = line.substr(0, line.length - 1);
-				var thisDex = Dex.species.get(line.substr(parenIndex + 2)).exists ? Dex : null;
-				if (!thisDex) {
-					for (var modid in (ModConfig)) {
-						if (Dex.mod(modid).species.get(line.substr(parenIndex + 2)).exists) {
-							thisDex = Dex.mod(modid);
-						}
-					}
-				}
-				curSet.species = thisDex.species.get(line.substr(parenIndex + 2)).name;
+				curSet.species = Dex.species.get(line.substr(parenIndex + 2)).name;
 				line = line.substr(0, parenIndex);
 				curSet.name = line;
 			} else {
-				var thisDex = Dex.species.get(line).exists ? Dex : null;
-				if (!thisDex) {
-					for (var modid in (ModConfig)) {
-						if (Dex.mod(modid).species.get(line).exists) {
-							thisDex = Dex.mod(modid);
-						}
-					}
-				}
-				console.log(curSet);
-				console.log(line);
-				curSet.species = thisDex.species.get(line).name;
+				curSet.species = Dex.species.get(line).name;
 				curSet.name = '';
 			}
 		} else if (line.substr(0, 7) === 'Trait: ') {
@@ -1368,11 +1333,11 @@ Storage.importTeam = function (buffer, teams) {
 			if (line.substr(0, 14) === 'Hidden Power [') {
 				var hptype = line.substr(14, line.length - 15);
 				line = 'Hidden Power ' + hptype;
-				var type = Dex.types.get(hptype.toLowerCase());
-				if (!curSet.ivs && window.BattleTypeChart && window.BattleTypeChart[type]) {
+				var type = Dex.types.get(hptype);
+				if (!curSet.ivs && type) {
 					curSet.ivs = {};
-					for (var stat in window.BattleTypeChart[type].HPivs) {
-						curSet.ivs[stat] = window.BattleTypeChart[type].HPivs[stat];
+					for (var stat in type.HPivs) {
+						curSet.ivs[stat] = type.HPivs[stat];
 					}
 				}
 			}
