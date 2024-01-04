@@ -1310,7 +1310,7 @@ function buildTeambuilderTables() {
 			BattleTeambuilderTable[modConfigId].formatSlices = formatSlices;
 			const doublesFormatSlices = {};
 			if (hasDoublesFormats) BattleTeambuilderTable[modConfigId].doubles.formatSlices = doublesFormatSlices;
-			const tierOrder = ["OU", "AG", "Uber", "(Uber)", "OU", "(OU)", "UUBL", "UU", "RUBL", "RU", "NUBL", "NU", "PUBL", "PU", "(PU)", "New", "NFE", "LC Uber", "LC", "Unreleased"];
+			const tierOrder = ["OU", "AG", "Uber", "(Uber)", "OU", "(OU)", "UUBL", "UU", "RUBL", "RU", "NUBL", "NU", "PUBL", "PU", "(PU)", "ZUBL", "ZU", "New", "NFE", "LC Uber", "LC", "Unreleased"];
 			const tierOrderDoubles = ["DUber", "(DUber)", "DOU", "DBL", "(DOU)", "DUU", "(DUU)", "New", "NFE", "LC Uber", "LC"];
 			if (hasSinglesFormats) buildTiers(modConfigId, tierTable, tiers, customTiers, formatSlices, tierOrder);
 			if (hasDoublesFormats) buildTiers(modConfigId, tierTable, doublesTiers, customDoublesTiers, doublesFormatSlices, tierOrderDoubles);
