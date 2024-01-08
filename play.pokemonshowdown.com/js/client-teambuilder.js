@@ -3560,58 +3560,64 @@
 			this.room = data.room;
 			this.curSet = data.curSet;
 			this.chartIndex = data.index;
-			const mod = this.room.curTeam && this.room.curTeam.mod ? this.room.curTeam.mod : ""; 
+			const mod = (this.room.curTeam && this.room.curTeam.mod) || ""; 
 			var species = this.room.curTeam.dex.species.get(this.curSet.species);
 			var baseid = toID(species.baseSpecies);
 			var forms = [baseid].concat(species.cosmeticFormes.map(toID));
 
-			let modSprite = Dex.getSpriteMod(mod, baseid, 'front', species.exists !== false);
-			if (!modSprite) modSprite = Dex.getSpriteMod(mod, species.id, 'front', species.exists !== false);
-			let resourcePrefix = Dex.resourcePrefix;
-			let d = "-";
+			let modSprite = Dex.getSpriteMod(mod, baseid, 'front', species.exists !== false)
+				|| Dex.getSpriteMod(mod, species.id, 'front', species.exists !== false);
+			let resourcePrefix;
+			let d;
 			if (modSprite) {
-				resourcePrefix = Dex.modResourcePrefix + mod + '/';
+				resourcePrefix = Dex.modResourcePrefix + modSprite + '/';
 				d = "";
-			} 
+			}  else {
+				resourcePrefix = Dex.resourcePrefix;
+				d = "-";
+			}
 
-			var spriteDir = Dex.resourcePrefix + 'sprites/';
+			var spriteDir = resourcePrefix + 'sprites/';
 			var spriteSize = 96;
 			var spriteDim = 'width: 96px; height: 96px;';
 
 			var gen = Math.max(this.room.curTeam.gen, species.gen);
-			if (modSprite) gen = "front";
-			var dir = gen > 5 ? 'dex' : 'gen' + gen;
-			if (Dex.prefs('nopastgens')) gen = 'dex';
-			if (Dex.prefs('bwgfx') && dir === 'dex') gen = 'gen5';
-			spriteDir += dir;
+			var dir;
+			if (modSprite) { 
+				dir = "front";
+			} else {
+				if (Dex.prefs('bwgfx')) dir = 'gen5';
+				else if (Dex.prefs('nopastgens') || gen > 5) dir = 'dex';
+				else dir = 'gen' + gen;
+			}
+			var spriteDir = resourcePrefix + 'sprites/' + dir;
 			if (dir === 'dex') {
 				spriteSize = 120;
 				spriteDim = 'width: 120px; height: 120px;';
 			}
 
-			var buf = '';
-			buf += '<p>Pick a variant or <button name="close" class="button">Cancel</button></p>';
-			buf += '<div class="formlist">';
+			var buf = '<p>Pick a variant or <button name="close" class="button">Cancel</button></p><div class="formlist">';
 
 			var formCount = forms.length;
 			for (var i = 0; i < formCount; i++) {
 				var formid = forms[i].substring(baseid.length);
 				var form = (formid ? formid[0].toUpperCase() + formid.slice(1) : '');
 				buf += '<button name="setForm" value="' + form + '" style="';
-				buf += 'background-image: url(' + spriteDir + '/' + baseid + (form ? '-' + formid : '') + '.png); ' + spriteDim + '" class="option';
-				buf += (form === (species.forme || '') ? ' cur' : '') + '"></button>';
+				buf += 'background-image: url(' + spriteDir + '/' + baseid + (form ? d + formid : '') + '.png); ' + spriteDim + '" class="option';
+				if (form === (species.forme || '')) buf += ' cur';
+				buf += '"></button>';
 			}
-			buf += '<div style="clear:both"></div>';
-			buf += '</div>';
+			buf += '<div style="clear:both"></div></div>';
 
 			this.$el.html(buf).css({'max-width': (4 + spriteSize) * 7});
 		},
 		setForm: function (form) {
 			var species = this.room.curTeam.dex.species.get(this.curSet.species);
-			if (form && form !== species.form) {
-				this.curSet.species = this.room.curTeam.dex.species.get(species.baseSpecies + form).name;
-			} else if (!form) {
+			if (!form) {
 				this.curSet.species = species.baseSpecies;
+			}
+			else if (form !== species.form) {
+				this.curSet.species = this.room.curTeam.dex.species.get(species.baseSpecies + form).name;
 			}
 			this.close();
 			if (this.room.curSet) {
