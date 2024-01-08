@@ -698,7 +698,7 @@ const Dex = new class implements ModdedDex {
 				if (miscData['frontf']) {
 					name += '-f';
 				}
-				//If it's a custom mon, does it have separate sprites for male and female?
+				//If it's a custom sprite, does it have separate sprites for male and female?
 				else if (window.ModSprites[modSpriteId] && window.ModSprites[modSpriteId + 'f']) {
 					name += 'f';
 				}
