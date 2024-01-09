@@ -693,8 +693,15 @@ const Dex = new class implements ModdedDex {
 
 			// Gender differences don't exist prior to Gen 4,
 			// so there are no sprites for it
-			if (spriteData.gen >= 4 && miscData['frontf'] && options.gender === 'F') {
-				name += '-f';
+			if (spriteData.gen >= 4 && options.gender === 'F') {
+				//Is it a realmon with a gender difference?
+				if (miscData['frontf']) {
+					name += '-f';
+				}
+				//If it's a custom sprite, does it have separate sprites for male and female?
+				else if (window.ModSprites[modSpriteId] && window.ModSprites[modSpriteId + 'f']) {
+					name += 'f';
+				}
 			}
 
 			spriteData.url += dir + '/' + name + '.png';
