@@ -1674,8 +1674,8 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		}
 		const moveData = dex.moves.get(id);
 		if (!moveData) return true;
+		if (!BattleMovedex[id].exists) return true; //Flag custom moves as viable by default
 		if (moveData.category === 'Status') {
-			if (!BattleMovedex[id].exists) return true; //Flag custom moves as viable by default
 			return BattleMoveSearch.GOOD_STATUS_MOVES.includes(id);
 		}
 		if (moveData.flags?.charge) {
