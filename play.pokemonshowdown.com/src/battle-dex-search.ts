@@ -718,8 +718,10 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			this.dex = Dex.mod('gen7letsgo' as ID);
 		}
 		if (format.includes('nationaldex') || format.startsWith('nd') || format.includes('natdex')) {
-			format = (format.startsWith('nd') ? format.slice(2) :
-				format.includes('natdex') ? format.slice(6) : format.slice(11)) as ID;
+			if (format !== 'nationaldexdoubles') {
+				format = (format.startsWith('nd') ? format.slice(2) :
+					format.includes('natdex') ? format.slice(6) : format.slice(11)) as ID;
+			}
 			this.formatType = 'natdex';
 			if (!format) format = 'ou' as ID;
 		}
@@ -1037,7 +1039,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 			table['gen' + dex.gen + 'doubles'] && dex.gen > 4 &&
 			this.formatType !== 'letsgo' && this.formatType !== 'bdspdoubles' &&
 			this.formatType !== 'ssdlc1doubles' && this.formatType !== 'predlcdoubles' &&
-			this.formatType !== 'svdlc1doubles' &&
+			this.formatType !== 'svdlc1doubles' && !this.formatType?.includes('natdex') &&
 			(
 				format.includes('doubles') || format.includes('triples') ||
 				format === 'freeforall' || format.startsWith('ffa') ||
@@ -1095,8 +1097,9 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		}
 		let tierSet: SearchRow[] = table.tierSet;
 		let slices: {[k: string]: number} = table.formatSlices;
-		if (format === 'ubers' || format === 'uber' || format === 'ubersuu') tierSet = tierSet.slice(slices.Uber);
-		else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType)) {
+		if (format === 'ubers' || format === 'uber' || format === 'ubersuu' || format === 'nationaldexdoubles') {
+			tierSet = tierSet.slice(slices.Uber);
+		} else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType)) {
 			if (format.endsWith('series13') || isHackmons) {
 				// Show Mythicals
 			} else if (
@@ -1108,7 +1111,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 				tierSet = tierSet.slice(slices.Regular);
 			}
 		} else if (format === 'ou') tierSet = tierSet.slice(slices.OU);
-		else if (format === 'uu') tierSet = tierSet.slice(slices.UU);
+		else if (format === 'uu' || (format === 'ru' && dex.gen === 3)) tierSet = tierSet.slice(slices.UU);
 		else if (format === 'ru') tierSet = tierSet.slice(slices.RU || slices.UU);
 		else if (format === 'nu') tierSet = tierSet.slice(slices.NU || slices.RU || slices.UU);
 		else if (format === 'pu') tierSet = tierSet.slice(slices.PU || slices.NU);
@@ -1147,6 +1150,12 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		if (format === 'ubersuu' && table.ubersUUBans) {
 			tierSet = tierSet.filter(([type, id]) => {
 				if (id in table.ubersUUBans) return false;
+				return true;
+			});
+		}
+		if (format === 'nationaldexdoubles' && table.ndDoublesBans) {
+			tierSet = tierSet.filter(([type, id]) => {
+				if (id in table.ndDoublesBans) return false;
 				return true;
 			});
 		}
@@ -1253,8 +1262,12 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 				}
 				const base1 = this.dex.species.get(id1).baseStats;
 				const base2 = this.dex.species.get(id2).baseStats;
-				const bst1 = base1.hp + base1.atk + base1.def + base1.spa + base1.spd + base1.spe;
-				const bst2 = base2.hp + base2.atk + base2.def + base2.spa + base2.spd + base2.spe;
+				let bst1 = base1.hp + base1.atk + base1.def + base1.spa + base1.spd + base1.spe;
+				let bst2 = base2.hp + base2.atk + base2.def + base2.spa + base2.spd + base2.spe;
+				if (this.dex.gen === 1) {
+					bst1 -= base1.spd;
+					bst2 -= base2.spd;
+				}
 				return (bst2 - bst1) * sortOrder;
 			});
 		} else if (sortCol === 'name') {

@@ -492,6 +492,7 @@ class BattleTooltips {
 		Flying: "Supersonic Skystrike",
 		Ground: "Tectonic Rage",
 		Fairy: "Twinkle Tackle",
+		Stellar: "",
 		"???": "",
 	};
 
@@ -514,6 +515,7 @@ class BattleTooltips {
 		Flying: "Max Airstream",
 		Ground: "Max Quake",
 		Fairy: "Max Starfall",
+		Stellar: "",
 		"???": "",
 	};
 
@@ -1124,7 +1126,7 @@ class BattleTooltips {
 						stats.spa = Math.floor(stats.spa * 1.5);
 					}
 					if (ability === 'orichalcumpulse') {
-						stats.atk = Math.floor(stats.atk * 1.3);
+						stats.atk = Math.floor(stats.atk * 1.3333);
 					}
 					let allyActive = clientPokemon?.side.active;
 					if (allyActive) {
@@ -1189,7 +1191,7 @@ class BattleTooltips {
 				speedModifiers.push(2);
 			}
 			if (ability === 'hadronengine') {
-				stats.spa = Math.floor(stats.spa * 1.3);
+				stats.spa = Math.floor(stats.spa * 1.3333);
 			}
 		}
 		if (item === 'choicespecs' && !clientPokemon?.volatiles['dynamax']) {
@@ -1464,8 +1466,8 @@ class BattleTooltips {
 		if (move.id === 'terablast' && pokemon.terastallized) {
 			moveType = pokemon.terastallized as TypeName;
 		}
-		if (move.id === 'terastarstorm' && pokemon.terastallized === 'Stellar') {
-			moveType = pokemon.terastallized as TypeName;
+		if (move.id === 'terastarstorm' && pokemon.getSpeciesForme() === 'Terapagos-Stellar') {
+			moveType = 'Stellar';
 		}
 
 		// Aura Wheel as Morpeko-Hangry changes the type to Dark
@@ -1881,9 +1883,6 @@ class BattleTooltips {
 		if (['psn', 'tox'].includes(pokemon.status) && move.category === 'Physical') {
 			value.abilityModify(1.5, "Toxic Boost");
 		}
-		if (this.battle.gen > 2 && serverPokemon.status === 'brn' && move.id !== 'facade' && move.category === 'Physical') {
-			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
-		}
 		if (['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm') {
 			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 		}
@@ -2015,6 +2014,11 @@ class BattleTooltips {
 			)
 		) {
 			value.set(60, 'Tera type BP minimum');
+		}
+
+		// Burn isn't really a base power modifier, so it needs to be applied after the Tera BP floor
+		if (this.battle.gen > 2 && serverPokemon.status === 'brn' && move.id !== 'facade' && move.category === 'Physical') {
+			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
 		}
 
 		if (
