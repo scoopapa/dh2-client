@@ -115,7 +115,7 @@ export const BattleSound = new class {
 		if (this.soundCache[url]) return this.soundCache[url];
 		try {
 			const sound = document.createElement('audio');
-			sound.src = 'https://' + Config.routes.psmain + '/' + url;
+			sound.src = url;
 			sound.volume = this.effectVolume / 100;
 			this.soundCache[url] = sound;
 			return sound;
@@ -123,7 +123,7 @@ export const BattleSound = new class {
 	}
 
 	playEffect(url: string) {
-		this.playSound(url, this.muted ? 0 : this.effectVolume);
+		this.playSound('https://' + Config.routes.psmain + '/' + url, this.muted ? 0 : this.effectVolume);
 	}
 
 	playSound(url: string, volume: number) {
