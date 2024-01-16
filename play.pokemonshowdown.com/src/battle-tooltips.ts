@@ -1177,8 +1177,8 @@ class BattleTooltips {
 					//Vaporemons
 					clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] ||
 					clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] ||
-					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]
-				) {
+					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName] ||
+				) { {
 					if (statName === 'spe') {
 						speedModifiers.push(1.5);
 					} else {
@@ -1931,7 +1931,7 @@ class BattleTooltips {
 			if (this.battle.weather === 'sandstorm') {
 				if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 			}
-			/*if (move.category === 'Physical') {
+			if (move.category === 'Physical') {
 				value.abilityModify(1.5, "Blunt Force");
 			}
 			if (move.category === 'Special') {
@@ -1943,9 +1943,6 @@ class BattleTooltips {
 			if (move.id === 'naturalgift') {
 				value.abilityModify(2, "Harvest");
 			}
-			if (['muddywater', 'mudbomb', 'mudslap', 'mudshot'].includes(move.id)) {
-				value.abilityModify(2, "Mud Wash");
-			}*/
 		}
 		// Base power based on times hit
 		if (this.battle.mod !== 'gen9vaporemons' && move.id === 'ragefist') {
@@ -2118,9 +2115,9 @@ class BattleTooltips {
 			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
 		}
 		//Vaporemons
-		if (this.battle.mod === 'gen9vaporemons' && serverPokemon.status === 'brn' && move.id !== 'lashout' && move.category === 'Physical') {
+		/*if (this.battle.mod === 'gen9vaporemons' && serverPokemon.status === 'brn' && move.id !== 'lashout' && move.category === 'Physical') {
 			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
-		}
+		}*/
 
 		if (
 			move.id === 'steelroller' &&
@@ -2266,14 +2263,14 @@ class BattleTooltips {
 				itemName === 'Razor Fang' && move.flags['bite'] || 
 				itemName === 'Razor Claw' && move.flags['slicing'] || 
 				itemName === 'Quick Claw' && move.priority > 0.1) {
-				//itemName === 'Protective Pads' && (move.recoil || move.hasCrashDamage) || 
-				//itemName === 'Tie-Dye Band' && !this.pokemonHasType(pokemon, moveType)
 				value.itemModify(1.3);
 			} if (itemName === 'Baseball Bat' && move.flags['contact']) {
 				value.itemModify(1.25);
 			} if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && speciesName === 'Palafin') {
 				value.itemModify(2);
-			}
+			} /*if (itemName === 'Binding Band' && target.volatiles['partiallytrapped']) {
+				value.itemModify(1.5);
+			}*/
 		}
 
 		return value;
