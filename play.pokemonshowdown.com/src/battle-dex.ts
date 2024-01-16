@@ -734,13 +734,13 @@ const Dex = new class implements ModdedDex {
 		// Placeholder sprites for Pet Mods Fakemons with no sprite data
 		// window.modsprites[modSpriteId]: checks if it has custom sprite data.
 		// window.BattlePokemonSprites[modSpriteId]: checks if it is a real Pokemon.
-		if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
-			spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
-				gen: options.gen,
-				mod: options.mod,
-			});
-		}
-		return spriteData;
+		// if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
+		// 	spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
+		// 		gen: options.gen,
+		// 		mod: options.mod,
+		// 	});
+		// }
+		// return spriteData;
 	}
 
 	getPokemonIconNum(id: ID, isFemale?: boolean, facingLeft?: boolean) {
