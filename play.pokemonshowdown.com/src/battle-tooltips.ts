@@ -1938,11 +1938,14 @@ class BattleTooltips {
 			if (move.category === 'Special') {
 				value.abilityModify(1.3, "Sheer Heart");
 			}
-			if (move.id === 'naturalgift') {
+			/*if (move.id === 'naturalgift') {
 				value.abilityModify(2, "Ripen");
 			}
 			if (move.id === 'naturalgift') {
 				value.abilityModify(2, "Harvest");
+			}*/
+			if (['muddywater', 'mudbomb', 'mudslap', 'mudshot'].includes(move.id)) {
+				value.abilityModify(2, "Mud Wash");
 			}
 		}
 		// Base power based on times hit
@@ -2169,6 +2172,7 @@ class BattleTooltips {
 		
 		//Vaporemons
 		'Charizard': ['Charizardite Shard X', 'Charizardite Shard Y'],
+		'Revavroom': ['Segin Star Shard', 'Schedar Star Shard', 'Navi Star Shard', 'Ruchbah Star Shard', 'Caph Star Shard'],
 	};
 	static orbTypes: {[itemName: string]: TypeName[]} = {
 		'Soul Dew': ['Psychic', 'Dragon'],
@@ -2181,6 +2185,11 @@ class BattleTooltips {
 		'Vile Vial': ['Poison', 'Flying'],
 		
 		//Vaporemons
+		'Segin Star Shard': ['Poison', 'Steel', 'Dark'],
+		'Schedar Star Shard': ['Poison', 'Steel', 'Fire'],
+		'Navi Star Shard': ['Poison', 'Steel'],
+		'Ruchbah Star Shard': ['Poison', 'Steel', 'Fairy'],
+		'Caph Star Shard': ['Poison', 'Steel', 'Fighting'],
 		'Charizardite Shard X': ['Fire', 'Dragon'],
 		'Charizardite Shard Y': ['Fire', 'Flying'],
 	};
@@ -2257,11 +2266,15 @@ class BattleTooltips {
 				itemName === 'Punching Glove' && move.flags['punch'] || 
 				itemName === 'Razor Fang' && move.flags['bite'] || 
 				itemName === 'Razor Claw' && move.flags['slicing'] || 
-				itemName === 'Quick Claw' && move.priority > 0.1) {
+				itemName === 'Quick Claw' && move.priority > 0.1 || 
+				itemName === 'Protective Pads' && (move.recoil || move.hasCrashDamage) || 
+				itemName === 'Tie-Dye Band' && !this.pokemonHasType(pokemon, moveType)) {
 				value.itemModify(1.3);
+			} if (itemName === 'Tie-Dye Band' && this.pokemonHasType(pokemon, moveType)) {
+				value.itemModify(0.67);
 			} if (itemName === 'Baseball Bat' && move.flags['contact']) {
 				value.itemModify(1.25);
-			} if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && speciesName === 'Palafin') {
+			} if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && pokemon.getSpeciesForme() === 'Palafin-Zero'') {
 				value.itemModify(2);
 			} /*if (itemName === 'Binding Band' && target.volatiles['partiallytrapped']) {
 				value.itemModify(1.5);
