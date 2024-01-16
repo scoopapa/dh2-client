@@ -1070,13 +1070,13 @@ class BattleTooltips {
 			}
 		}
 		//Vaporemons
-		if (this.battle.mod === 'vaporemons' && item === 'mantisclaw') {
+		if (this.battle.mod === 'gen9vaporemons' && item === 'mantisclaw') {
 			if (speciesName === 'Scyther') {
 				speedModifiers.push(1.5);
 			} else if (speciesName === 'Scizor') {
 				stats.def = Math.floor(stats.def * 1.3);
 				stats.spd = Math.floor(stats.spd * 1.3);
-			} else if (speciesName === 'Scyther') {
+			} else if (speciesName === 'Kleavor') {
 				stats.atk *= 1.5;
 			}
 		}
@@ -1111,11 +1111,7 @@ class BattleTooltips {
 		}
 		if (ability === 'purepower' || ability === 'hugepower') {
 			stats.atk *= 2;
-		}
-		//Vaporemons
-		if (ability === 'sheerheart') {
-			stats.atk *= 1.3;
-		}		
+		}	
 		if (ability === 'hustle' || (ability === 'gorillatactics' && !clientPokemon?.volatiles['dynamax'])) {
 			stats.atk = Math.floor(stats.atk * 1.5);
 		}
@@ -1181,7 +1177,7 @@ class BattleTooltips {
 					//Vaporemons
 					clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] ||
 					clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] ||
-					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName] ||
+					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]
 				) {
 					if (statName === 'spe') {
 						speedModifiers.push(1.5);
@@ -1214,7 +1210,7 @@ class BattleTooltips {
 		}
 		if (ability === 'grasspelt' && this.battle.hasPseudoWeather('Grassy Terrain')) {
 			//Vaporemons
-			if (this.battle.mod === 'vaporemons') {
+			if (this.battle.mod === 'gen9vaporemons') {
 				stats.def = Math.floor(stats.def * 1.3333);
 			} else {
 				stats.def = Math.floor(stats.def * 1.5);
@@ -1256,7 +1252,7 @@ class BattleTooltips {
 			stats.spd = Math.floor(stats.spd * 1.5);
 		}
 		//Vaporemons
-		if (this.battle.mod === 'vaporemons') {
+		if (this.battle.mod === 'gen9vaporemons') {
 			if (item === 'mithrilarmor') {
 				stats.def = Math.floor(stats.def * 1.2);
 			} if (item === 'snowglobe' && this.pokemonHasType(pokemon, 'Ice')) {
@@ -1589,6 +1585,11 @@ class BattleTooltips {
 			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
 			if (stats.atk > stats.spa) category = 'Physical';
 		}
+		//Vaporemons
+		if (this.battle.mod === 'gen9vaporemons' && move.id === 'terablast' && item.id === 'terashard') {
+			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
+			if (stats.atk > stats.spa) category = 'Physical';
+		}
 		return [moveType, category];
 	}
 
@@ -1730,17 +1731,17 @@ class BattleTooltips {
 			value.set(100, 'Tera Stellar boost');
 		}
 		//Vaporemons
-		if (this.battle.mod === 'vaporemons' && ['terablast'].includes(move.id) && serverPokemon.item) {
+		if (this.battle.mod === 'gen9vaporemons' && ['terablast'].includes(move.id) && serverPokemon.item) {
 			let item = Dex.items.get(serverPokemon.item);
 			if (item.id === 'terashard') {
 				value.set(100, 'Tera Shard boost');
 			}
 		}
-		if (this.battle.mod === 'vaporemons' && move.id === 'lashout') {
+		if (this.battle.mod === 'gen9vaporemons' && move.id === 'lashout') {
 			if (!['', 'slp', 'frz'].includes(pokemon.status)) {
 				value.modify(2, 'Lash Out + status');
 			} for (const boost of Object.values(pokemon.boosts)) {
-				else if (boost < 0) {
+				if (boost < 0) {
 					value.modify(2, 'Lash Out + stats lowered');
 				}
 			}
@@ -1918,9 +1919,8 @@ class BattleTooltips {
 				value.setRange(isGKLK ? 20 : 40, 120);
 			}
 		}
-		// Base power based on times hit
 		//Vaporemons
-		if (this.battle.mod === 'vaporemons') {
+		if (this.battle.mod === 'gen9vaporemons') {
 			if (move.id === 'ragefist' || move.id === 'ragingfury') {
 				value.set(Math.min(200, 50 + 50 * pokemon.timesAttacked),
 					pokemon.timesAttacked > 0
@@ -1928,11 +1928,15 @@ class BattleTooltips {
 						: undefined);
 			}
 			if (!value.value) return value;
+			
 			if (this.battle.weather === 'sandstorm') {
 				if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 			}
 			if (move.category === 'Physical') {
 				value.abilityModify(1.5, "Blunt Force");
+			}
+			if (move.category === 'Special') {
+				value.abilityModify(1.3, "Sheer Heart");
 			}
 			if (move.id === 'naturalgift') {
 				value.abilityModify(2, "Ripen");
@@ -1941,7 +1945,8 @@ class BattleTooltips {
 				value.abilityModify(2, "Harvest");
 			}
 		}
-		if (this.battle.mod !== 'vaporemons' && move.id === 'ragefist') {
+		// Base power based on times hit
+		if (this.battle.mod !== 'gen9vaporemons' && move.id === 'ragefist') {
 			value.set(Math.min(350, 50 + 50 * pokemon.timesAttacked),
 				pokemon.timesAttacked > 0
 					? `Hit ${pokemon.timesAttacked} time${pokemon.timesAttacked > 1 ? 's' : ''}`
@@ -1968,7 +1973,7 @@ class BattleTooltips {
 		if (['psn', 'tox'].includes(pokemon.status) && move.category === 'Physical') {
 			value.abilityModify(1.5, "Toxic Boost");
 		}
-		if (this.battle.mod !== 'vaporemons' && ['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm') {
+		if (this.battle.mod !== 'gen9vaporemons' && ['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm') {
 			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 		}
 		if (move.secondaries) {
@@ -2035,7 +2040,7 @@ class BattleTooltips {
 					value.modify(1.3, 'Power Spot');
 				} else if (allyAbility === 'Steely Spirit' && moveType === 'Steel') {
 					//Vaporemons
-					if (this.battle.mod !== 'vaporemons') {
+					if (this.battle.mod !== 'gen9vaporemons') {
 						value.modify(1.5, 'Steely Spirit');
 					} else {
 						value.modify(2, 'Steely Spirit');
@@ -2108,6 +2113,9 @@ class BattleTooltips {
 
 		// Burn isn't really a base power modifier, so it needs to be applied after the Tera BP floor
 		if (this.battle.gen > 2 && serverPokemon.status === 'brn' && move.id !== 'facade' && move.category === 'Physical') {
+			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
+		}
+		if (this.battle.mod === 'gen9vaporemons' && serverPokemon.status === 'brn' && move.id !== 'lashout' && move.category === 'Physical') {
 			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
 		}
 
@@ -2238,12 +2246,12 @@ class BattleTooltips {
 
 		if (itemName === 'Muscle Band' && move.category === 'Physical' ||
 			itemName === 'Wise Glasses' && move.category === 'Special' ||
-			itemName === 'Punching Glove' && move.flags['punch'] && this.battle.mod !== 'vaporemons') {
+			itemName === 'Punching Glove' && move.flags['punch'] && this.battle.mod !== 'gen9vaporemons') {
 			value.itemModify(1.1);
 		}
 		
 		//Vaporemons
-		if (this.battle.mod === 'vaporemons') {
+		if (this.battle.mod === 'gen9vaporemons') {
 			if (itemName === 'Big Root' && move.flags['heal'] || 
 				itemName === 'Punching Glove' && move.flags['punch'] || 
 				itemName === 'Razor Fang' && move.flags['bite'] || 
