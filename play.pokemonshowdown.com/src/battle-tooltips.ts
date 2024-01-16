@@ -1077,7 +1077,7 @@ class BattleTooltips {
 				stats.def = Math.floor(stats.def * 1.3);
 				stats.spd = Math.floor(stats.spd * 1.3);
 			} else if (speciesName === 'Kleavor') {
-				stats.atk = Math.floor(stats.atk * 1.5);
+				stats.atk *= 1.5;
 			}
 		}
 
@@ -1111,7 +1111,7 @@ class BattleTooltips {
 		}
 		if (ability === 'purepower' || ability === 'hugepower') {
 			stats.atk *= 2;
-		}
+		}	
 		if (ability === 'hustle' || (ability === 'gorillatactics' && !clientPokemon?.volatiles['dynamax'])) {
 			stats.atk = Math.floor(stats.atk * 1.5);
 		}
@@ -1173,12 +1173,12 @@ class BattleTooltips {
 			for (const statName of Dex.statNamesExceptHP) {
 				if (
 					clientPokemon.volatiles['protosynthesis' + statName] || clientPokemon.volatiles['quarkdrive' + statName] ||
-
+					
 					//Vaporemons
 					clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] ||
 					clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] ||
-					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName] ||
-				) { {
+					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]
+				) {
 					if (statName === 'spe') {
 						speedModifiers.push(1.5);
 					} else {
@@ -1928,6 +1928,7 @@ class BattleTooltips {
 						: undefined);
 			}
 			if (!value.value) return value;
+			
 			if (this.battle.weather === 'sandstorm') {
 				if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 			}
@@ -2114,10 +2115,9 @@ class BattleTooltips {
 		if (this.battle.gen > 2 && serverPokemon.status === 'brn' && move.id !== 'facade' && move.category === 'Physical') {
 			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
 		}
-		//Vaporemons
-		/*if (this.battle.mod === 'gen9vaporemons' && serverPokemon.status === 'brn' && move.id !== 'lashout' && move.category === 'Physical') {
+		if (this.battle.mod === 'gen9vaporemons' && serverPokemon.status === 'brn' && move.id !== 'lashout' && move.category === 'Physical') {
 			if (!value.tryAbility("Guts")) value.modify(0.5, 'Burn');
-		}*/
+		}
 
 		if (
 			move.id === 'steelroller' &&
@@ -2168,7 +2168,6 @@ class BattleTooltips {
 		
 		//Vaporemons
 		'Charizard': ['Charizardite Shard X', 'Charizardite Shard Y'],
-		//'Revavroom': ['Segin Star Shard', 'Schedar Star Shard', 'Navi Star Shard', 'Ruchbah Star Shard', 'Caph Star Shard'],
 	};
 	static orbTypes: {[itemName: string]: TypeName[]} = {
 		'Soul Dew': ['Psychic', 'Dragon'],
@@ -2181,11 +2180,6 @@ class BattleTooltips {
 		'Vile Vial': ['Poison', 'Flying'],
 		
 		//Vaporemons
-		//'Segin Star Shard': ['Poison', 'Steel', 'Dark'],
-		//'Schedar Star Shard': ['Poison', 'Steel', 'Fire'],
-		//'Navi Star Shard': ['Poison', 'Steel'],
-		//'Ruchbah Star Shard': ['Poison', 'Steel', 'Fairy'],
-		//'Caph Star Shard': ['Poison', 'Steel', 'Fighting'],
 		'Charizardite Shard X': ['Fire', 'Dragon'],
 		'Charizardite Shard Y': ['Fire', 'Flying'],
 	};
