@@ -1266,6 +1266,38 @@ export class BattleScene implements BattleSceneStub {
 			this.$spritesFront[spriteIndex].append(surge3.$el!);
 			this.sideConditions[siden][id] = [surge1, surge2, surge3];
 			break;
+		//Vaporemons
+		case 'healingstones':
+			const hstone1 = new Sprite(BattleEffects.greenmetal1, {
+				display: 'block',
+				x: x + side.leftof(-30),
+				y: y - 20,
+				z: side.z,
+				opacity: 0.5,
+				scale: 0.8,
+			}, this);
+			const hstone2 = new Sprite(BattleEffects.greenmetal2, {
+				display: 'block',
+				x: x + side.leftof(35),
+				y: y - 15,
+				z: side.z,
+				opacity: 0.5,
+				scale: 0.8,
+			}, this);
+			const hstone3 = new Sprite(BattleEffects.greenmetal1, {
+				display: 'block',
+				x: x + side.leftof(50),
+				y: y - 10,
+				z: side.z,
+				opacity: 0.5,
+				scale: 0.8,
+			}, this);
+
+			this.$spritesFront[spriteIndex].append(hstone1.$el!);
+			this.$spritesFront[spriteIndex].append(hstone2.$el!);
+			this.$spritesFront[spriteIndex].append(hstone3.$el!);
+			this.sideConditions[siden][id] = [hstone1, hstone2, hstone3];
+			break;
 		case 'spikes':
 			let spikeArray = this.sideConditions[siden]['spikes'];
 			if (!spikeArray) {
@@ -1825,6 +1857,38 @@ export class PokemonSprite extends Sprite {
 		quarkdrivespa: ['Quark Drive: SpA', 'good'],
 		quarkdrivespd: ['Quark Drive: SpD', 'good'],
 		quarkdrivespe: ['Quark Drive: Spe', 'good'],
+		//Vaporemons
+		protosmosisatk: ['Protosmosis: Atk', 'good'],
+		protosmosisdef: ['Protosmosis: Def', 'good'],
+		protosmosisspa: ['Protosmosis: SpA', 'good'],
+		protosmosisspd: ['Protosmosis: SpD', 'good'],
+		protosmosisspe: ['Protosmosis: Spe', 'good'],
+		photondriveatk: ['Photon Drive: Atk', 'good'],
+		photondrivedef: ['Photon Drive: Def', 'good'],
+		photondrivespa: ['Photon Drive: SpA', 'good'],
+		photondrivespd: ['Photon Drive: SpD', 'good'],
+		photondrivespe: ['Photon Drive: Spe', 'good'],
+		protocrysalisatk: ['Protocrysalis: Atk', 'good'],
+		protocrysalisdef: ['Protocrysalis: Def', 'good'],
+		protocrysalisspa: ['Protocrysalis: SpA', 'good'],
+		protocrysalisspd: ['Protocrysalis: SpD', 'good'],
+		protocrysalisspe: ['Protocrysalis: Spe', 'good'],
+		neurondriveatk: ['Neuron Drive: Atk', 'good'],
+		neurondrivedef: ['Neuron Drive: Def', 'good'],
+		neurondrivespa: ['Neuron Drive: SpA', 'good'],
+		neurondrivespd: ['Neuron Drive: SpD', 'good'],
+		neurondrivespe: ['Neuron Drive: Spe', 'good'],
+		protostasisatk: ['Protostasis: Atk', 'good'],
+		protostasisdef: ['Protostasis: Def', 'good'],
+		protostasisspa: ['Protostasis: SpA', 'good'],
+		protostasisspd: ['Protostasis: SpD', 'good'],
+		protostasisspe: ['Protostasis: Spe', 'good'],
+		runedriveatk: ['Rune Drive: Atk', 'good'],
+		runedrivedef: ['Rune Drive: Def', 'good'],
+		runedrivespa: ['Rune Drive: SpA', 'good'],
+		runedrivespd: ['Rune Drive: SpD', 'good'],
+		runedrivespe: ['Rune Drive: Spe', 'good'],
+		
 		fallen1: ['Fallen: 1', 'good'],
 		fallen2: ['Fallen: 2', 'good'],
 		fallen3: ['Fallen: 3', 'good'],
