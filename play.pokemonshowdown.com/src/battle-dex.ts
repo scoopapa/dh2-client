@@ -740,7 +740,7 @@ const Dex = new class implements ModdedDex {
 		// 		mod: options.mod,
 		// 	});
 		// }
-		// return spriteData;
+		return spriteData;
 	}
 
 	getPokemonIconNum(id: ID, isFemale?: boolean, facingLeft?: boolean) {
