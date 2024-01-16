@@ -1172,12 +1172,12 @@ class BattleTooltips {
 			}
 			for (const statName of Dex.statNamesExceptHP) {
 				if (
-					clientPokemon.volatiles['protosynthesis' + statName] || clientPokemon.volatiles['quarkdrive' + statName]
+					clientPokemon.volatiles['protosynthesis' + statName] || clientPokemon.volatiles['quarkdrive' + statName] || 
 					
 					//Vaporemons
-					|| clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName]
-					|| clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName]
-					|| clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]
+					clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] || 
+					clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] || 
+					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName] 
 				) {
 					if (statName === 'spe') {
 						speedModifiers.push(1.5);
@@ -1932,21 +1932,21 @@ class BattleTooltips {
 			if (this.battle.weather === 'sandstorm') {
 				if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 			}
-			if (move.category === 'Physical') {
+			/*if (move.category === 'Physical') {
 				value.abilityModify(1.5, "Blunt Force");
 			}
 			if (move.category === 'Special') {
 				value.abilityModify(1.3, "Sheer Heart");
 			}
-			/*if (move.id === 'naturalgift') {
+			if (move.id === 'naturalgift') {
 				value.abilityModify(2, "Ripen");
 			}
 			if (move.id === 'naturalgift') {
 				value.abilityModify(2, "Harvest");
-			}*/
+			}
 			if (['muddywater', 'mudbomb', 'mudslap', 'mudshot'].includes(move.id)) {
 				value.abilityModify(2, "Mud Wash");
-			}
+			}*/
 		}
 		// Base power based on times hit
 		if (this.battle.mod !== 'gen9vaporemons' && move.id === 'ragefist') {
@@ -2172,7 +2172,7 @@ class BattleTooltips {
 		
 		//Vaporemons
 		'Charizard': ['Charizardite Shard X', 'Charizardite Shard Y'],
-		'Revavroom': ['Segin Star Shard', 'Schedar Star Shard', 'Navi Star Shard', 'Ruchbah Star Shard', 'Caph Star Shard'],
+		//'Revavroom': ['Segin Star Shard', 'Schedar Star Shard', 'Navi Star Shard', 'Ruchbah Star Shard', 'Caph Star Shard'],
 	};
 	static orbTypes: {[itemName: string]: TypeName[]} = {
 		'Soul Dew': ['Psychic', 'Dragon'],
@@ -2185,11 +2185,11 @@ class BattleTooltips {
 		'Vile Vial': ['Poison', 'Flying'],
 		
 		//Vaporemons
-		'Segin Star Shard': ['Poison', 'Steel', 'Dark'],
-		'Schedar Star Shard': ['Poison', 'Steel', 'Fire'],
-		'Navi Star Shard': ['Poison', 'Steel'],
-		'Ruchbah Star Shard': ['Poison', 'Steel', 'Fairy'],
-		'Caph Star Shard': ['Poison', 'Steel', 'Fighting'],
+		//'Segin Star Shard': ['Poison', 'Steel', 'Dark'],
+		//'Schedar Star Shard': ['Poison', 'Steel', 'Fire'],
+		//'Navi Star Shard': ['Poison', 'Steel'],
+		//'Ruchbah Star Shard': ['Poison', 'Steel', 'Fairy'],
+		//'Caph Star Shard': ['Poison', 'Steel', 'Fighting'],
 		'Charizardite Shard X': ['Fire', 'Dragon'],
 		'Charizardite Shard Y': ['Fire', 'Flying'],
 	};
@@ -2262,19 +2262,21 @@ class BattleTooltips {
 		
 		//Vaporemons
 		if (this.battle.mod === 'gen9vaporemons') {
-			if (itemName === 'Big Root' && move.flags['heal'] || 
+			if (
+				itemName === 'Big Root' && move.flags['heal'] || 
 				itemName === 'Punching Glove' && move.flags['punch'] || 
 				itemName === 'Razor Fang' && move.flags['bite'] || 
 				itemName === 'Razor Claw' && move.flags['slicing'] || 
-				itemName === 'Quick Claw' && move.priority > 0.1 || 
-				itemName === 'Protective Pads' && (move.recoil || move.hasCrashDamage) || 
-				itemName === 'Tie-Dye Band' && !this.pokemonHasType(pokemon, moveType)) {
+				itemName === 'Quick Claw' && move.priority > 0.1 //|| 
+				//itemName === 'Protective Pads' && (move.recoil || move.hasCrashDamage) || 
+				//itemName === 'Tie-Dye Band' && !this.pokemonHasType(pokemon, moveType)
+			) {
 				value.itemModify(1.3);
-			} if (itemName === 'Tie-Dye Band' && this.pokemonHasType(pokemon, moveType)) {
-				value.itemModify(0.67);
+			//} if (itemName === 'Tie-Dye Band' && this.pokemonHasType(pokemon, moveType)) {
+			//	value.itemModify(0.67);
 			} if (itemName === 'Baseball Bat' && move.flags['contact']) {
 				value.itemModify(1.25);
-			} if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && pokemon.getSpeciesForme() === 'Palafin-Zero'') {
+			} if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && speciesName === 'Palafin'/*pokemon.getSpeciesForme() === 'Palafin'*/) {
 				value.itemModify(2);
 			} /*if (itemName === 'Binding Band' && target.volatiles['partiallytrapped']) {
 				value.itemModify(1.5);
