@@ -1222,7 +1222,11 @@ class BattleTooltips {
 			stats.spd = Math.floor(stats.spd * 1.5);
 		}
 		if (ability === 'grasspelt' && this.battle.hasPseudoWeather('Grassy Terrain')) {
-			stats.def = Math.floor(stats.def * 1.5);
+			if (this.battle.mod === 'gen9vaporemons') {
+				stats.def = Math.floor(stats.def * 1.3333);
+			} else {
+				stats.def = Math.floor(stats.def * 1.5);
+			}
 		}
 		if (this.battle.hasPseudoWeather('Electric Terrain')) {
 			if (ability === 'surgesurfer') {
