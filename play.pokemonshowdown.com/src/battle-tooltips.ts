@@ -2106,9 +2106,6 @@ class BattleTooltips {
 		'Palkia': ['Lustrous Globe', 'Lustrous Orb'],
 		'Giratina': ['Griseous Core', 'Griseous Orb'],
 		'Venomicon': ['Vile Vial'],
-		
-		//Vaporemons
-		'Charizard': ['Charizardite Shard X', 'Charizardite Shard Y'],
 	};
 	static orbTypes: {[itemName: string]: TypeName[]} = {
 		'Soul Dew': ['Psychic', 'Dragon'],
@@ -2119,10 +2116,6 @@ class BattleTooltips {
 		'Griseous Core': ['Ghost', 'Dragon'],
 		'Griseous Orb': ['Ghost', 'Dragon'],
 		'Vile Vial': ['Poison', 'Flying'],
-		
-		//Vaporemons
-		'Charizardite Shard X': ['Fire', 'Dragon'],
-		'Charizardite Shard Y': ['Fire', 'Flying'],
 	};
 	static noGemMoves = [
 		'Fire Pledge',
@@ -2189,14 +2182,6 @@ class BattleTooltips {
 			itemName === 'Wise Glasses' && move.category === 'Special' ||
 			itemName === 'Punching Glove' && move.flags['punch']) {
 			value.itemModify(1.1);
-		}
-		
-		//Vaporemons
-		if (itemName === 'Baseball Bat' && move.flags['contact']) {
-			value.itemModify(1.25);
-		} 
-		if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && speciesName === 'Palafin') {
-			value.itemModify(2);
 		}
 		
 		return value;
