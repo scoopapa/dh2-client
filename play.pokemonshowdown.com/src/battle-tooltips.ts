@@ -1070,7 +1070,7 @@ class BattleTooltips {
 			}
 		}
 		//Vaporemons
-		if (this.battle.mod === 'gen9vaporemons' && item === 'mantisclaw') {
+		if (item === 'mantisclaw') {
 			if (speciesName === 'Scyther') {
 				speedModifiers.push(1.5);
 			} else if (speciesName === 'Scizor') {
@@ -1171,7 +1171,14 @@ class BattleTooltips {
 				speedModifiers.push(2);
 			}
 			for (const statName of Dex.statNamesExceptHP) {
-				if (clientPokemon.volatiles['protosynthesis' + statName] || clientPokemon.volatiles['quarkdrive' + statName]) {
+				if (
+					clientPokemon.volatiles['protosynthesis' + statName] || clientPokemon.volatiles['quarkdrive' + statName] ||
+					
+					//Vaporemons
+					clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] ||
+					clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] ||
+					clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]
+				) {
 					if (statName === 'spe') {
 						speedModifiers.push(1.5);
 					} else {
@@ -1180,6 +1187,26 @@ class BattleTooltips {
 				}
 			}
 		}
+		//Vaporemons
+		if (item === 'tuffytuff' && (this.battle.dex.species.get(serverPokemon.speciesForme).id === 'igglybuff' || 
+			this.battle.dex.species.get(serverPokemon.speciesForme).id === 'jigglypuff' || 
+			this.battle.dex.species.get(serverPokemon.speciesForme).id === 'wigglytuff')) {
+			stats.def = Math.floor(stats.def * 2);
+			stats.spd = Math.floor(stats.spd * 2);
+		}
+		if (item === 'mithrilarmor') {
+			stats.def = Math.floor(stats.def * 1.2);
+		} 
+		if (item === 'snowglobe' && this.pokemonHasType(pokemon, 'Ice')) {
+			stats.def = Math.floor(stats.def * 1.5);
+		} 
+		if (item === 'sandclock' && this.pokemonHasType(pokemon, 'Rock')) {
+			stats.spd = Math.floor(stats.spd * 1.5);
+		} 
+		if (item === 'desertrose' && species === 'Florges' && this.battle.weather === 'sandstorm') {
+			stats.spd = Math.floor(stats.spd * 1.5);
+		}
+		
 		if (ability === 'marvelscale' && pokemon.status) {
 			stats.def = Math.floor(stats.def * 1.5);
 		}
@@ -1866,6 +1893,14 @@ class BattleTooltips {
 				value.setRange(isGKLK ? 20 : 40, 120);
 			}
 		}
+		//Vaporemons
+		if (move.category === 'Physical') {
+			value.abilityModify(1.5, "Blunt Force");
+		}
+		if (move.category === 'Special') {
+			value.abilityModify(1.3, "Sheer Heart");
+		}
+		
 		// Base power based on times hit
 		if (move.id === 'ragefist') {
 			value.set(Math.min(350, 50 + 50 * pokemon.timesAttacked),
@@ -2078,6 +2113,9 @@ class BattleTooltips {
 		'Palkia': ['Lustrous Globe', 'Lustrous Orb'],
 		'Giratina': ['Griseous Core', 'Griseous Orb'],
 		'Venomicon': ['Vile Vial'],
+		
+		//Vaporemons
+		'Charizard': ['Charizardite Shard X', 'Charizardite Shard Y'],
 	};
 	static orbTypes: {[itemName: string]: TypeName[]} = {
 		'Soul Dew': ['Psychic', 'Dragon'],
@@ -2088,6 +2126,10 @@ class BattleTooltips {
 		'Griseous Core': ['Ghost', 'Dragon'],
 		'Griseous Orb': ['Ghost', 'Dragon'],
 		'Vile Vial': ['Poison', 'Flying'],
+		
+		//Vaporemons
+		'Charizardite Shard X': ['Fire', 'Dragon'],
+		'Charizardite Shard Y': ['Fire', 'Flying'],
 	};
 	static noGemMoves = [
 		'Fire Pledge',
@@ -2155,7 +2197,15 @@ class BattleTooltips {
 			itemName === 'Punching Glove' && move.flags['punch']) {
 			value.itemModify(1.1);
 		}
-
+		
+		//Vaporemons
+		if (itemName === 'Baseball Bat' && move.flags['contact']) {
+			value.itemModify(1.25);
+		} 
+		if (moveType === 'Water' && itemName === 'Hero\'s Bubble' && speciesName === 'Palafin') {
+			value.itemModify(2);
+		}
+		
 		return value;
 	}
 	getPokemonTypes(pokemon: Pokemon | ServerPokemon, preterastallized = false): ReadonlyArray<TypeName> {
