@@ -1893,13 +1893,6 @@ class BattleTooltips {
 				value.setRange(isGKLK ? 20 : 40, 120);
 			}
 		}
-		//Vaporemons
-		if (move.category === 'Physical') {
-			value.abilityModify(1.5, "Blunt Force");
-		}
-		if (move.category === 'Special') {
-			value.abilityModify(1.3, "Sheer Heart");
-		}
 		
 		// Base power based on times hit
 		if (move.id === 'ragefist') {
