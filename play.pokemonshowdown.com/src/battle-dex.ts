@@ -664,8 +664,17 @@ const Dex = new class implements ModdedDex {
 
 		// Mod Cries
 		if (options.mod === 'digimon') {
-			spriteData.cryurl = `sprites/${options.mod}/audio/${toID(species.baseSpecies)}`;
-			spriteData.cryurl += '.mp3';
+			spriteData.cryurl = `sprites/${options.mod}/audio/${toID(species.baseSpecies)}.mp3`;
+		}
+		//If we already have a cry url we load from the main server, otherwise we try to search for the presence of a custom cry
+		if (!(spriteData.cryurl &&= 'https://' + Config.routes.psmain + '/' + spriteData.cryurl)) {			
+			//For whatever reason if there is a cry but no true sprite data then options.mod becomes '' regardless of mod
+			//TODO: Possibly fix that? I wouldn't prioritize it though
+			if (window.ModSprites[modSpriteId]?.[options.mod]?.includes('cries')) {
+				spriteData.cryurl = spriteData.url + 'cries/' + speciesid + '.mp3';
+			} else { //We couldn't find a cry
+				spriteData.cryurl = '';
+			}
 		}
 		
 		let hasCustomAnim = false;
