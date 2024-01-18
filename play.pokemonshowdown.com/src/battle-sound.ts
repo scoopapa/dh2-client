@@ -142,7 +142,7 @@ export const BattleSound = new class {
 			this.deleteBgm(replaceBGM);
 		}
 
-		const bgm = new BattleBGM(url, loopstart, loopend);
+		const bgm = new BattleBGM('https://' + Config.routes.psmain + '/' + url, loopstart, loopend);
 		this.bgm.push(bgm);
 		return bgm;
 	}
