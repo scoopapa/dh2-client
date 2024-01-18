@@ -123,7 +123,7 @@ export const BattleSound = new class {
 	}
 
 	playEffect(url: string) {
-		this.playSound('https://' + Config.routes.psmain + '/' + url, this.muted ? 0 : this.effectVolume);
+		this.playSound(url, this.muted ? 0 : this.effectVolume);
 	}
 
 	playSound(url: string, volume: number) {
