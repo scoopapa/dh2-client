@@ -1266,7 +1266,7 @@ export class BattleScene implements BattleSceneStub {
 			this.$spritesFront[spriteIndex].append(surge3.$el!);
 			this.sideConditions[siden][id] = [surge1, surge2, surge3];
 			break;
-		//Vaporemons
+		/*//Vaporemons
 		case 'healingstones':
 			const hstone1 = new Sprite(BattleEffects.greenmetal1, {
 				display: 'block',
@@ -1298,7 +1298,7 @@ export class BattleScene implements BattleSceneStub {
 			this.$spritesFront[spriteIndex].append(hstone3.$el!);
 			this.sideConditions[siden][id] = [hstone1, hstone2, hstone3];
 			break;
-		case 'spikes':
+		*/case 'spikes':
 			let spikeArray = this.sideConditions[siden]['spikes'];
 			if (!spikeArray) {
 				spikeArray = [];
@@ -1858,7 +1858,7 @@ export class PokemonSprite extends Sprite {
 		quarkdrivespd: ['Quark Drive: SpD', 'good'],
 		quarkdrivespe: ['Quark Drive: Spe', 'good'],
 		//Vaporemons
-		protosmosisatk: ['Protosmosis: Atk', 'good'],
+		/*protosmosisatk: ['Protosmosis: Atk', 'good'],
 		protosmosisdef: ['Protosmosis: Def', 'good'],
 		protosmosisspa: ['Protosmosis: SpA', 'good'],
 		protosmosisspd: ['Protosmosis: SpD', 'good'],
@@ -1887,7 +1887,7 @@ export class PokemonSprite extends Sprite {
 		runedrivedef: ['Rune Drive: Def', 'good'],
 		runedrivespa: ['Rune Drive: SpA', 'good'],
 		runedrivespd: ['Rune Drive: SpD', 'good'],
-		runedrivespe: ['Rune Drive: Spe', 'good'],
+		runedrivespe: ['Rune Drive: Spe', 'good'],*/
 		
 		fallen1: ['Fallen: 1', 'good'],
 		fallen2: ['Fallen: 2', 'good'],
