@@ -1070,7 +1070,7 @@ class BattleTooltips {
 			}
 		}
 		//Vaporemons
-		if (this.battle.tier.includes("Vaporemons")) {
+		if (this.battle.tier.includes("VaporeMons")) {
 			if (item === 'mantisclaw') {
 				if (speciesName === 'Scyther') {
 					speedModifiers.push(1.5);
@@ -1180,7 +1180,7 @@ class BattleTooltips {
 						stats[statName] = Math.floor(stats[statName] * 1.3);
 					}
 				} 
-				if (this.battle.tier.includes("Vaporemons")) {//Vaporemons
+				if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
 					if (clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] ||
 						clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] ||
 						clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]) {
@@ -1193,7 +1193,7 @@ class BattleTooltips {
 				}
 			}
 		}
-		if (this.battle.tier.includes("Vaporemons")) {//Vaporemons
+		if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
 			if (item === 'tuffytuff' && (this.battle.dex.species.get(serverPokemon.speciesForme).id === 'igglybuff' || 
 				this.battle.dex.species.get(serverPokemon.speciesForme).id === 'jigglypuff' || 
 				this.battle.dex.species.get(serverPokemon.speciesForme).id === 'wigglytuff')) {
@@ -1229,7 +1229,7 @@ class BattleTooltips {
 			stats.spd = Math.floor(stats.spd * 1.5);
 		}
 		if (ability === 'grasspelt' && this.battle.hasPseudoWeather('Grassy Terrain')) {
-			if (this.battle.tier.includes("Vaporemons")) {//Vaporemons
+			if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
 				stats.def = Math.floor(stats.def * 1.3333);
 			} else {
 				stats.def = Math.floor(stats.def * 1.5);
@@ -1932,10 +1932,10 @@ class BattleTooltips {
 		if (['psn', 'tox'].includes(pokemon.status) && move.category === 'Physical') {
 			value.abilityModify(1.5, "Toxic Boost");
 		}
-		if (['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm' && !this.battle.tier.includes("Vaporemons")) {
+		if (['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm' && !this.battle.tier.includes("VaporeMons")) {
 			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 		}
-		if (this.battle.weather === 'sandstorm' && this.battle.tier.includes("Vaporemons")) {
+		if (this.battle.weather === 'sandstorm' && this.battle.tier.includes("VaporeMons")) {
 			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 		}
 		if (move.secondaries) {
@@ -2004,7 +2004,7 @@ class BattleTooltips {
 				} else if (allyAbility === 'Power Spot' && ally !== pokemon) {
 					value.modify(1.3, 'Power Spot');
 				} else if (allyAbility === 'Steely Spirit' && moveType === 'Steel') {
-					if (this.battle.tier.includes("Vaporemons")) {
+					if (this.battle.tier.includes("VaporeMons")) {
 						value.modify(2, 'Steely Spirit');
 					} else {
 						value.modify(1.5, 'Steely Spirit');
@@ -2200,11 +2200,11 @@ class BattleTooltips {
 
 		if (itemName === 'Muscle Band' && move.category === 'Physical' ||
 			itemName === 'Wise Glasses' && move.category === 'Special' ||
-			itemName === 'Punching Glove' && move.flags['punch']) {
+			itemName === 'Punching Glove' && move.flags['punch'] && !this.battle.tier.includes("VaporeMons")) {
 			value.itemModify(1.1);
 		}
 		//Vaporemons
-		if (this.battle.tier.includes("Vaporemons")) {
+		if (this.battle.tier.includes("VaporeMons")) {
 			if (itemName === 'Protective Pads' && (move.recoil || move.hasCrashDamage) ||
 				itemName === 'Quick Claw' && move.priority > 0.1 ||
 				itemName === 'Razor Fang' && move.flags['bite'] ||
@@ -2212,17 +2212,17 @@ class BattleTooltips {
 				itemName === 'Big Root' && move.flags['heal'] ||
 				itemName === 'Punching Glove' && move.flags['punch']) {
 				value.itemModify(1.3);
-			}
-			if (itemName === 'Baseball Bat' && move.flags['contact']) {
+			} else if (itemName === 'Baseball Bat' && move.flags['contact']) {
 				value.itemModify(1.25);
-			}
-			/*if (itemName === 'Tie-Dye Band') {
+			} else if (itemName === 'Tie-Dye Band') {
 				if (this.pokemonHasType(pokemon, moveType)) {
 					value.itemModify(0.67);
 				} else {
 					value.itemModify(1.3);
 				}
-			}*/
+			} else if (itemName === 'Hero\' Bubble' && moveType === 'Water' && speciesName === 'Palafin') {
+				value.itemModify(2);
+			}
 		}
 		return value;
 	}
