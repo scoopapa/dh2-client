@@ -1905,7 +1905,15 @@ class BattleTooltips {
 			}
 		}
 		// Base power based on times hit
-		if (move.id === 'ragefist') {
+		if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
+			if (move.id === 'ragefist' || move.id === 'ragingfury') {
+				value.set(Math.min(200, 50 + 50 * pokemon.timesAttacked),
+					pokemon.timesAttacked > 0
+						? `Hit ${pokemon.timesAttacked} time${pokemon.timesAttacked > 1 ? 's' : ''}`
+						: undefined);
+			}
+		}
+		if (move.id === 'ragefist' && !this.battle.tier.includes("VaporeMons")) {
 			value.set(Math.min(350, 50 + 50 * pokemon.timesAttacked),
 				pokemon.timesAttacked > 0
 					? `Hit ${pokemon.timesAttacked} time${pokemon.timesAttacked > 1 ? 's' : ''}`
@@ -2222,7 +2230,13 @@ class BattleTooltips {
 				}
 			} else if (itemName === 'Hero\' Bubble' && moveType === 'Water' && speciesName === 'Palafin') {
 				value.itemModify(2);
-			}
+			}/* else if (
+				(speciesName === 'Charizard' && itemName === 'Wellspring Mask') ||
+				(speciesName.startsWith('Ogerpon-Hearthflame') && itemName === 'Hearthflame Mask') ||
+				(speciesName.startsWith('Ogerpon-Cornerstone') && itemName === 'Cornerstone Mask')) {
+				value.itemModify(1.2);
+				return value;
+			}*/
 		}
 		return value;
 	}
