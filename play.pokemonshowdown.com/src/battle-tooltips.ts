@@ -1592,6 +1592,10 @@ class BattleTooltips {
 			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
 			if (stats.atk > stats.spa) category = 'Physical';
 		}
+		/*if (this.battle.tier.includes("VaporeMons") && move.id === 'terablast' && itemName === 'Tera Shard') {
+			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
+			if (stats.atk > stats.spa) category = 'Physical';
+		}*/
 		return [moveType, category];
 	}
 
@@ -1732,6 +1736,9 @@ class BattleTooltips {
 		if (['terablast'].includes(move.id) && pokemon.terastallized === 'Stellar') {
 			value.set(100, 'Tera Stellar boost');
 		}
+		/*if (['terablast'].includes(move.id) && 	this.battle.tier.includes("VaporeMons") && itemName === 'Tera Shard') {
+			value.set(100, 'Tera Shard boost');
+		}*/
 		if (move.id === 'brine' && target && target.hp * 2 <= target.maxhp) {
 			value.modify(2, 'Brine + target below half HP');
 		}
@@ -1945,9 +1952,6 @@ class BattleTooltips {
 		}
 		if (this.battle.weather === 'sandstorm' && this.battle.tier.includes("VaporeMons")) {
 			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
-		}
-		if (move.secondaries) {
-			value.abilityModify(1.3, "Sheer Force");
 		}
 		if (move.secondaries) {
 			value.abilityModify(1.3, "Sheer Force");
