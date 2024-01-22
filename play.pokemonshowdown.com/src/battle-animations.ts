@@ -1824,7 +1824,7 @@ export class PokemonSprite extends Sprite {
 		quarkdrivedef: ['Quark Drive: Def', 'good'],
 		quarkdrivespa: ['Quark Drive: SpA', 'good'],
 		quarkdrivespd: ['Quark Drive: SpD', 'good'],
-		quarkdrivespe: ['Quark Drive: Spe', 'good'],	
+		quarkdrivespe: ['Quark Drive: Spe', 'good'],
 		fallen1: ['Fallen: 1', 'good'],
 		fallen2: ['Fallen: 2', 'good'],
 		fallen3: ['Fallen: 3', 'good'],
