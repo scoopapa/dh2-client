@@ -731,11 +731,13 @@ const Dex = new class implements ModdedDex {
 			spriteData.h *= 1.5;
 			spriteData.y += -11;
 		}
-		if (window.BattlePokemonSprites && !window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
-			spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
-				gen: options.gen,
-				mod: options.mod,
-			});
+		if (window.BattlePokemonSprites) {
+			if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
+				spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
+					gen: options.gen,
+					mod: options.mod,
+				});
+			}
 		}
 		return spriteData;
 	}
