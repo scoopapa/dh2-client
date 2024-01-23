@@ -731,9 +731,6 @@ const Dex = new class implements ModdedDex {
 			spriteData.h *= 1.5;
 			spriteData.y += -11;
 		}
-		// Placeholder sprites for Pet Mods Fakemons with no sprite data
-		// window.modsprites[modSpriteId]: checks if it has custom sprite data.
-		// window.BattlePokemonSprites[modSpriteId]: checks if it is a real Pokemon.
 		if (window.BattlePokemonSprites && !window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
 			spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
 				gen: options.gen,
