@@ -1706,7 +1706,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (move.flags['slicing'] && abilityid === 'sharpness') {
 			return true;
 		}
-		if (moveData.basePower < 75 && !(abilityid === 'technician' && moveData.basePower <= 60 && moveData.basePower >= 50)) {
+		if (move.basePower < 75 && !(abilityid === 'technician' && move.basePower <= 60 && move.basePower >= 50)) {
 			return BattleMoveSearch.GOOD_WEAK_MOVES.includes(id);
 		}
 		return !BattleMoveSearch.BAD_STRONG_MOVES.includes(id);
