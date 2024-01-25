@@ -179,8 +179,7 @@ const Dex = new class implements ModdedDex {
 
 	pokeballs: string[] | null = null;
 
-	//TODO we might want to move this to something like data/petmods
-	readonly modResourcePrefix = 'https://raw.githubusercontent.com/scoopapa/dh2/master/data/mods/';
+	readonly modResourcePrefix = 'https://media.githubusercontent.com/media/scoopapa/DH2/main/data/mods/';
 
 
 	resourcePrefix = (() => {
@@ -740,15 +739,14 @@ const Dex = new class implements ModdedDex {
 			spriteData.h *= 1.5;
 			spriteData.y += -11;
 		}
-		// Placeholder sprites for Pet Mods Fakemons with no sprite data
-		// window.modsprites[modSpriteId]: checks if it has custom sprite data.
-		// window.BattlePokemonSprites[modSpriteId]: checks if it is a real Pokemon.
-		// if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
-		// 	spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
-		// 		gen: options.gen,
-		// 		mod: options.mod,
-		// 	});
-		// }
+		if (window.BattlePokemonSprites) {
+			if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
+				spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
+					gen: options.gen,
+					mod: options.mod,
+				});
+			}
+		}
 		return spriteData;
 	}
 
