@@ -671,7 +671,7 @@ const Dex = new class implements ModdedDex {
 			//For whatever reason if there is a cry but no true sprite data then options.mod becomes '' regardless of mod
 			//TODO: Possibly fix that? I wouldn't prioritize it though
 			if (window.ModSprites[modSpriteId]?.[options.mod]?.includes('cries')) {
-				spriteData.cryurl = resourcePrefix + options.mod + '/cries/' + speciesid + '.mp3';
+				spriteData.cryurl = resourcePrefix + options.mod + '/audio/cries/' + speciesid + '.mp3';
 			} else { //We couldn't find a cry
 				spriteData.cryurl = '';
 			}
