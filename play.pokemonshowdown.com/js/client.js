@@ -2063,7 +2063,7 @@ function toId() {
 
 		playNotificationSound: function () {
 			if (window.BattleSound && !Dex.prefs('mute')) {
-				BattleSound.playSound('audio/notification.wav', Dex.prefs('notifvolume'));
+				BattleSound.playSound('https://' + Config.routes.psmain + '/audio/notification.wav', Dex.prefs('notifvolume'));
 			}
 		},
 

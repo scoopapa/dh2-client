@@ -1757,17 +1757,17 @@ function buildModSprites() {
 	const modDir = fs.readdirSync('caches/DH2/data/mods/');
 	for (const i in modDir) {
 		const modName = modDir[i];
-		const subFolders = ['anifront', 'anifront-shiny','aniback','aniback-shiny','front', 'front-shiny', 'back', 'back-shiny', 'icons', 'types', 'items'];
+		const subFolders = ['anifront', 'anifront-shiny','aniback','aniback-shiny','front', 'front-shiny', 'back', 'back-shiny', 'icons', 'types', 'items', 'cries'];
 		for (const j in subFolders) {
 			const subF = subFolders[j];
-			const spritePath = 'caches/DH2/data/mods/' + modName + '/sprites/' + subF;
+			const spritePath = 'caches/DH2/data/mods/' + modName + (j === 'cries' ? '/audio/' : '/sprites/') + subF;
 			const spriteDir = fs.existsSync(spritePath) ? fs.readdirSync(spritePath) : '';
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
 				const ext = id.split(".")[1];
 				id = toID(id.slice(0, id.length - 4));
-				if (!modSprites[id]) modSprites[id] = {};
-				if (!modSprites[id][modName]) modSprites[id][modName] = [];
+				modSprites[id] ||= {};
+				modSprites[id][modName] ||= [];
 				modSprites[id][modName].push(subF);
 			}
 		}

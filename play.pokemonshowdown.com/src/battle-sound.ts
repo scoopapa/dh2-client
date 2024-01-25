@@ -115,7 +115,7 @@ export const BattleSound = new class {
 		if (this.soundCache[url]) return this.soundCache[url];
 		try {
 			const sound = document.createElement('audio');
-			sound.src = 'https://' + Config.routes.psmain + '/' + url;
+			sound.src = url;
 			sound.volume = this.effectVolume / 100;
 			this.soundCache[url] = sound;
 			return sound;
@@ -142,7 +142,7 @@ export const BattleSound = new class {
 			this.deleteBgm(replaceBGM);
 		}
 
-		const bgm = new BattleBGM(url, loopstart, loopend);
+		const bgm = new BattleBGM('https://' + Config.routes.psmain + '/' + url, loopstart, loopend);
 		this.bgm.push(bgm);
 		return bgm;
 	}
