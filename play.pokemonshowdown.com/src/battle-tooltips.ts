@@ -1069,6 +1069,19 @@ class BattleTooltips {
 				stats.atk *= 2;
 			}
 		}
+		//Vaporemons
+		if (this.battle.tier.includes("VaporeMons")) {
+			if (item === 'mantisclaw') {
+				if (speciesName === 'Scyther') {
+					speedModifiers.push(1.5);
+				} else if (speciesName === 'Scizor') {
+					stats.def = Math.floor(stats.def * 1.3);
+					stats.spd = Math.floor(stats.spd * 1.3);
+				} else if (speciesName === 'Kleavor') {
+					stats.atk = Math.floor(stats.atk * 1.5);
+				}
+			}
+		}
 
 		if (speciesName === 'Ditto' && !(clientPokemon && 'transform' in clientPokemon.volatiles)) {
 			if (item === 'quickpowder') {
@@ -1166,9 +1179,41 @@ class BattleTooltips {
 					} else {
 						stats[statName] = Math.floor(stats[statName] * 1.3);
 					}
+				} 
+				if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
+					if (clientPokemon.volatiles['protomosis' + statName] || clientPokemon.volatiles['photondrive' + statName] ||
+						clientPokemon.volatiles['protocrysalis' + statName] || clientPokemon.volatiles['neurondrive' + statName] ||
+						clientPokemon.volatiles['protostasis' + statName] || clientPokemon.volatiles['runedrive' + statName]) {
+						if (statName === 'spe') {
+							speedModifiers.push(1.5);
+						} else {
+							stats[statName] = Math.floor(stats[statName] * 1.3);
+						}
+					}
 				}
 			}
 		}
+		if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
+			if (item === 'tuffytuff' && (this.battle.dex.species.get(serverPokemon.speciesForme).id === 'igglybuff' || 
+				this.battle.dex.species.get(serverPokemon.speciesForme).id === 'jigglypuff' || 
+				this.battle.dex.species.get(serverPokemon.speciesForme).id === 'wigglytuff')) {
+				stats.def *= 2;
+				stats.spd *= 2;
+			}
+			if (item === 'mithrilarmor') {
+				stats.def = Math.floor(stats.def * 1.2);
+			} 
+			if (item === 'snowglobe' && this.pokemonHasType(pokemon, 'Ice')) {
+				stats.def = Math.floor(stats.def * 1.5);
+			} 
+			if (item === 'sandclock' && this.pokemonHasType(pokemon, 'Rock')) {
+				stats.spd = Math.floor(stats.spd * 1.5);
+			} 
+			if (item === 'desertrose' && species === 'Florges' && this.battle.weather === 'sandstorm') {
+				stats.spd = Math.floor(stats.spd * 1.5);
+			}
+		}
+		
 		if (ability === 'marvelscale' && pokemon.status) {
 			stats.def = Math.floor(stats.def * 1.5);
 		}
@@ -1184,7 +1229,11 @@ class BattleTooltips {
 			stats.spd = Math.floor(stats.spd * 1.5);
 		}
 		if (ability === 'grasspelt' && this.battle.hasPseudoWeather('Grassy Terrain')) {
-			stats.def = Math.floor(stats.def * 1.5);
+			if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
+				stats.def = Math.floor(stats.def * 1.3333);
+			} else {
+				stats.def = Math.floor(stats.def * 1.5);
+			}
 		}
 		if (this.battle.hasPseudoWeather('Electric Terrain')) {
 			if (ability === 'surgesurfer') {
@@ -1543,6 +1592,10 @@ class BattleTooltips {
 			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
 			if (stats.atk > stats.spa) category = 'Physical';
 		}
+		/*if (this.battle.tier.includes("VaporeMons") && move.id === 'terablast' && itemName === 'Tera Shard') {
+			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
+			if (stats.atk > stats.spa) category = 'Physical';
+		}*/
 		return [moveType, category];
 	}
 
@@ -1686,6 +1739,9 @@ class BattleTooltips {
 		if (move.id === 'terablast' && pokemon.terastallized === 'Stellar') {
 			value.set(100, 'Tera Stellar boost');
 		}
+		/*if (['terablast'].includes(move.id) && 	this.battle.tier.includes("VaporeMons") && itemName === 'Tera Shard') {
+			value.set(100, 'Tera Shard boost');
+		}*/
 		if (move.id === 'brine' && target && target.hp * 2 <= target.maxhp) {
 			value.modify(2, 'Brine + target below half HP');
 		}
@@ -1859,7 +1915,15 @@ class BattleTooltips {
 			}
 		}
 		// Base power based on times hit
-		if (move.id === 'ragefist') {
+		if (this.battle.tier.includes("VaporeMons")) {//Vaporemons
+			if (move.id === 'ragefist' || move.id === 'ragingfury') {
+				value.set(Math.min(200, 50 + 50 * pokemon.timesAttacked),
+					pokemon.timesAttacked > 0
+						? `Hit ${pokemon.timesAttacked} time${pokemon.timesAttacked > 1 ? 's' : ''}`
+						: undefined);
+			}
+		}
+		if (move.id === 'ragefist' && !this.battle.tier.includes("VaporeMons")) {
 			value.set(Math.min(350, 50 + 50 * pokemon.timesAttacked),
 				pokemon.timesAttacked > 0
 					? `Hit ${pokemon.timesAttacked} time${pokemon.timesAttacked > 1 ? 's' : ''}`
@@ -1886,7 +1950,10 @@ class BattleTooltips {
 		if (['psn', 'tox'].includes(pokemon.status) && move.category === 'Physical') {
 			value.abilityModify(1.5, "Toxic Boost");
 		}
-		if (['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm') {
+		if (['Rock', 'Ground', 'Steel'].includes(moveType) && this.battle.weather === 'sandstorm' && !this.battle.tier.includes("VaporeMons")) {
+			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
+		}
+		if (this.battle.weather === 'sandstorm' && this.battle.tier.includes("VaporeMons")) {
 			if (value.tryAbility("Sand Force")) value.weatherModify(1.3, "Sandstorm", "Sand Force");
 		}
 		if (move.secondaries) {
@@ -1952,7 +2019,11 @@ class BattleTooltips {
 				} else if (allyAbility === 'Power Spot' && ally !== pokemon) {
 					value.modify(1.3, 'Power Spot');
 				} else if (allyAbility === 'Steely Spirit' && moveType === 'Steel') {
-					value.modify(1.5, 'Steely Spirit');
+					if (this.battle.tier.includes("VaporeMons")) {
+						value.modify(2, 'Steely Spirit');
+					} else {
+						value.modify(1.5, 'Steely Spirit');
+					}
 				}
 			}
 			for (const foe of pokemon.side.foe.active) {
@@ -2145,10 +2216,36 @@ class BattleTooltips {
 
 		if (itemName === 'Muscle Band' && move.category === 'Physical' ||
 			itemName === 'Wise Glasses' && move.category === 'Special' ||
-			itemName === 'Punching Glove' && move.flags['punch']) {
+			itemName === 'Punching Glove' && move.flags['punch'] && !this.battle.tier.includes("VaporeMons")) {
 			value.itemModify(1.1);
 		}
-
+		//Vaporemons
+		if (this.battle.tier.includes("VaporeMons")) {
+			if (itemName === 'Protective Pads' && (move.recoil || move.hasCrashDamage) ||
+				itemName === 'Quick Claw' && move.priority > 0.1 ||
+				itemName === 'Razor Fang' && move.flags['bite'] ||
+				itemName === 'Razor Claw' && move.flags['slicing'] ||
+				itemName === 'Big Root' && move.flags['heal'] ||
+				itemName === 'Punching Glove' && move.flags['punch']) {
+				value.itemModify(1.3);
+			} else if (itemName === 'Baseball Bat' && move.flags['contact']) {
+				value.itemModify(1.25);
+			} else if (itemName === 'Tie-Dye Band') {
+				if (this.pokemonHasType(pokemon, moveType)) {
+					value.itemModify(0.67);
+				} else {
+					value.itemModify(1.3);
+				}
+			} else if (itemName === 'Hero\' Bubble' && moveType === 'Water' && speciesName === 'Palafin') {
+				value.itemModify(2);
+			}/* else if (
+				(speciesName === 'Charizard' && itemName === 'Wellspring Mask') ||
+				(speciesName.startsWith('Ogerpon-Hearthflame') && itemName === 'Hearthflame Mask') ||
+				(speciesName.startsWith('Ogerpon-Cornerstone') && itemName === 'Cornerstone Mask')) {
+				value.itemModify(1.2);
+				return value;
+			}*/
+		}
 		return value;
 	}
 	getPokemonTypes(pokemon: Pokemon | ServerPokemon, preterastallized = false): ReadonlyArray<TypeName> {
