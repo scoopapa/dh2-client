@@ -1760,15 +1760,55 @@ function buildModSprites() {
 		const subFolders = ['anifront', 'anifront-shiny','aniback','aniback-shiny','front', 'front-shiny', 'back', 'back-shiny', 'icons', 'types', 'items', 'cries'];
 		for (const j in subFolders) {
 			const subF = subFolders[j];
-			const spritePath = 'caches/DH2/data/mods/' + modName + (j === 'cries' ? '/audio/' : '/sprites/') + subF;
+			const spritePath = 'caches/DH2/data/mods/' + modName + (subF === 'cries' ? '/audio/cries' : ('/sprites/' + subF));
 			const spriteDir = fs.existsSync(spritePath) ? fs.readdirSync(spritePath) : '';
+			let inheritDataPresent = false;
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
+				if (id === 'inherit') {
+					inheritDataPresent = true;
+					continue;
+				}
 				const ext = id.split(".")[1];
 				id = toID(id.slice(0, id.length - 4));
 				modSprites[id] ||= {};
 				modSprites[id][modName] ||= [];
-				modSprites[id][modName].push(subF);
+				modSprites[id][modName][subF] = null;
+			}
+			if (!inheritDataPresent) continue;
+			try {
+			//We're not outright making "inherit" a JSON because the other files would attempt to copypaste it and it would cause problems
+				const mappings = JSON.parse(fs.readFileSync(spritePath + "/inherit"));
+				for (const mon in mappings) {
+					//null is our indicator for the presence of a custom sprite already being uploaded
+					//Also you can't inherit from yourself
+					if (mappings[mon] === null || mappings[mon] === mon) continue;
+					modSprites[mon] ||= {};
+					modSprites[mon][modName] ||= {};
+					//Skip if we already have custom data on this mon
+					if (modSprites[mon][modName].hasOwnProperty(subF)) continue;
+					let inherited = mappings[mon];
+					if (modSprites[inherited] && modSprites[inherited][modName] && modSprites[inherited][modName].hasOwnProperty(subF)) {
+						//If we already decided that the inheritor inherits in of itself we inherit from that
+						//(cycles result in neither inheriting)
+						modSprites[mon][modName][subF] = modSprites[inherited][modName][subF]; 
+					} else {
+						//We don't have inherit data for this mapping, so let us inherit
+						while (mappings.hasOwnProperty(inherited) && inherited !== mon) {
+							//If there is a chain of inheritance track it to the source
+							inherited = mappings[inherited];
+						}
+						if (inherited === mon) {
+							//CYCLE SPOTTED, DO NOT INHERIT
+							modSprites[mon][modName][subF] = null;
+						} else {
+							//Now we inherit
+							modSprites[mon][modName][subF] = inherited;
+						}
+					}
+				}
+			} catch (e) {
+				console.log("WARNING: Failed to read inherit file under " + spritePath + " (it's meant to be formatted like a JSON)");
 			}
 		}
 	}
