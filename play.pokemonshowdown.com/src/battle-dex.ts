@@ -822,10 +822,14 @@ const Dex = new class implements ModdedDex {
 		Dex.species.get(id);
 		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
 		const moddata = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
-			//TODO: Have an inherited icon reflect fainting (That it doesn't is why this next line is commented out in the first place)
-		//if (moddata.inherit) return this.getPokemonIcon(moddata.inherit, facingLeft || false, mod);
-		mod = moddata.mod;
-		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
+		//TODO: Figure out a way for inherited sprites to show up as fainted
+		//("?" icons will be used as placeholders for fainted inherited sprites for the time being)
+		if (!moddata.inherit) {
+			mod = moddata.mod;
+			if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
+		} else if (!fainted) {
+			return this.getPokemonIcon(moddata.inherit, facingLeft || false, mod);
+		}
 		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v16) no-repeat scroll -${left}px -${top}px${fainted}`;
 
 	}
