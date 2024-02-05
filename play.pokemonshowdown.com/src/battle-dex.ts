@@ -482,7 +482,7 @@ const Dex = new class implements ModdedDex {
 		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {
 			for (const prefix of ['ani', '']) {
 				if (window.ModSprites[spriteId][optionsMod].hasOwnProperty(prefix + filepath))
-					//It won't matter if 
+					//It won't matter if it inherits in another mod or not, point is it has data in this mod
 					return {mod: optionsMod, inherit: window.ModSprites[spriteId][optionsMod][prefix + filepath]};
 			}
 		}
@@ -941,7 +941,7 @@ const Dex = new class implements ModdedDex {
 		}
 	}
 
-	//TODO: Support modded ones maybe?
+	//TODO: Support replaced sprites from mods maybe?
 	getCategoryIcon(category: string | null) {
 		const categoryID = toID(category);
 		let sanitizedCategory = '';
