@@ -475,18 +475,28 @@ const Dex = new class implements ModdedDex {
 	// getSpriteMod is used to find the correct mod folder for the sprite url to use
 	// id is the name of the pokemon, type, or item. folder refers to "front", or "back-shiny" etc. overrideStandard is false for custom elements and true for canon elements
 	getSpriteMod(optionsMod: string, spriteId: string, filepath: string, overrideStandard: boolean = false) {
-		if (!window.ModSprites[spriteId]) return '';
-		if ((!optionsMod || !window.ModSprites[spriteId][optionsMod]) && !overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
-			for (const modName in window.ModSprites[spriteId]) {
-				if (window.ModSprites[spriteId][modName].includes(filepath)) return modName;
-				if (window.ModSprites[spriteId][modName].includes('ani' + filepath)) return modName;
+		 //Setting default value; This is returned if realmon or otherwise no custom sprite data
+		 //(Implementing it this way helps prioritize mods where it has a sprite over mods where it borrows for custom elements)
+		let pick = {mod: '', inherit: null};
+		if (!window.ModSprites[spriteId]) return pick;
+		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {
+			for (const prefix of ['ani', '']) {
+				if (window.ModSprites[spriteId][optionsMod].hasOwnProperty(prefix + filepath))
+					//It won't matter if 
+					return {mod: optionsMod, inherit: window.ModSprites[spriteId][optionsMod][prefix + filepath]};
 			}
 		}
-		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {		
-			if (window.ModSprites[spriteId][optionsMod].includes('ani' + filepath)) return optionsMod;
-			if (window.ModSprites[spriteId][optionsMod].includes(filepath)) return optionsMod;
+		else if (!overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
+			for (const modName in window.ModSprites[spriteId]) {
+				for (const prefix of ['', 'ani']) {
+					const entry = window.ModSprites[spriteId][modName][prefix + filepath];
+					//With other mods, we prioritize ones that actually have the sprite
+					if (entry === null) return {mod: modName, inherit: null};
+					if (entry) pick = {mod: modName, inherit: entry};
+				}
+			}
 		}
-		return ''; // must be a real Pokemon or not have custom sprite data
+		return pick;
 	}
 
 	loadSpriteData(gen: 'xy' | 'bw') {
@@ -500,6 +510,46 @@ const Dex = new class implements ModdedDex {
 		let el = document.createElement('script');
 		el.src = path + 'data/pokedex-mini-bw.js' + qs;
 		document.getElementsByTagName('body')[0].appendChild(el);
+	}
+
+	
+	getCryUrl(miscData: any, species: Species, crymod: string, overrideStandard: boolean = false, resourcePrefix: string) {
+		const data = this.getSpriteMod(crymod, toID(species.spriteid), 'cries', overrideStandard);
+		//This is null if we're either using the provided cry or didn't find a cry in the first place
+		if (data.inherit) {
+			const newspecies = Dex.species.get(data.inherit);
+			miscData.num = newspecies.num
+			return this.getCryUrl(miscData, Dex.species.get(data.inherit), crymod, overrideStandard, resourcePrefix);
+		}
+		let url = '';
+		if (species.exists && miscData.num !== 0 && miscData.num > -5000) {
+			let baseSpeciesid = toID(species.baseSpecies);
+			if (BattlePokemonSprites[baseSpeciesid] || BattlePokemonSpritesBW[baseSpeciesid]) {
+				url = 'audio/cries/' + baseSpeciesid;
+				let formeid = species.formeid;
+				if (species.isMega || formeid && (
+					['-crowned','-eternal','-eternamax','-four','-hangry','-hero',
+					'-lowkey','-noice','-primal','-rapidstrike', '-roaming', '-school',
+					'-sky', '-starter', '-super', '-therian', '-unbound'].includes(formeid)
+					|| ['calyrex','kyurem','cramorant','indeedee','lycanroc','necrozma',
+						'oinkologne','oricorio','slowpoke','tatsugiri','zygarde'].includes(baseSpeciesid)
+				)) {
+					url += formeid;
+				}
+				url += '.mp3';
+			}
+		}
+
+		// Mod Cries
+		if (crymod === 'digimon') {
+			url = `sprites/${options.mod}/audio/${toID(species.baseSpecies)}.mp3`;
+		}
+		//If we already have a cry url we load from the main server, otherwise we attempt to load from our repository
+		if ((!(url &&= 'https://' + Config.routes.psmain + '/' + url)) && data.mod) {			
+			url = resourcePrefix + data.mod + '/audio/cries/' + species.id + '.mp3';
+		}
+		//console.log ("URL for " + species.id + " cry is " + url);
+		return url;
 	}
 
 	getSpriteData(pokemon: Pokemon | Species | string, isFront: boolean, options: {
@@ -537,13 +587,16 @@ const Dex = new class implements ModdedDex {
 		let spriteDir = 'sprites/';
 		let hasCustomSprite = false;
 		let modSpriteId = toID(modSpecies.spriteid);		
-		options.mod = this.getSpriteMod(options.mod, modSpriteId, isFront ? 'front' : 'back', modSpecies.exists);
+		let firstmod = options.mod;
+		const searchedMod = this.getSpriteMod(options.mod, modSpriteId, isFront ? 'front' : 'back', modSpecies.exists);
+		options.mod = searchedMod.mod;
+		let cryResourcePrefix = resourcePrefix;
 		if (options.mod) {
 			resourcePrefix = Dex.modResourcePrefix;
 			spriteDir = `${options.mod}/sprites/`;
 			hasCustomSprite = true;
-			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists) === '') options.shiny = false;
-		}
+			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists).mod === '') options.shiny = false;
+		} else if (this.getSpriteMod(firstmod, modSpriteId, 'cries', modSpecies.exists).mod) cryResourcePrefix = Dex.modResourcePrefix;
 
 		const species = Dex.species.get(pokemon);
 		// Gmax sprites are already extremely large, so we don't need to double.
@@ -603,45 +656,22 @@ const Dex = new class implements ModdedDex {
 		if (!animationData) animationData = {};
 		if (!miscData) miscData = {};
 
-		if (miscData.num !== 0 && miscData.num > -5000) {
-			let baseSpeciesid = toID(species.baseSpecies);
-			spriteData.cryurl = 'audio/cries/' + baseSpeciesid;
-			let formeid = species.formeid;
-			if (species.isMega || formeid && (
-				formeid === '-crowned' ||
-				formeid === '-eternal' ||
-				formeid === '-eternamax' ||
-				formeid === '-four' ||
-				formeid === '-hangry' ||
-				formeid === '-hero' ||
-				formeid === '-lowkey' ||
-				formeid === '-noice' ||
-				formeid === '-primal' ||
-				formeid === '-rapidstrike' ||
-				formeid === '-roaming' ||
-				formeid === '-school' ||
-				formeid === '-sky' ||
-				formeid === '-starter' ||
-				formeid === '-super' ||
-				formeid === '-therian' ||
-				formeid === '-unbound' ||
-				baseSpeciesid === 'calyrex' ||
-				baseSpeciesid === 'kyurem' ||
-				baseSpeciesid === 'cramorant' ||
-				baseSpeciesid === 'indeedee' ||
-				baseSpeciesid === 'lycanroc' ||
-				baseSpeciesid === 'necrozma' ||
-				baseSpeciesid === 'oinkologne' ||
-				baseSpeciesid === 'oricorio' ||
-				baseSpeciesid === 'slowpoke' ||
-				baseSpeciesid === 'tatsugiri' ||
-				baseSpeciesid === 'zygarde'
-			)) {
-				spriteData.cryurl += formeid;
-			}
-			spriteData.cryurl += '.mp3';
+		spriteData.cryurl = Dex.getCryUrl(miscData, species, firstmod, modSpecies.exists, cryResourcePrefix);
+		if (searchedMod.inherit) {
+			let newoptions = {
+				gen: mechanicsGen,
+				shiny: spriteData.shiny,
+				gender: options.gender || 'N',
+				afd: options.afd || false,
+				noScale: options.noScale || false,
+				mod: firstmod,
+				dynamax: isDynamax
+			};
+			let overwriteData = Dex.getSpriteData(searchedMod.inherit, isFront, newoptions);
+			overwriteData.cryurl = spriteData.cryurl;
+			return overwriteData;
 		}
-
+		
 		if (options.shiny && mechanicsGen > 1) dir += '-shiny';
 
 		// April Fool's 2014
@@ -661,21 +691,6 @@ const Dex = new class implements ModdedDex {
 			}
 			return spriteData;
 		}
-
-		// Mod Cries
-		if (options.mod === 'digimon') {
-			spriteData.cryurl = `sprites/${options.mod}/audio/${toID(species.baseSpecies)}.mp3`;
-		}
-		//If we already have a cry url we load from the main server, otherwise we try to search for the presence of a custom cry
-		if (!(spriteData.cryurl &&= 'https://' + Config.routes.psmain + '/' + spriteData.cryurl)) {			
-			//For whatever reason if there is a cry but no true sprite data then options.mod becomes '' regardless of mod
-			//TODO: Possibly fix that? I wouldn't prioritize it though
-			if (window.ModSprites[modSpriteId]?.[options.mod]?.includes('cries')) {
-				spriteData.cryurl = resourcePrefix + options.mod + '/audio/cries/' + speciesid + '.mp3';
-			} else { //We couldn't find a cry
-				spriteData.cryurl = '';
-			}
-		}
 		
 		let hasCustomAnim = false;
 		if (hasCustomSprite && window.ModSprites[modSpriteId][options.mod].includes('ani' + facing)){
@@ -694,7 +709,6 @@ const Dex = new class implements ModdedDex {
 			spriteData.w = animationData[facing].w;
 			spriteData.h = animationData[facing].h;
 			spriteData.url += dir + '/' + name + '.gif';
-			console.log(animationData[facing]);
 		} else {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
@@ -807,7 +821,10 @@ const Dex = new class implements ModdedDex {
 		let fainted = ((pokemon as Pokemon | ServerPokemon)?.fainted ? `;opacity:.3;filter:grayscale(100%) brightness(.5)` : ``);
 		Dex.species.get(id);
 		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
-		mod = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
+		const moddata = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
+			//TODO: Have an inherited icon reflect fainting (That it doesn't is why this next line is commented out in the first place)
+		//if (moddata.inherit) return this.getPokemonIcon(moddata.inherit, facingLeft || false, mod);
+		mod = moddata.mod;
 		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
 		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v16) no-repeat scroll -${left}px -${top}px${fainted}`;
 
@@ -821,12 +838,14 @@ const Dex = new class implements ModdedDex {
 			spriteid = species.spriteid || toID(pokemon.species);
 		}
 		if (mod && window.ModConfig[mod].spriteGen) gen = window.ModConfig[mod].spriteGen;
-		mod = this.getSpriteMod(mod, id, 'front', species.exists !== false);
+		const moddata = this.getSpriteMod(mod, id, 'front', species.exists !== false);
+		if (moddata.inherit) return this.getTeambuilderSpriteData({species: moddata.inherit, spriteid: moddata.inherit, shiny: pokemon.shiny}, gen, mod);
+		mod = moddata.mod;
 		if (mod) {
 			return {
 				spriteDir: `${mod}/sprites/front`,
 				spriteid,
-				shiny: (this.getSpriteMod(mod, id, 'front-shiny', species.exists !== false) !== null && pokemon.shiny),
+				shiny: (this.getSpriteMod(mod, id, 'front-shiny', species.exists !== false).mod !== null && pokemon.shiny),
 				x: 10,
 				y: 5,
 			};
@@ -892,7 +911,9 @@ const Dex = new class implements ModdedDex {
 	getItemIcon(item: any, mod: string = '') {
 		let num = 0;
 		if (typeof item === 'string' && exports.BattleItems) item = exports.BattleItems[toID(item)];
-		mod = this.getSpriteMod(mod, item.id, 'items');
+		const moddata = this.getSpriteMod(mod, item.id, 'items');
+		if (moddata.inherit) return this.getItemIcon(mod, moddata.inherit, 'items');
+		mod = moddata.mod;
 		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/items/${item.id}.png) no-repeat`;
 		if (item?.spritenum) num = item.spritenum;
 
@@ -905,7 +926,10 @@ const Dex = new class implements ModdedDex {
 		type = this.types.get(type).name;
 		if (!type) type = '???';
 		let sanitizedType = type.replace(/\?/g, '%3f');
-		mod = this.getSpriteMod(mod, toID(type), 'types');
+		const moddata = this.getSpriteMod(mod, toID(type), 'types');
+		//Only real application I could see is mixing up type visuals but eh, consistency
+		if (moddata.inherit) return this.getTypeIcon(moddata.inherit, mod);
+		mod = moddata.mod;
 		if (mod && (type !== '???')) {
 			return `<img src="${this.modResourcePrefix}${mod}/sprites/types/${toID(type)}.png" alt="${type}" class="pixelated${b ? ' b' : ''}" />`;
 		} else {
@@ -913,6 +937,7 @@ const Dex = new class implements ModdedDex {
 		}
 	}
 
+	//TODO: Support modded ones maybe?
 	getCategoryIcon(category: string | null) {
 		const categoryID = toID(category);
 		let sanitizedCategory = '';
