@@ -826,7 +826,10 @@ const Dex = new class implements ModdedDex {
 		//("?" icons will be used as placeholders for fainted inherited sprites for the time being)
 		if (!moddata.inherit) {
 			mod = moddata.mod;
-			if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
+			if (mod) {
+				//TODO: If female try and check if "../icons/${id}f" is available, fall back on the default if no such file is found (which is to say there are no gender differences in the icon)
+				return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
+			}
 		} else if (!fainted) {
 			return this.getPokemonIcon(moddata.inherit, facingLeft || false, mod);
 		}
