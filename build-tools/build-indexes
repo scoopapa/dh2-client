@@ -1778,7 +1778,7 @@ function buildModSprites() {
 			}
 			if (!inheritDataPresent) continue;
 			try {
-			//We're not outright making "inherit" a JSON because the other files would attempt to copypaste it and it would cause problems
+			//We're not outright giving this file the .json suffix because the other files would attempt to copypaste it and it would cause problems
 				const mappings = JSON.parse(fs.readFileSync(spritePath + "/reused"));
 				for (const mon in mappings) {
 					//null is our indicator for the presence of a custom sprite already being uploaded
