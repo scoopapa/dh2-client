@@ -1765,7 +1765,7 @@ function buildModSprites() {
 			let inheritDataPresent = false;
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
-				if (id === 'inherit') {
+				if (id === 'reused') {
 					inheritDataPresent = true;
 					continue;
 				}
@@ -1773,12 +1773,13 @@ function buildModSprites() {
 				id = toID(id.slice(0, id.length - 4));
 				modSprites[id] ||= {};
 				modSprites[id][modName] ||= [];
+				//TODO: Find a more space-efficient means of indicating which mons share certain resources in a given mod
 				modSprites[id][modName][subF] = null;
 			}
 			if (!inheritDataPresent) continue;
 			try {
 			//We're not outright making "inherit" a JSON because the other files would attempt to copypaste it and it would cause problems
-				const mappings = JSON.parse(fs.readFileSync(spritePath + "/inherit"));
+				const mappings = JSON.parse(fs.readFileSync(spritePath + "/reused"));
 				for (const mon in mappings) {
 					//null is our indicator for the presence of a custom sprite already being uploaded
 					//Also you can't inherit from yourself
@@ -1808,7 +1809,7 @@ function buildModSprites() {
 					}
 				}
 			} catch (e) {
-				console.log("WARNING: Failed to read inherit file under " + spritePath + " (it's meant to be formatted like a JSON)");
+				console.log("WARNING: Failed to read \"reused\" file under " + spritePath + " (it's meant to be formatted like a JSON)");
 			}
 		}
 	}
