@@ -478,21 +478,40 @@ const Dex = new class implements ModdedDex {
 		 //Setting default value; This is returned if realmon or otherwise no custom sprite data
 		 //(Implementing it this way helps prioritize mods where it has a sprite over mods where it borrows for custom elements)
 		let pick = {mod: '', inherit: null};
-		if (!window.ModSprites[spriteId]) return pick;
-		if (optionsMod && window.ModSprites[spriteId][optionsMod]) {
-			for (const prefix of ['ani', '']) {
-				if (window.ModSprites[spriteId][optionsMod].hasOwnProperty(prefix + filepath))
-					//It won't matter if it inherits in another mod or not, point is it has data in this mod
-					return {mod: optionsMod, inherit: window.ModSprites[spriteId][optionsMod][prefix + filepath]};
+		if (!window.ModSprites[spriteId] && !window.ModSprites.ReusedResources[spriteId]) return pick;
+		const reuseLocation = window.ModSprites.ReusedResources[spriteId];
+		if (optionsMod) { 
+			if (window.ModSprites[spriteId] && window.ModSprites[spriteId][optionsMod]) {
+				for (const prefix of ['ani', '']) {
+					if (window.ModSprites[spriteId][optionsMod].includes(prefix + filepath))
+						return {mod: optionsMod, inherit: null};
+				}
+			}
+			if (reuseLocation && reuseLocation[optionsMod]) {
+				console.log("Checking reuse in " + optionsMod + " for " + spriteId);
+				for (const prefix of ['ani', '']) {
+					if (reuseLocation[optionsMod].hasOwnProperty(prefix + filepath))
+						return {mod: optionsMod, inherit: reuseLocation[optionsMod][prefix + filepath]};
+				}
 			}
 		}
 		else if (!overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
 			for (const modName in window.ModSprites[spriteId]) {
-				for (const prefix of ['', 'ani']) {
-					const entry = window.ModSprites[spriteId][modName][prefix + filepath];
-					//With other mods, we prioritize ones that actually have the sprite
-					if (entry === null) return {mod: modName, inherit: null};
-					if (entry) pick = {mod: modName, inherit: entry};
+				if (window.ModSprites[spriteId] && window.ModSprites[spriteId][modName]) {
+					for (const prefix of ['', 'ani']) {
+						if (window.ModSprites[spriteId][modName].includes(prefix + filepath))
+							return {mod: modName, inherit: null};
+					}
+				}
+				if (reuseLocation && !pick.mod && reuseLocation[modName]) {
+					console.log("Checking reuse in " + optionsMod + " for " + spriteId);
+					for (const prefix of ['', 'ani']) {
+						const entry = reuseLocation[modName][prefix + filepath];
+						if (entry) {
+							pick = {mod: modName, inherit: entry};
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -592,7 +611,7 @@ const Dex = new class implements ModdedDex {
 		options.mod = searchedMod.mod;
 		let cryResourcePrefix = resourcePrefix;
 		if (options.mod) {
-			resourcePrefix = Dex.modResourcePrefix;
+			cryResourcePrefix = resourcePrefix = Dex.modResourcePrefix;
 			spriteDir = `${options.mod}/sprites/`;
 			hasCustomSprite = true;
 			if (this.getSpriteMod(options.mod, modSpriteId, (isFront ? 'front' : 'back') + '-shiny', modSpecies.exists).mod === '') options.shiny = false;
@@ -722,7 +741,7 @@ const Dex = new class implements ModdedDex {
 					name += '-f';
 				}
 				//If it's a custom sprite, does it have separate sprites for male and female?
-				else if (window.ModSprites[modSpriteId] && window.ModSprites[modSpriteId + 'f']) {
+				else if (window.ModSprites[modSpriteId] && window.ModSprites[modSpriteId + 'f'] && window.ModSprites[modSpriteId + 'f'][options.mod]) {
 					name += 'f';
 				}
 			}
@@ -756,10 +775,12 @@ const Dex = new class implements ModdedDex {
 		}
 		if (window.BattlePokemonSprites) {
 			if (!window.ModSprites[modSpriteId] && !window.BattlePokemonSprites[modSpriteId] && pokemon !== 'substitute') {
+				let currentcry = spriteData.cryurl;
 				spriteData = Dex.getSpriteData('substitute', spriteData.isFrontSprite, {
 					gen: options.gen,
 					mod: options.mod,
 				});
+				spriteData.cryurl = currentcry;
 			}
 		}
 		return spriteData;
