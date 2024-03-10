@@ -965,7 +965,7 @@ const Dex = new class implements ModdedDex {
 		}
 	}
 
-	//TODO: Support replaced sprites from mods maybe?
+	//TODO: Support replaced category icons from mods maybe?
 	getCategoryIcon(category: string | null) {
 		const categoryID = toID(category);
 		let sanitizedCategory = '';
