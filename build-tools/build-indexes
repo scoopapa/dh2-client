@@ -1753,7 +1753,7 @@ function buildLearnsets() {
  *********************************************************/
 
 function buildModSprites() {
-	const modSprites = {};
+	const modSprites = {ReusedResources: {}};
 	const modDir = fs.readdirSync('caches/DH2/data/mods/');
 	for (const i in modDir) {
 		const modName = modDir[i];
