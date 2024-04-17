@@ -843,18 +843,14 @@ const Dex = new class implements ModdedDex {
 		Dex.species.get(id);
 		let species = window.BattlePokedexAltForms && window.BattlePokedexAltForms[id] ? window.BattlePokedexAltForms[id] : Dex.species.get(id);
 		const moddata = this.getSpriteMod(mod, id, 'icons', species.exists !== false);
-		//TODO: Figure out a way for inherited sprites to show up as fainted
-		//("?" icons will be used as placeholders for fainted inherited sprites for the time being)
-		if (!moddata.inherit) {
-			mod = moddata.mod;
-			if (mod) {
-				//TODO: If female try and check if "../icons/${id}f" is available, fall back on the default if no such file is found (which is to say there are no gender differences in the icon)
-				return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
-			}
-		} else if (!fainted) {
-			return this.getPokemonIcon(moddata.inherit, facingLeft || false, mod);
+		if (moddata.inherit) {
+			return this.getPokemonIcon(moddata.inherit, facingLeft || false, mod) + fainted;
 		}
+		mod = moddata.mod;
+		//TODO: Add support for icon gender differences (how to pass the gender as an argument...)
+		if (mod) return `background:transparent url(${this.modResourcePrefix}${mod}/sprites/icons/${id}.png) no-repeat scroll -0px -0px${fainted}`;
 		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v16) no-repeat scroll -${left}px -${top}px${fainted}`;
+
 
 	}
 
