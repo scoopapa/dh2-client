@@ -488,7 +488,7 @@ const Dex = new class implements ModdedDex {
 				}
 			}
 			if (reuseLocation && reuseLocation[optionsMod]) {
-				console.log("Checking reuse in " + optionsMod + " for " + spriteId);
+				//console.log("Checking reuse in " + optionsMod + " for " + spriteId);
 				for (const prefix of ['ani', '']) {
 					if (reuseLocation[optionsMod].hasOwnProperty(prefix + filepath))
 						return {mod: optionsMod, inherit: reuseLocation[optionsMod][prefix + filepath]};
@@ -504,7 +504,7 @@ const Dex = new class implements ModdedDex {
 					}
 				}
 				if (reuseLocation && !pick.mod && reuseLocation[modName]) {
-					console.log("Checking reuse in " + optionsMod + " for " + spriteId);
+					//console.log("Checking reuse in " + optionsMod + " for " + spriteId);
 					for (const prefix of ['', 'ani']) {
 						const entry = reuseLocation[modName][prefix + filepath];
 						if (entry) {
