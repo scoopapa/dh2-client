@@ -488,14 +488,14 @@ const Dex = new class implements ModdedDex {
 				}
 			}
 			if (reuseLocation && reuseLocation[optionsMod]) {
-				//console.log("Checking reuse in " + optionsMod + " for " + spriteId);
+				//console.log("Checking reuse in " + optionsMod + " for " + spriteId + " on " + filepath);
 				for (const prefix of ['ani', '']) {
 					if (reuseLocation[optionsMod].hasOwnProperty(prefix + filepath))
 						return {mod: optionsMod, inherit: reuseLocation[optionsMod][prefix + filepath]};
 				}
 			}
 		}
-		else if (!overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
+		if (!overrideStandard) { // for custom elements only, it will use sprites from another mod if the mod provided doesn't have one
 			for (const modName in window.ModSprites[spriteId]) {
 				if (window.ModSprites[spriteId] && window.ModSprites[spriteId][modName]) {
 					for (const prefix of ['', 'ani']) {
@@ -503,12 +503,15 @@ const Dex = new class implements ModdedDex {
 							return {mod: modName, inherit: null};
 					}
 				}
-				if (reuseLocation && !pick.mod && reuseLocation[modName]) {
-					//console.log("Checking reuse in " + optionsMod + " for " + spriteId);
+
+			}
+			if (reuseLocation) {
+				for (const modName in reuseLocation) {
+					//console.log("Checking reuse in " + optionsMod + " for a replacement for " + spriteId + " on " + filepath);
 					for (const prefix of ['', 'ani']) {
 						const entry = reuseLocation[modName][prefix + filepath];
 						if (entry) {
-							pick = {mod: modName, inherit: entry};
+							return {mod: modName, inherit: entry};
 							break;
 						}
 					}
