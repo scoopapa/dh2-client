@@ -302,7 +302,7 @@
 
 		// icon
 		buf += '<span class="col iconcol">';
-		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name, false, this.mod) + '"></span>';
+		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name, false, this.engine.dex.modid) + '"></span>';
 		buf += '</span> ';
 
 		// name

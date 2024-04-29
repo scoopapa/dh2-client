@@ -676,14 +676,15 @@ export class BattleScene implements BattleSceneStub {
 				pokemonhtml += `<span class="picon" style="` + Dex.getPokemonIcon('zoroark') + `" title="Unrevealed Illusion user" aria-label="Unrevealed Illusion user"></span>`;
 			} else if (!poke) {
 				pokemonhtml += `<span class="picon" style="` + Dex.getPokemonIcon('pokeball') + `" title="Not revealed" aria-label="Not revealed"></span>`;
-			} else if (!poke.ident && this.battle.teamPreviewCount && this.battle.teamPreviewCount < side.pokemon.length) {
-				// in VGC (bring 6 pick 4) and other pick-less-than-you-bring formats, this is
-				// a pokemon that's been brought but not necessarily picked
-				const details = this.getDetailsText(poke);
-				pokemonhtml += `<span${tooltipCode} style="` + Dex.getPokemonIcon(poke, !side.isFar) + `;opacity:0.6" aria-label="${details}"></span>`;
 			} else {
+				pokemonhtml += `<span${tooltipCode} style="` + Dex.getPokemonIcon(poke, !side.isFar, this.battle.mod);
 				const details = this.getDetailsText(poke);
-				pokemonhtml += `<span${tooltipCode} style="` + Dex.getPokemonIcon(poke, !side.isFar) + `" aria-label="${details}"></span>`;
+				if (!poke.ident && this.battle.teamPreviewCount && this.battle.teamPreviewCount < side.pokemon.length) {
+					// in VGC (bring 6 pick 4) and other pick-less-than-you-bring formats, this is
+					// a pokemon that's been brought but not necessarily picked
+					pokemonhtml += `;opacity:0.6`;
+				}
+				pokemonhtml += `" aria-label="${details}"></span>`;
 			}
 			if (i % 3 === 2) pokemonhtml += `</div><div class="teamicons">`;
 		}
