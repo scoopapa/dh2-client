@@ -1753,7 +1753,7 @@ function buildLearnsets() {
  *********************************************************/
 
 function buildModSprites() {
-	const modSprites = {};
+	const modSprites = {ReusedResources: {}};
 	const modDir = fs.readdirSync('caches/DH2/data/mods/');
 	for (const i in modDir) {
 		const modName = modDir[i];
@@ -1762,13 +1762,74 @@ function buildModSprites() {
 			const subF = subFolders[j];
 			const spritePath = 'caches/DH2/data/mods/' + modName + (subF === 'cries' ? '/audio/cries' : ('/sprites/' + subF));
 			const spriteDir = fs.existsSync(spritePath) ? fs.readdirSync(spritePath) : '';
+			let inheritDataPresent = false;
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
+				if (id === 'reused') {
+					inheritDataPresent = true;
+					continue;
+				}
 				const ext = id.split(".")[1];
+				//These are our supported file extensions, if missing we skip
+				if (!["png","gif","mp3"].includes(ext)) continue;
 				id = toID(id.slice(0, id.length - 4));
-				modSprites[id] ||= {};
-				modSprites[id][modName] ||= [];
-				modSprites[id][modName].push(subF);
+				if (!modSprites[id]) modSprites[id] = {[modName]: [subF]};
+				else if (!modSprites[id][modName]) modSprites[id][modName] = [subF];
+				else modSprites[id][modName].push(subF);
+			}
+			//We're not adding the .JSON extension outright because the other files would attempt to copypaste it and it would cause problems
+			if (!inheritDataPresent) continue;
+			try {
+				const mappings = JSON.parse(fs.readFileSync(spritePath + "/reused"));
+				for (const mon in mappings) {
+					let inherited = mappings[mon];
+					//null is not valid to inherit from
+					//Also you can't inherit from yourself
+					if (inherited === null || inherited === mon) continue;
+					//Skip if we already have custom data on this mon
+					if (modSprites[mon] && modSprites[mon][modName] && modSprites[mon][modName].includes(subF)) continue;
+					if (!modSprites.ReusedResources[mon]) {
+						modSprites.ReusedResources[mon] = {[modName]: {}};
+					} else if (!modSprites.ReusedResources[mon][modName]) {
+						modSprites.ReusedResources[mon][modName] = {};
+					} else if (modSprites.ReusedResources[mon][modName].hasOwnProperty(subF)){
+						//We already handled this, it was presumably caught in an inherit chain
+						continue;
+					}
+					//If we already decided that the inheritor inherits in of itself we inherit from that
+					//(cycles result in neither inheriting)
+					if (modSprites.ReusedResources[inherited] && modSprites.ReusedResources[inherited][modName]
+						&& modSprites.ReusedResources[inherited][modName].hasOwnProperty(subF)) {
+						modSprites.ReusedResources[mon][modName][subF] = modSprites.ReusedResources[inherited][modName][subF]; 
+					} else {
+						//We don't have inherit data for this mapping, so let us inherit
+						const inheritChain = [mon];
+						//If there is a chain of inheritance track it to the source
+						//"inherited !== mon" breaks the loop if the inheritance is cyclic
+						while (mappings.hasOwnProperty(inherited) && inherited !== mon
+							//We're cutting off the inherit chain if we come across a preexisting element.
+							&& !(modSprites.hasOwnProperty(inherited) && modSprites[inherited].hasOwnProperty(modName)
+								&& modSprites[inherited][modName].contains(subF))) {
+							inheritChain.push(inherited);
+							inherited = mappings[inherited];
+						}
+						//If there's a cycle none of these guys are inheriting
+						if (inherited === mon) {
+							for (const chainInherit of inheritChain) {
+								modSprites[chainInherit] ||= {};
+								if (!modSprites[chainInherit].hasOwnProperty(modName)) modSprites[chainInherit][modName] = [subF];
+								else modSprites[chainInherit][modName].push(subF);
+							}
+						} else {
+							//We're inheriting here
+							for (const chainInherit of inheritChain) {
+								modSprites.ReusedResources[chainInherit][modName][subF] = inherited;
+							}
+						}
+					}
+				}
+			} catch (e) {
+				console.log("WARNING: Failed to read \"reused\" file under " + spritePath + " (it's meant to be formatted like a JSON)");
 			}
 		}
 	}
