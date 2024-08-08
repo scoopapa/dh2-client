@@ -181,6 +181,8 @@ replayEmbedContents = replayEmbedContents.replace(/play\.pokemonshowdown\.com/g,
 
 // Nobody cares about the news. Cheers.
 
+let indexContents2 = '';
+
 fs.writeFileSync('play.pokemonshowdown.com/index.html', indexContents);
 if (indexContents2) {
 	fs.writeFileSync('play.pokemonshowdown.com/index-test.html', indexContents2);
