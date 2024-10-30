@@ -1,2 +1,2 @@
-const server_repo = "https://github.com/KirbyRider1337/DH2.git";
+const server_repo = "https://github.com/scoopapa/DH2.git";
 module.exports = server_repo;
