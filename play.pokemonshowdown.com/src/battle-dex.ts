@@ -645,7 +645,8 @@ const Dex = new class implements ModdedDex {
 		if (options.shiny && mechanicsGen > 1) dir += '-shiny';
 
 		// April Fool's 2014
-		if (window.Config?.server?.afd || Dex.prefs('afd') || options.afd) {
+		if (Dex.prefs('afd') !== false && (window.Config?.server?.afd || Dex.prefs('afd') || options.afd)) {
+			// Explicit false check above means AFD will be off if the user disables it - no matter what
 			dir = 'afd' + dir;
 			spriteData.url += dir + '/' + name + '.png';
 			// Duplicate code but needed to make AFD tinymax work
@@ -853,7 +854,7 @@ const Dex = new class implements ModdedDex {
 		let xydexExists = (!species.isNonstandard || species.isNonstandard === 'Past' || species.isNonstandard === 'CAP') || [
 			"pikachustarter", "eeveestarter", "meltan", "melmetal", "pokestarufo", "pokestarufo2", "pokestarbrycenman", "pokestarmt", "pokestarmt2", "pokestargiant", "pokestarhumanoid", "pokestarmonster", "pokestarf00", "pokestarf002", "pokestarspirit",
 		].includes(species.id);
-		if (species.gen === 8 && species.isNonstandard !== 'CAP') xydexExists = false;
+		if (species.gen >= 8 && species.isNonstandard !== 'CAP') xydexExists = false;
 		if ((!gen || gen >= 6) && xydexExists) {
 			if (species.gen >= 7) {
 				spriteData.x = -6;
@@ -1010,14 +1011,14 @@ class ModdedDex {
 				data.name = table.fullItemName[id];
 				data.exists = true;
 			}
-			for(let i = Dex.gen - 1; i >= this.gen; i--) {
+			for (let i = Dex.gen - 1; i >= this.gen; i--) {
 				const genTable = window.BattleTeambuilderTable[`gen${i}`];
-				if (genTable.overrideItemInfo[id]) {
-					Object.assign(data, table.overrideItemInfo[id]);
+				if (id in genTable.overrideItemData) {
+					Object.assign(data, genTable.overrideItemData[id]);
 				}
 			}
-			if (this.modid !== `gen${this.gen}` && table.overrideItemInfo[id]) {
-					Object.assign(data, table.overrideItemInfo[id]);
+			if ((this.modid !== `gen${this.gen}`) && id in table.overrideItemData) {
+				Object.assign(data, table.overrideItemData[id]);
 			}
 
 			const item = new Item(id, name, data);
