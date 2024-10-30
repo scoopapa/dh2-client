@@ -186,6 +186,10 @@ class TeamTextbox extends preact.Component<{team: Team}> {
 }
 
 class TeamPanel extends PSRoomPanel<TeamRoom> {
+	backToList = () => {
+		PS.removeRoom(this.props.room);
+		PS.join('teambuilder' as RoomID);
+	};
 	rename = (e: Event) => {
 		const textbox = e.currentTarget as HTMLInputElement;
 		const room = this.props.room;
@@ -198,8 +202,7 @@ class TeamPanel extends PSRoomPanel<TeamRoom> {
 		const team = PS.teams.byKey[room.id.slice(5)];
 		if (!team) {
 			return <PSPanelWrapper room={room}>
-				<button class="button" data-href="teambuilder" data-target="replace">
-					<i class="fa fa-chevron-left"></i> List
+				<button class="button" onClick={this.backToList}>					<i class="fa fa-chevron-left"></i> List
 				</button>
 				<p class="error">
 					Team doesn't exist
@@ -210,8 +213,7 @@ class TeamPanel extends PSRoomPanel<TeamRoom> {
 		if (!room.team) room.team = team;
 		return <PSPanelWrapper room={room} scrollable>
 			<div class="pad">
-				<button class="button" data-href="teambuilder" data-target="replace">
-					<i class="fa fa-chevron-left"></i> List
+			<button class="button" onClick={this.backToList}>					<i class="fa fa-chevron-left"></i> List
 				</button>
 				<label class="label teamname">
 					Team name:

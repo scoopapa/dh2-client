@@ -218,7 +218,7 @@ function toId() {
 		getActionPHP: function () {
 			var ret = '/~~' + Config.server.id + '/action.php';
 			if (Config.testclient) {
-				ret = 'https://' + Config.routes.client + ret;
+				ret = 'https://play.pokemonshowdown.com/action.php';
 			}
 			return (this.getActionPHP = function () {
 				return ret;
@@ -2081,7 +2081,7 @@ function toId() {
 
 		playNotificationSound: function () {
 			if (window.BattleSound && !Dex.prefs('mute')) {
-				BattleSound.playSound('audio/notification.wav', Dex.prefs('notifvolume'));
+				BattleSound.playSound('https://' + Config.routes.psmain + '/audio/notification.wav', Dex.prefs('notifvolume'));
 			}
 		},
 

@@ -763,8 +763,7 @@ export class BattleLog {
 				return false;
 			},
 			getURI(uri: string) {
-				return `http://${Config.routes.root}/interstice?uri=${encodeURIComponent(uri)}`;
-			},
+				return `http://${Config.routes.psmain}/interstice?uri=${encodeURIComponent(uri)}`;			},
 		};
 	})();
 
@@ -1194,7 +1193,7 @@ export class BattleLog {
 		buf += '<div class="battle-log battle-log-inline"><div class="inner">' + battle.scene.log.elem.innerHTML + '</div></div>\n';
 		buf += '</div>\n';
 		buf += '<script>\n';
-		buf += `let daily = Math.floor(Date.now()/1000/60/60/24);document.write('<script src="https://${Config.routes.client}/js/replay-embed.js?version'+daily+'"></'+'script>');\n`;
+		buf += `let daily = Math.floor(Date.now()/1000/60/60/24);document.write('<script src="http://191.101.232.116//js/replay-embed.js?version'+daily+'"></'+'script>');\n`;
 		buf += '</script>\n';
 		return buf;
 	}

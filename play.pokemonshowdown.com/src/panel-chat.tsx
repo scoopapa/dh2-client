@@ -85,7 +85,7 @@ class ChatRoom extends PSRoom {
 			this.update(null);
 			return false;
 		}}
-		return super.handleMessage(line);
+		return false;
 	}
 	openChallenge() {
 		if (!this.pmTarget) {

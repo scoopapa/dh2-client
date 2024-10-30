@@ -115,7 +115,7 @@ export class BattleScene implements BattleSceneStub {
 		let numericId = 0;
 		if (battle.id) {
 			numericId = parseInt(battle.id.slice(battle.id.lastIndexOf('-') + 1), 10);
-			if (this.battle.id.includes('digimon')) this.mod = 'digimon';
+			if (this.battle.id.includes('digimon')) this.battle.mod = 'digimon';
 		}
 		if (!numericId) {
 			numericId = Math.floor(Math.random() * 1000000);
@@ -676,14 +676,15 @@ export class BattleScene implements BattleSceneStub {
 				pokemonhtml += `<span class="picon" style="` + Dex.getPokemonIcon('zoroark') + `" title="Unrevealed Illusion user" aria-label="Unrevealed Illusion user"></span>`;
 			} else if (!poke) {
 				pokemonhtml += `<span class="picon" style="` + Dex.getPokemonIcon('pokeball') + `" title="Not revealed" aria-label="Not revealed"></span>`;
-			} else if (!poke.ident && this.battle.teamPreviewCount && this.battle.teamPreviewCount < side.pokemon.length) {
-				// in VGC (bring 6 pick 4) and other pick-less-than-you-bring formats, this is
-				// a pokemon that's been brought but not necessarily picked
-				const details = this.getDetailsText(poke);
-				pokemonhtml += `<span${tooltipCode} style="` + Dex.getPokemonIcon(poke, !side.isFar) + `;opacity:0.6" aria-label="${details}"></span>`;
 			} else {
+				pokemonhtml += `<span${tooltipCode} style="` + Dex.getPokemonIcon(poke, !side.isFar, this.battle.mod);
 				const details = this.getDetailsText(poke);
-				pokemonhtml += `<span${tooltipCode} style="` + Dex.getPokemonIcon(poke, !side.isFar) + `" aria-label="${details}"></span>`;
+				if (!poke.ident && this.battle.teamPreviewCount && this.battle.teamPreviewCount < side.pokemon.length) {
+					// in VGC (bring 6 pick 4) and other pick-less-than-you-bring formats, this is
+					// a pokemon that's been brought but not necessarily picked
+					pokemonhtml += `;opacity:0.6`;
+				}
+				pokemonhtml += `" aria-label="${details}"></span>`;
 			}
 			if (i % 3 === 2) pokemonhtml += `</div><div class="teamicons">`;
 		}
@@ -842,7 +843,7 @@ export class BattleScene implements BattleSceneStub {
 				let spriteData = Dex.getSpriteData(pokemon, !!spriteIndex, {
 					gen: this.gen,
 					noScale: true,
-					mod: this.mod,
+					mod: this.battle.mod,
 				});
 				let y = 0;
 				let x = 0;
@@ -856,8 +857,11 @@ export class BattleScene implements BattleSceneStub {
 				if (textBuf) textBuf += ' / ';
 				textBuf += pokemon.speciesForme;
 				let url = spriteData.url;
+				var placeholderSprite = spriteData.isFrontSprite // Pet Mods placeholder sprites
+				? "https://play.pokemonshowdown.com/sprites/gen5/substitute.png"
+				: "https://play.pokemonshowdown.com/sprites/gen5-back/substitute.png";
 				// if (this.paused) url.replace('/xyani', '/xy').replace('.gif', '.png');
-				buf += '<img src="' + url + '" width="' + spriteData.w + '" height="' + spriteData.h + '" style="position:absolute;top:' + Math.floor(y - spriteData.h / 2) + 'px;left:' + Math.floor(x - spriteData.w / 2) + 'px" />';
+				buf += '<img src="' + url + '" width="' + spriteData.w + '" height="' + spriteData.h + '" style="position:absolute;top:' + Math.floor(y - spriteData.h / 2) + 'px;left:' + Math.floor(x - spriteData.w / 2) + 'px" onerror="this.src=\'' + placeholderSprite + '\'"/>';
 				buf2 += '<div style="position:absolute;top:' + (y + 45) + 'px;left:' + (x - 40) + 'px;width:80px;font-size:10px;text-align:center;color:#FFF;">';
 				const gender = pokemon.gender;
 				if (gender === 'M' || gender === 'F') {
@@ -1090,7 +1094,7 @@ export class BattleScene implements BattleSceneStub {
 	addPokemonSprite(pokemon: Pokemon) {
 		const sprite = new PokemonSprite(Dex.getSpriteData(pokemon, pokemon.side.isFar, {
 			gen: this.gen,
-			mod: this.mod,
+			mod: this.battle.mod,
 		}), {
 			x: pokemon.side.x,
 			y: pokemon.side.y,
@@ -1395,7 +1399,7 @@ export class BattleScene implements BattleSceneStub {
 
 	typeAnim(pokemon: Pokemon, types: string) {
 		const result = BattleLog.escapeHTML(types).split('/').map(type =>
-			'<img src="' + Dex.resourcePrefix + 'sprites/types/' + encodeURIComponent(type) + '.png" alt="' + type + '" class="pixelated" />'
+			Dex.getTypeIcon(encodeURIComponent(type),null,this.battle.mod)
 		).join(' ');
 		this.resultAnim(pokemon, result, 'neutral');
 	}
@@ -1539,6 +1543,21 @@ export class BattleScene implements BattleSceneStub {
 	}
 	afterMove(pokemon: Pokemon) {
 		return pokemon.sprite.afterMove();
+	}
+
+	updateSpritesForSide(side: Side) {
+		side.missedPokemon?.sprite?.destroy();
+
+		side.missedPokemon = {
+			sprite: new PokemonSprite(null, {
+				x: side.leftof(-100),
+				y: side.y,
+				z: side.z,
+				opacity: 0,
+			}, this, side.isFar),
+		} as any;
+
+		side.missedPokemon.sprite.isMissedPokemon = true;
 	}
 
 	// Misc
@@ -1989,7 +2008,7 @@ export class PokemonSprite extends Sprite {
 		if (this.$sub) return;
 		const subsp = Dex.getSpriteData('substitute', this.isFrontSprite, {
 			gen: this.scene.gen,
-			mod: this.scene.mod,
+			mod: this.scene.battle.mod,
 		});
 		this.subsp = subsp;
 		this.$sub = $('<img src="' + subsp.url + '" style="display:block;opacity:0;position:absolute"' + (subsp.pixelated ? ' class="pixelated"' : '') + ' />');
@@ -2104,7 +2123,7 @@ export class PokemonSprite extends Sprite {
 			if (!this.oldsp) this.oldsp = this.sp;
 			this.sp = Dex.getSpriteData(pokemon, this.isFrontSprite, {
 				gen: this.scene.gen,
-				mod: this.scene.mod,
+				mod: this.scene.battle.mod,
 			});
 		} else if (this.oldsp) {
 			this.sp = this.oldsp;
@@ -2509,7 +2528,7 @@ export class PokemonSprite extends Sprite {
 		if (!this.scene.animating && !isPermanent) return;
 		let sp = Dex.getSpriteData(pokemon, this.isFrontSprite, {
 			gen: this.scene.gen,
-			mod: this.scene.mod,
+			mod: this.scene.battle.mod,
 		});
 		let oldsp = this.sp;
 		if (isPermanent) {
@@ -2517,7 +2536,7 @@ export class PokemonSprite extends Sprite {
 				// if a permanent forme change happens while dynamaxed, we need an undynamaxed sprite to go back to
 				this.oldsp = Dex.getSpriteData(pokemon, this.isFrontSprite, {
 					gen: this.scene.gen,
-					mod: this.scene.mod,
+					mod: this.scene.battle.mod,
 					dynamax: false,
 				});
 			} else {
@@ -2818,12 +2837,12 @@ export class PokemonSprite extends Sprite {
 		} else if (pokemon.volatiles.typechange && pokemon.volatiles.typechange[1]) {
 			const types = pokemon.volatiles.typechange[1].split('/');
 			for (const type of types) {
-				status += '<img src="' + Dex.resourcePrefix + 'sprites/types/' + encodeURIComponent(type) + '.png" alt="' + type + '" class="pixelated" /> ';
+				status += Dex.getTypeIcon(encodeURIComponent(type),null,this.scene.battle.mod);
 			}
 		}
 		if (pokemon.volatiles.typeadd) {
 			const type = pokemon.volatiles.typeadd[1];
-			status += '+<img src="' + Dex.resourcePrefix + 'sprites/types/' + type + '.png" alt="' + type + '" class="pixelated" /> ';
+			status += Dex.getTypeIcon(type,null,this.scene.battle.mod);
 		}
 		for (const stat in pokemon.boosts) {
 			if (pokemon.boosts[stat]) {

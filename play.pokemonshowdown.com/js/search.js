@@ -108,9 +108,8 @@
 		var buf = '<p>Filters: ';
 		for (var i = 0; i < this.filters.length; i++) {
 			var text = this.filters[i][1];
-			if (this.filters[i][0] === 'move') text = Dex.moves.get(text).name;
-			if (this.filters[i][0] === 'pokemon') text = Dex.species.get(text).name;
-			buf += '<button class="filter" value="' + BattleLog.escapeHTML(this.filters[i].join(':')) + '">' + text + ' <i class="fa fa-times-circle"></i></button> ';
+			if (this.filters[i][0] === 'move') text = this.engine.dex.species.get(text).name;
+			if (this.filters[i][0] === 'pokemon') text = this.engine.dex.moves.get(text).name;			buf += '<button class="filter" value="' + BattleLog.escapeHTML(this.filters[i].join(':')) + '">' + text + ' <i class="fa fa-times-circle"></i></button> ';
 		}
 		if (!q) buf += '<small style="color: #888">(backspace = delete filter)</small>';
 		return buf + '</p>';
@@ -197,7 +196,7 @@
 		case 'sortmove':
 			return this.renderMoveSortRow();
 		case 'pokemon':
-			var pokemon = this.engine.dex.species.get(id);
+			var pokemon = this.engine.dex.species.get(id, (id, undefined, "from renderRow"));
 			return this.renderPokemonRow(pokemon, matchStart, matchLength, errorMessage, attrs);
 		case 'move':
 			var move = this.engine.dex.moves.get(id);
@@ -303,7 +302,7 @@
 
 		// icon
 		buf += '<span class="col iconcol">';
-		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name) + '"></span>';
+		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name, false, this.engine.dex.modid) + '"></span>';
 		buf += '</span> ';
 
 		// name
@@ -338,13 +337,12 @@
 		buf += '<span class="col typecol">';
 		var types = pokemon.types;
 		for (var i = 0; i < types.length; i++) {
-			buf += Dex.getTypeIcon(types[i]);
+			buf += Dex.getTypeIcon(types[i], null, this.mod);
 		}
 		buf += '</span> ';
-
 		// abilities
 		if (gen >= 3) {
-			var abilities = Dex.forGen(gen).species.get(id).abilities;
+			var abilities = pokemon.abilities;
 			if (gen >= 5) {
 				if (abilities['1']) {
 					buf += '<span class="col twoabilitycol">' + abilities['0'] + '<br />' +
@@ -407,7 +405,7 @@
 
 		// icon
 		buf += '<span class="col iconcol">';
-		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name) + '"></span>';
+		buf += '<span style="' + Dex.getPokemonIcon(pokemon.name, false, this.mod) + '"></span>';
 		buf += '</span> ';
 
 		// name
@@ -475,7 +473,7 @@
 
 		// icon
 		buf += '<span class="col itemiconcol">';
-		buf += '<span style="' + Dex.getItemIcon(item) + '"></span>';
+		buf += '<span style="' + Dex.getItemIcon(item, null, this.mod) + '"></span>';
 		buf += '</span> ';
 
 		// name
@@ -559,7 +557,7 @@
 
 		// type
 		buf += '<span class="col typecol">';
-		buf += Dex.getTypeIcon(move.type);
+		buf += Dex.getTypeIcon(move.type, null, this.engine.dex.modid);
 		buf += Dex.getCategoryIcon(move.category);
 		buf += '</span> ';
 
@@ -571,6 +569,9 @@
 		buf += '<span class="col pplabelcol"><em>PP</em><br />' + pp + '</span> ';
 
 		// desc
+		if (this.engine.dex.gen < 9 && !BattleTeambuilderTable[this.engine.dex.modid]?.overrideMoveInfo?.[id]?.shortDesc) {
+			move.shortDesc = Dex.mod("gen" + this.engine.dex.gen).moves.get(id).shortDesc; // this does not correctly give the gen 1 description, but if it did this would be a fix
+		}
 		buf += '<span class="col movedesccol">' + BattleLog.escapeHTML(move.shortDesc) + '</span> ';
 
 		buf += '</a></li>';
@@ -596,7 +597,7 @@
 
 		// type
 		buf += '<span class="col typecol">';
-		buf += Dex.getTypeIcon(move.type);
+		buf += Dex.getTypeIcon(move.type, null, this.engine.dex.modid);
 		buf += Dex.getCategoryIcon(move.category);
 		buf += '</span> ';
 

@@ -1091,6 +1091,7 @@ class Item implements Effect {
 	readonly id: ID;
 	readonly name: string;
 	readonly gen: number;
+	readonly isNonstandard: string;
 	readonly exists: boolean;
 
 	readonly num: number;
@@ -1118,6 +1119,7 @@ class Item implements Effect {
 		this.name = Dex.sanitizeName(name);
 		this.id = id;
 		this.gen = data.gen || 0;
+		this.isNonstandard = data.isNonstandard || undefined;
 		this.exists = ('exists' in data ? !!data.exists : true);
 
 		this.num = data.num || 0;
@@ -1204,7 +1206,7 @@ interface MoveFlags {
 	wind?: 1 | 0;
 }
 
-type MoveTarget = 'normal' | 'any' | 'adjacentAlly' | 'adjacentFoe' | 'adjacentAllyOrSelf' | // single-target
+type MoveTarget = 'normal' | 'any' | 'adjacentAlly' | 'adjacentFoe' | 'adjacentAllyOrSelf' | 'anyAlly' | // single-target
 	'self' | 'randomNormal' | // single-target, automatic
 	'allAdjacent' | 'allAdjacentFoes' | // spread
 	'allySide' | 'foeSide' | 'all'; // side and field
@@ -1231,6 +1233,7 @@ class Move implements Effect {
 	readonly desc: string;
 	readonly shortDesc: string;
 	readonly isNonstandard: string | null;
+	readonly viable: boolean | null;
 	readonly isZ: ID;
 	readonly zMove?: {
 		basePower?: number,
@@ -1239,7 +1242,7 @@ class Move implements Effect {
 	};
 	readonly isMax: boolean | string;
 	readonly maxMove: {basePower: number};
-	readonly ohko: true | 'Ice' | null;
+	readonly ohko: true | TypeName | null;
 	readonly recoil: number[] | null;
 	readonly heal: number[] | null;
 	readonly multihit: number[] | number | null;
@@ -1273,6 +1276,7 @@ class Move implements Effect {
 		this.desc = data.desc;
 		this.shortDesc = data.shortDesc;
 		this.isNonstandard = data.isNonstandard || null;
+		this.viable = ('viable' in data ? !!data.viable : null);
 		this.isZ = data.isZ || '';
 		this.zMove = data.zMove || {};
 		this.ohko = data.ohko || null;
