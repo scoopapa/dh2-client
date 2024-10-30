@@ -924,7 +924,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			if (learnset && (moveid in learnset) && (!(this.format.startsWith('tradebacks') || tradebacksMod.includes(this.mod)) ? learnset[moveid].includes(genChar) :
 				(learnset[moveid].includes(genChar) || (learnset[moveid].includes(`${gen + 1}`) && move.gen === gen)) &&
 				(!eggMovesOnly || (learnset[moveid].includes('e') && this.dex.gen === 9))
-				) {=
+				)) {
 				return true;
 			}
 			learnsetid = this.nextLearnsetid(learnsetid, speciesid, true);
@@ -1247,7 +1247,7 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 			tierSet = tierSet.filter(([type, id]) => {
 				if (id in table.gen5zuBans) return false;
 				return true;
-			}
+			});
 		}
 
 		// Filter out Gmax Pokemon from standard tier selection

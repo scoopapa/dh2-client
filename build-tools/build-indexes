@@ -730,6 +730,7 @@ function buildTeambuilderTables() {
 		const specificItems = [['header', "Pok&eacute;mon-specific items"]];
 		const poorItems = [['header', "Usually useless items"]];
 		const badItems = [['header', "Useless items"]];
+		const unreleasedItems = genNum === 6 ? ['header', "Unreleased"] : [];
 		for (const id of itemList) {
 			const item = Dex.mod(gen).items.get(id);
 			if (item.gen > genNum) {

@@ -1017,7 +1017,7 @@ class ModdedDex {
 					Object.assign(data, genTable.overrideItemData[id]);
 				}
 			}
-			if (this.modid !== `gen${this.gen}`) && id in table.overrideItemData) {
+			if ((this.modid !== `gen${this.gen}`) && id in table.overrideItemData) {
 				Object.assign(data, table.overrideItemData[id]);
 			}
 
