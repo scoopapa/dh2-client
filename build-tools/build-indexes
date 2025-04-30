@@ -1385,6 +1385,9 @@ function buildTeambuilderTables() {
 			for (const id in modData.Items) {
 				const modEntry = modData.Items[id];
 				const baseEntry = Dex.data.Items[id];
+				if(ModConfig[modConfigId].excludeStandardItems) {
+					if(ModConfig[modConfigId].customItems.indexOf(modEntry.name) == -1) continue;
+				}
 				if (typeof baseEntry === 'undefined') {
 					overrideItemInfo[id] = {};
 					overrideItemInfo[id] = modEntry;
