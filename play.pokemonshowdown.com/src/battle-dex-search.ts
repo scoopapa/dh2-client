@@ -1685,6 +1685,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 
 		const move = dex.moves.get(id);
 		if (!move.exists) return true;
+		if (BattleMovedex[id] === undefined) return false; // Fix for undefined moves
 		if (!BattleMovedex[id].exists) return true; //Flag custom moves as viable by default
 		if ((move.status === 'slp' || id === 'yawn') && dex.gen === 9 && !this.formatType) {
 			return false;
