@@ -583,6 +583,10 @@ const Dex = new class implements ModdedDex {
 		//     (eg. Darmanitan in graphicsGen 2) then we go up gens until it exists.
 		//
 		let graphicsGen = mechanicsGen;
+		// Mod Graphics override
+		const customGraphics = window.ModConfig[options.mod].graphicsGen;
+		if (customGraphics) graphicsGen = customGraphics;
+		// Respect prefs
 		if (Dex.prefs('nopastgens')) graphicsGen = 6;
 		if (Dex.prefs('bwgfx') && graphicsGen >= 6) graphicsGen = 5;
 		spriteData.gen = Math.max(graphicsGen, Math.min(species.gen, 5));
