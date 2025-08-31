@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/monsterhunter/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\nstatusmod: {\n        effectType: 'Rule',\n        name: 'Status Mod',\n        desc: \"Displays new statuses as a volatile\",\n        onSwitchIn (pokemon) {\n            if(pokemon.status) this.add('-start', pokemon, pokemon.status, '[silent]');\n        },\n    },\n}"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACzD,WAAW;AAAA,IACH,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,WAAY,SAAS;AACjB,UAAG,QAAQ;AAAQ,aAAK,IAAI,UAAU,SAAS,QAAQ,QAAQ,UAAU;AAAA,IAC7E;AAAA,EACJ;AACJ;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/branchedpotential/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[k: string]: ConditionData} = {\n\tchrienmor: {\n\t\tname: 'Chrienmor',\n\t\tonTypePriority: 1,\n\t\tonType(types, pokemon) {\n\t\t\tif (pokemon.transformed || pokemon.ability !== 'prism' && this.gen >= 8) return types;\n\t\t\tlet type: string | undefined = 'Normal';\n\t\t\tif (pokemon.ability === 'prism') {\n\t\t\t\ttype = pokemon.getItem().onMemory;\n\t\t\t\tif (!type) {\n\t\t\t\t\ttype = 'Normal';\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn [type];\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAA2C;AAAA,EACvD,WAAW;AAAA,IACV,MAAM;AAAA,IACN,gBAAgB;AAAA,IAChB,OAAO,OAAO,SAAS;AACtB,UAAI,QAAQ,eAAe,QAAQ,YAAY,WAAW,KAAK,OAAO;AAAG,eAAO;AAChF,UAAI,OAA2B;AAC/B,UAAI,QAAQ,YAAY,SAAS;AAChC,eAAO,QAAQ,QAAQ,EAAE;AACzB,YAAI,CAAC,MAAM;AACV,iBAAO;AAAA,QACR;AAAA,MACD;AACA,aAAO,CAAC,IAAI;AAAA,IACb;AAAA,EACD;AACD;",
+  "names": []
+}

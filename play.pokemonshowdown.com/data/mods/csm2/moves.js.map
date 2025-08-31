@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/csm2/moves.ts"],
+  "sourcesContent": ["export const Moves: {[k: string]: ModdedMoveData} = {\n\torderup: {\n\t\tnum: 856,\n\t\taccuracy: 100,\n\t\tbasePower: 80,\n\t\tcategory: \"Physical\",\n\t\tname: \"Order Up\",\n\t\tpp: 10,\n\t\tpriority: 0,\n\t\tflags: {protect: 1},\n\t\tonHit(target, source) {\n\t\t\tlet statName = 'atk';\n\t\t\tlet bestStat = 0;\n\t\t\tlet s: StatNameExceptHP;\n\t\t\tfor (s in source.storedStats) {\n\t\t\t\tif (source.storedStats[s] > bestStat) {\n\t\t\t\t\tstatName = s;\n\t\t\t\t\tbestStat = source.storedStats[s];\n\t\t\t\t}\n\t\t\t}\n\t\t\tthis.boost({[statName]: length}, source);\n\t\t},\n\t\tsecondary: null,\n\t\thasSheerForce: true,\n\t\ttarget: \"normal\",\n\t\ttype: \"Dragon\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,SAAS;AAAA,IACR,KAAK;AAAA,IACL,UAAU;AAAA,IACV,WAAW;AAAA,IACX,UAAU;AAAA,IACV,MAAM;AAAA,IACN,IAAI;AAAA,IACJ,UAAU;AAAA,IACV,OAAO,EAAC,SAAS,EAAC;AAAA,IAClB,MAAM,QAAQ,QAAQ;AACrB,UAAI,WAAW;AACf,UAAI,WAAW;AACf,UAAI;AACJ,WAAK,KAAK,OAAO,aAAa;AAC7B,YAAI,OAAO,YAAY,CAAC,IAAI,UAAU;AACrC,qBAAW;AACX,qBAAW,OAAO,YAAY,CAAC;AAAA,QAChC;AAAA,MACD;AACA,WAAK,MAAM,EAAC,CAAC,QAAQ,GAAG,OAAM,GAAG,MAAM;AAAA,IACxC;AAAA,IACA,WAAW;AAAA,IACX,eAAe;AAAA,IACf,QAAQ;AAAA,IACR,MAAM;AAAA,EACP;AACD;",
+  "names": []
+}

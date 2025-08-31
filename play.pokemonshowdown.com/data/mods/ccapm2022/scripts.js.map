@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/ccapm2022/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tinherit: 'gen8',\n\tteambuilderConfig: {\n\t\t// only to specify the order of custom tiers\n\t\tcustomTiers: ['CCaPM'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,SAAS;AAAA,EACT,mBAAmB;AAAA;AAAA,IAElB,aAAa,CAAC,OAAO;AAAA,EACtB;AACD;",
+  "names": []
+}

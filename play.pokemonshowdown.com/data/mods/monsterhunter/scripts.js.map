@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/monsterhunter/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: ['MHAG', 'MEGAS', 'MHOU', 'MHUU', 'MHRU'],\n\t\tcustomDoublesTiers: ['MHAG', 'MEGAS', 'MHOU', 'MHUU', 'MHRU'],\n\t},\n\tpokemon: {\n\t\tignoringItem() {\n\t\treturn !!(\n\t\t\tthis.itemState.knockedOff || // Gen 3-4\n\t\t\t(this.battle.gen >= 5 && !this.isActive) ||\n\t\t\t(!this.getItem().ignoreKlutz && this.hasAbility('klutz')) ||\n\t\t\tthis.volatiles['embargo'] || this.battle.field.pseudoWeather['magicroom']\n\t\t\t|| this.volatiles['stench']\n\t\t);\n\t}\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,KAAK;AAAA,EACL,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,QAAQ,SAAS,QAAQ,QAAQ,MAAM;AAAA,IACrD,oBAAoB,CAAC,QAAQ,SAAS,QAAQ,QAAQ,MAAM;AAAA,EAC7D;AAAA,EACA,SAAS;AAAA,IACR,eAAe;AACf,aAAO,CAAC,EACP,KAAK,UAAU;AAAA,MACd,KAAK,OAAO,OAAO,KAAK,CAAC,KAAK,YAC9B,CAAC,KAAK,QAAQ,EAAE,eAAe,KAAK,WAAW,OAAO,KACvD,KAAK,UAAU,SAAS,KAAK,KAAK,OAAO,MAAM,cAAc,WAAW,KACrE,KAAK,UAAU,QAAQ;AAAA,IAE5B;AAAA,EACA;AACD;",
+  "names": []
+}

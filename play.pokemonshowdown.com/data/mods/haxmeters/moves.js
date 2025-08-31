@@ -1,0 +1,81 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var moves_exports = {};
+__export(moves_exports, {
+  Moves: () => Moves
+});
+module.exports = __toCommonJS(moves_exports);
+const Moves = {
+  /*
+  placeholder: {
+  	name: "",
+  	type: "",
+  	category: "",
+  	basePower: 0,
+  	accuracy: 100,
+  	pp: 10,
+  	shortDesc: "",
+  	priority: 0,
+  	flags: {protect: 1, mirror: 1, metronome: 1},
+  	onPrepareHit(target, pokemon, move) {
+  		this.attrLastMove('[still]');
+  		this.add('-anim', pokemon, "", target);
+  	},
+  	secondary: null,
+  	target: "normal",
+  },
+  */
+  attract: {
+    inherit: true,
+    condition: {
+      noCopy: true,
+      // doesn't get copied by Baton Pass
+      onStart(pokemon, source, effect) {
+        if (!(pokemon.gender === "M" && source.gender === "F") && !(pokemon.gender === "F" && source.gender === "M")) {
+          this.debug("incompatible gender");
+          return false;
+        }
+        if (!this.runEvent("Attract", pokemon, source)) {
+          this.debug("Attract event failed");
+          return false;
+        }
+        if (effect.name === "Cute Charm") {
+          this.add("-start", pokemon, "Attract", "[from] ability: Cute Charm", `[of] ${source}`);
+        } else if (effect.name === "Destiny Knot") {
+          this.add("-start", pokemon, "Attract", "[from] item: Destiny Knot", `[of] ${source}`);
+        } else {
+          this.add("-start", pokemon, "Attract");
+        }
+      },
+      onUpdate(pokemon) {
+        if (this.effectState.source && !this.effectState.source.isActive && pokemon.volatiles["attract"]) {
+          this.debug(`Removing Attract volatile on ${pokemon}`);
+          pokemon.removeVolatile("attract");
+        }
+      },
+      onBeforeMovePriority: 2,
+      onBeforeMove(pokemon, target, move) {
+      },
+      onEnd(pokemon) {
+        this.add("-end", pokemon, "Attract", "[silent]");
+      }
+    }
+  }
+};
+//# sourceMappingURL=moves.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/morebalancedhackmons/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tstandardnatdex: {\n\t\tinherit: true,\n\t\tunbanlist: [/*'All-Seeing Eye',*/ 'Adamant Crystal', 'Griseous Core', 'Lustrous Globe', 'Bleakwind Storm', 'Lunar Blessing', 'Mystical Power', 'Sandsear Storm', 'Wildbolt Storm'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,gBAAgB;AAAA,IACf,SAAS;AAAA,IACT,WAAW;AAAA;AAAA,MAAuB;AAAA,MAAmB;AAAA,MAAiB;AAAA,MAAkB;AAAA,MAAmB;AAAA,MAAkB;AAAA,MAAkB;AAAA,MAAkB;AAAA,IAAgB;AAAA,EAClL;AACD;",
+  "names": []
+}

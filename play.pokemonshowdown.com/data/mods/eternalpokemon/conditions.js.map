@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/eternalpokemon/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[k: string]: ConditionData} = {};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAA2C,CAAC;",
+  "names": []
+}

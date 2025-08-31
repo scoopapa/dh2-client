@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/fecc/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tintromod: {\n\t\teffectType: 'Rule',\n\t\tname: 'Intro Mod',\n\t\tdesc: 'plays the intro for fecc',\n\t\tonBegin() {\n\t\t\tthis.add('-message', \"\");\n\t\t\tthis.add('-message', \"Welcome to Fusion Evolution Corrupt Council! This is one of the April Fools formats from the Fusion Evolution series, built to be fun and chaotic.\");\n\t\t\tthis.add('-message', \"In this format, there are 151 fusions, each with an unique ability with some wacky effect.\");\n\t\t\tthis.add('-message', \"Both the fusions and their abilities are hidden to the players, however, their effects are always some sort of mix of real ability effects, depending on the abilities of the Pok\u00E9mon used for the fusions. \");\n\t\t\tthis.add('-message', \"Go out there and try to figure out how each ability works!\");\n\t\t\tthis.add('-message', \"\");\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,UAAU;AACT,WAAK,IAAI,YAAY,EAAE;AACvB,WAAK,IAAI,YAAY,oJAAoJ;AACzK,WAAK,IAAI,YAAY,4FAA4F;AACjH,WAAK,IAAI,YAAY,iNAA8M;AACnO,WAAK,IAAI,YAAY,4DAA4D;AACjF,WAAK,IAAI,YAAY,EAAE;AAAA,IACxB;AAAA,EACD;AACD;",
+  "names": []
+}

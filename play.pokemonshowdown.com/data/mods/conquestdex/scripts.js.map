@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/conquestdex/scripts.ts"],
+  "sourcesContent": ["export const Scripts: BattleScriptsData = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\t// for micrometas to only show custom tiers\n\t\texcludeStandardTiers: true,\n\t\t// only to specify the order of custom tiers\n\t\tcustomTiers: ['Conq', 'Conqlc', 'ConqNFE'],\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAA6B;AAAA,EACzC,KAAK;AAAA,EACL,mBAAmB;AAAA;AAAA,IAElB,sBAAsB;AAAA;AAAA,IAEtB,aAAa,CAAC,QAAQ,UAAU,SAAS;AAAA,EAC1C;AACD;",
+  "names": []
+}

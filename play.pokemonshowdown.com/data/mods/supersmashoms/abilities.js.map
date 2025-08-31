@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/supersmashoms/abilities.ts"],
+  "sourcesContent": ["export const Abilities: {[k: string]: ModdedAbilityData} = {\n\t/*\n\tplaceholder: {\n\t\t\n\t\tflags: {},\n\t\tname: \"\",\n\t\tshortDesc: \"\",\n\t},\n\t*/\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAA8C;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAS3D;",
+  "names": []
+}

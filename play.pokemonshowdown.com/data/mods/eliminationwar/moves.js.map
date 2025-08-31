@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/eliminationwar/moves.ts"],
+  "sourcesContent": ["export const Moves: {[k: string]: ModdedMoveData} = {\n\tblazingtorque: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\twickedtorque: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tnoxioustorque: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tcombattorque: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tmagicaltorque: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,eAAe;AAAA,IACd,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,cAAc;AAAA,IACb,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,eAAe;AAAA,IACd,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,cAAc;AAAA,IACb,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,eAAe;AAAA,IACd,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AACD;",
+  "names": []
+}

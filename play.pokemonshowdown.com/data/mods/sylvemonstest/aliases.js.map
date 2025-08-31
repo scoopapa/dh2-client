@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/sylvemonstest/aliases.ts"],
+  "sourcesContent": ["export const Aliases = {\n\n\t// basically deerling & sawsbuck formes\n\t\"deerlingsummer\": null,\n\t\"deerlingautumn\": null,\n\t\"deerlingwinter\": null,\n\t\"sawsbucksummer\": null,\n\t\"sawsbuckautumn\": null,\n\t\"sawsbuckwinter\": null,\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAU;AAAA;AAAA,EAGtB,kBAAkB;AAAA,EAClB,kBAAkB;AAAA,EAClB,kBAAkB;AAAA,EAClB,kBAAkB;AAAA,EAClB,kBAAkB;AAAA,EAClB,kBAAkB;AACnB;",
+  "names": []
+}

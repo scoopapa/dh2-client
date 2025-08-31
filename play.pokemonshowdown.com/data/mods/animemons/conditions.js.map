@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/animemons/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[id: string]: ModdedConditionData} = {\n\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAAkD,CAE/D;",
+  "names": []
+}

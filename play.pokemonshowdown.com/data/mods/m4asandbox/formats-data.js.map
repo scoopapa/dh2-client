@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/m4asandbox/formats-data.ts"],
+  "sourcesContent": ["export const FormatsData: {[k: string]: ModdedSpeciesFormatsData} = {\n\tpichuspikyearedmega: {tier: \"April Fools\"},\n\tporygodzmega: {tier: \"April Fools\"},\n\tstoutlandmegau: {tier: \"April Fools\"},\n\tfloetteeternalmega: {tier: \"April Fools\"},\n\tmeltanmega: {tier: \"April Fools\"},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,cAAuD;AAAA,EACnE,qBAAqB,EAAC,MAAM,cAAa;AAAA,EACzC,cAAc,EAAC,MAAM,cAAa;AAAA,EAClC,gBAAgB,EAAC,MAAM,cAAa;AAAA,EACpC,oBAAoB,EAAC,MAAM,cAAa;AAAA,EACxC,YAAY,EAAC,MAAM,cAAa;AACjC;",
+  "names": []
+}

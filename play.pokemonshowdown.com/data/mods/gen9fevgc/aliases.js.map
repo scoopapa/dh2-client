@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen9fevgc/aliases.ts"],
+  "sourcesContent": ["export const Aliases: {[alias: string]: string} = {\n\tmegaflorred: \"Megaflor\",\n\tmegaflorblue: \"Megaflor\",\n\tmegafloryellow: \"Megaflor\",\n\tmegaflororange: \"Megaflor\",\n\tmegaflorwhite: \"Megaflor\",\n\tchikobebered: \"Chikobebe\",\n\tchikobebeblue: \"Chikobebe\",\n\tchikobebeyellow: \"Chikobebe\",\n\tchikobebeorange: \"Chikobebe\",\n\tchikobebewhite: \"Chikobebe\",\n\tfloeleefred: \"Floeleef\",\n\tfloeleefblue: \"Floeleef\",\n\tfloeleefyellow: \"Floeleef\",\n\tfloeleeforange: \"Floeleef\",\n\tfloeleefwhite: \"Floeleef\",\n\ttoxtricorioampedpompom: \"Toxtricorio\",\n\tsamureedeem: \"Samureedee\",\n\tminiklawred: \"Miniklaw\",\n\tminiklaworange: \"Miniklaw\",\n\tminiklawyellow: \"Miniklaw\",\n\tminiklawgreen: \"Miniklaw\",\n\tminiklawblue: \"Miniklaw\",\n\tminiklawindigo: \"Miniklaw\",\n\tminiklawviolet: \"Miniklaw\",\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAqC;AAAA,EACjD,aAAa;AAAA,EACb,cAAc;AAAA,EACd,gBAAgB;AAAA,EAChB,gBAAgB;AAAA,EAChB,eAAe;AAAA,EACf,cAAc;AAAA,EACd,eAAe;AAAA,EACf,iBAAiB;AAAA,EACjB,iBAAiB;AAAA,EACjB,gBAAgB;AAAA,EAChB,aAAa;AAAA,EACb,cAAc;AAAA,EACd,gBAAgB;AAAA,EAChB,gBAAgB;AAAA,EAChB,eAAe;AAAA,EACf,wBAAwB;AAAA,EACxB,aAAa;AAAA,EACb,aAAa;AAAA,EACb,gBAAgB;AAAA,EAChB,gBAAgB;AAAA,EAChB,eAAe;AAAA,EACf,cAAc;AAAA,EACd,gBAAgB;AAAA,EAChB,gBAAgB;AACjB;",
+  "names": []
+}

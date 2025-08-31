@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/masquerade/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tterastalclause: {\n\t\teffectType: 'Rule',\n\t\tname: 'Terastal Clause',\n\t\tdesc: \"Prevents Pok&eacute;mon from Terastallizing\",\n\t\tonBegin() {\n\t\t\tfor (const pokemon of this.getAllPokemon()) {\n\t\t\t  if (pokemon.species.baseSpecies !== 'Ogerpon') {\n\t\t\t\t  pokemon.canTerastallize = null;\n        }\n\t\t\t}\n\t\t\tthis.add('rule', 'Terastal Clause: You cannot Terastallize');\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,gBAAgB;AAAA,IACf,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,UAAU;AACT,iBAAW,WAAW,KAAK,cAAc,GAAG;AAC1C,YAAI,QAAQ,QAAQ,gBAAgB,WAAW;AAC9C,kBAAQ,kBAAkB;AAAA,QACxB;AAAA,MACL;AACA,WAAK,IAAI,QAAQ,0CAA0C;AAAA,IAC5D;AAAA,EACD;AACD;",
+  "names": []
+}

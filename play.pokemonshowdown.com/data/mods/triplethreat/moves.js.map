@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/triplethreat/moves.ts"],
+  "sourcesContent": ["export const Moves: {[k: string]: ModdedMoveData} = {\n\tlightsaunter: {\n\t\taccuracy: 100,\n\t\tbasePower: 90,\n\t\tcategory: \"Physical\",\n\t\tname: \"Light Saunter\",\n\t\tshortDesc: \"10% chance to raise the user's Speed by 1.\",\n\t\tpp: 10,\n\t\tpriority: 0,\n\t\tflags: {protect: 1, mirror: 1},\n\t\tonPrepareHit(target, source, move) {\n\t\t\tthis.attrLastMove('[still]');\n\t\t\tthis.add('-anim', source, \"Thrash\", target);\n\t\t},\n\t\tsecondary: {\n\t\t\tchance: 10,\n\t\t\tself: {\n\t\t\t\tboosts: {\n\t\t\t\t\tspe: 1,\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\ttarget: \"normal\",\n\t\ttype: \"Flying\",\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,cAAc;AAAA,IACb,UAAU;AAAA,IACV,WAAW;AAAA,IACX,UAAU;AAAA,IACV,MAAM;AAAA,IACN,WAAW;AAAA,IACX,IAAI;AAAA,IACJ,UAAU;AAAA,IACV,OAAO,EAAC,SAAS,GAAG,QAAQ,EAAC;AAAA,IAC7B,aAAa,QAAQ,QAAQ,MAAM;AAClC,WAAK,aAAa,SAAS;AAC3B,WAAK,IAAI,SAAS,QAAQ,UAAU,MAAM;AAAA,IAC3C;AAAA,IACA,WAAW;AAAA,MACV,QAAQ;AAAA,MACR,MAAM;AAAA,QACL,QAAQ;AAAA,UACP,KAAK;AAAA,QACN;AAAA,MACD;AAAA,IACD;AAAA,IACA,QAAQ;AAAA,IACR,MAAM;AAAA,EACP;AACD;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/publicdomain/aliases.ts"],
+  "sourcesContent": ["export const Aliases: {[alias: string]: string} = {\n\tminiorred: null,\n\tminiororange: null,\n\tminioryellow: null,\n\tminiorgreen: null,\n\tminiorblue: null,\n\tminiorindigo: null,\n\tminiorviolet: null,\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAqC;AAAA,EACjD,WAAW;AAAA,EACX,cAAc;AAAA,EACd,cAAc;AAAA,EACd,aAAa;AAAA,EACb,YAAY;AAAA,EACZ,cAAc;AAAA,EACd,cAAc;AACf;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/moderngen4/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tzmoveclause: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Z-Move Clause',\n\t\tdesc: \"Bans Pok&eacute;mon from holding Z-Crystals\",\n\t\tonValidateSet(set) {\n\t\t\tconst item = this.dex.items.get(set.item);\n\t\t\tif (item.zMove) return [`${set.name || set.species}'s item ${item.name} is banned by Z-Move Clause.`];\n\t\t},\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Z-Move Clause: Z-Moves are banned');\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,aAAa;AAAA,IACZ,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,cAAc,KAAK;AAClB,YAAM,OAAO,KAAK,IAAI,MAAM,IAAI,IAAI,IAAI;AACxC,UAAI,KAAK;AAAO,eAAO,CAAC,GAAG,IAAI,QAAQ,IAAI,kBAAkB,KAAK,kCAAkC;AAAA,IACrG;AAAA,IACA,UAAU;AACT,WAAK,IAAI,QAAQ,mCAAmC;AAAA,IACrD;AAAA,EACD;AACD;",
+  "names": []
+}

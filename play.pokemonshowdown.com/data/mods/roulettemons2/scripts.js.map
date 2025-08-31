@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/roulettemons2/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: ['R2, R2Ubers'],\n\t\tcustomDoublesTiers: ['R2, R2Ubers'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,KAAK;AAAA,EACL,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,aAAa;AAAA,IAC3B,oBAAoB,CAAC,aAAa;AAAA,EACnC;AACD;",
+  "names": []
+}

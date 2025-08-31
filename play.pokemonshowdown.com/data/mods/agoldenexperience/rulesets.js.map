@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/agoldenexperience/rulesets.ts"],
+  "sourcesContent": ["import {FS} from '../../../lib';\nimport {toID} from '../../../sim/dex-data';\nimport {Pokemon} from \"../../../sim/pokemon\";\n\nexport const Rulesets: {[k: string]: ModdedFormatData} = {\n\tevasionabilitiesclause: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Evasion Abilities Clause',\n\t\tdesc: \"Bans abilities that boost Evasion under certain weather conditions\",\n\t\tbanlist: [],\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Evasion Abilities Clause: Evasion abilities are banned');\n\t\t},\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIO,MAAM,WAA4C;AAAA,EACxD,wBAAwB;AAAA,IACvB,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,SAAS,CAAC;AAAA,IACV,UAAU;AACT,WAAK,IAAI,QAAQ,wDAAwD;AAAA,IAC1E;AAAA,EACD;AACD;",
+  "names": []
+}

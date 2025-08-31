@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/patratdex/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tteambuilderConfig: {\n\t\t// for micrometas to only show custom tiers\n\t\texcludeStandardTiers: true,\n\t\t// only to specify the order of custom tiers\n\t\tcustomTiers: ['Patratdex OU', 'Patratdex UU', 'Patratdex LC', 'Patratdex Ubers', 'Patratdex NFE'],\n\t\tcustomDoublesTiers: ['Patratdex Doubles OU', 'Patratdex Doubles Ubers', 'Patratdex Doubles NFE'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,mBAAmB;AAAA;AAAA,IAElB,sBAAsB;AAAA;AAAA,IAEtB,aAAa,CAAC,gBAAgB,gBAAgB,gBAAgB,mBAAmB,eAAe;AAAA,IAChG,oBAAoB,CAAC,wBAAwB,2BAA2B,uBAAuB;AAAA,EAChG;AACD;",
+  "names": []
+}

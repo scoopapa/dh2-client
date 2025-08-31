@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/branchedpotential/moves.ts"],
+  "sourcesContent": ["export const Moves: {[k: string]: ModdedMoveData} = {\n\tfreestyletsunami: {\n\t\tnum: -100,\n\t\taccuracy: true,\n\t\tbasePower: 175,\n\t\tcategory: \"Special\",\n\t\tisNonstandard: \"Past\",\n\t\tname: \"Freestyle Tsunami\",\n\t\tpp: 1,\n\t\tpriority: 0,\n\t\tflags: {},\n\t\tisZ: \"aloraichiumz\",\n\t\tsecondary: {\n\t\t\tchance: 100,\n\t\t\tstatus: 'brn',\n\t\t},\n\t\ttarget: \"normal\",\n\t\ttype: \"Electric\",\n\t\tcontestType: \"Cool\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,kBAAkB;AAAA,IACjB,KAAK;AAAA,IACL,UAAU;AAAA,IACV,WAAW;AAAA,IACX,UAAU;AAAA,IACV,eAAe;AAAA,IACf,MAAM;AAAA,IACN,IAAI;AAAA,IACJ,UAAU;AAAA,IACV,OAAO,CAAC;AAAA,IACR,KAAK;AAAA,IACL,WAAW;AAAA,MACV,QAAQ;AAAA,MACR,QAAQ;AAAA,IACT;AAAA,IACA,QAAQ;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AACD;",
+  "names": []
+}

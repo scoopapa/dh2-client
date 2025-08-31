@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/weatherwar/items.ts"],
+  "sourcesContent": ["export const Items: {[itemid: string]: ItemData} = {\n\ttherock: {\n\t\tname: \"The Rock\",\n\t\tshortDesc: \"All weathers last 8 turns.\",\n\t\trating: 3,\n\t\tfling: {\n\t\t\tbasePower: 60,\n\t\t},\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAsC;AAAA,EAClD,SAAS;AAAA,IACR,MAAM;AAAA,IACN,WAAW;AAAA,IACX,QAAQ;AAAA,IACR,OAAO;AAAA,MACN,WAAW;AAAA,IACZ;AAAA,EACD;AACD;",
+  "names": []
+}

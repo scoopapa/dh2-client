@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/roulettemons/items.ts"],
+  "sourcesContent": ["export const Items: {[k: string]: ModdedItemData} = {\n\tchillytite: {\n\t\tname: \"Chillytite\",\n\t\tspritenum: 594,\n\t\tmegaStone: \"Chillyte-Mega\",\n\t\tmegaEvolves: \"Chillyte\",\n\t\titemUser: [\"Chillyte\"],\n\t\tonTakeItem(item, source) {\n\t\t\tif (item.megaEvolves === source.baseSpecies.baseSpecies) return false;\n\t\t\treturn true;\n\t\t},\n\t\tnum: 673,\n\t\tgen: 8,\n\t\tisNonstandard: \"Past\",\n\t\tdesc: \"If held by a Chillyte, this item allows it to Mega Evolve in battle.\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,YAAY;AAAA,IACX,MAAM;AAAA,IACN,WAAW;AAAA,IACX,WAAW;AAAA,IACX,aAAa;AAAA,IACb,UAAU,CAAC,UAAU;AAAA,IACrB,WAAW,MAAM,QAAQ;AACxB,UAAI,KAAK,gBAAgB,OAAO,YAAY;AAAa,eAAO;AAChE,aAAO;AAAA,IACR;AAAA,IACA,KAAK;AAAA,IACL,KAAK;AAAA,IACL,eAAe;AAAA,IACf,MAAM;AAAA,EACP;AACD;",
+  "names": []
+}

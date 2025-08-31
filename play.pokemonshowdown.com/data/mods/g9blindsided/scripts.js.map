@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/g9blindsided/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: ['hi'],\n\t\tcustomDoublesTiers: ['hi'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,IAAI;AAAA,IAClB,oBAAoB,CAAC,IAAI;AAAA,EAC1B;AACD;",
+  "names": []
+}

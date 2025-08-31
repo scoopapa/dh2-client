@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/bookofenigmas/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[k: string]: ConditionData} = {\n\tstorm: {\n\t\tname: 'storm',\n\t\tonStart(pokemon) {\n\t\t\tthis.add('-start', pokemon, 'storm');\n\t\t},\n\t\tonResidualOrder: 14,\n\t\tonResidual(pokemon) {\n\t\t\tthis.damage(pokemon.baseMaxhp / 8);\n\t\t},\n\t\tonEnd(pokemon) {\n\t\t\tthis.add('-end', pokemon, 'storm');\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAA2C;AAAA,EACvD,OAAO;AAAA,IACN,MAAM;AAAA,IACN,QAAQ,SAAS;AAChB,WAAK,IAAI,UAAU,SAAS,OAAO;AAAA,IACpC;AAAA,IACA,iBAAiB;AAAA,IACjB,WAAW,SAAS;AACnB,WAAK,OAAO,QAAQ,YAAY,CAAC;AAAA,IAClC;AAAA,IACA,MAAM,SAAS;AACd,WAAK,IAAI,QAAQ,SAAS,OAAO;AAAA,IAClC;AAAA,EACD;AACD;",
+  "names": []
+}

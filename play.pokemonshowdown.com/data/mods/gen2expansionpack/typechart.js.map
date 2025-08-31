@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen2expansionpack/typechart.ts"],
+  "sourcesContent": ["export const TypeChart: {[k: string]: ModdedTypeData} = {\n\tfairy: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAA2C;AAAA,EACvD,OAAO;AAAA,IACN,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AACD;",
+  "names": []
+}

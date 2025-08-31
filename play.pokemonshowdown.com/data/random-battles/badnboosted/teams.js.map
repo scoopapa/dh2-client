@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/random-battles/badnboosted/teams.ts"],
+  "sourcesContent": ["import {RandomTeams, MoveCounter} from \"../gen9/teams\";\n\nexport class RandomBNBTeams extends RandomTeams { }\n\nexport default RandomBNBTeams;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAAuC;AAEhC,MAAM,uBAAuB,yBAAY;AAAE;AAElD,IAAO,gBAAQ;",
+  "names": []
+}

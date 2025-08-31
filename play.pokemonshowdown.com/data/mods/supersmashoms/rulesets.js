@@ -1,0 +1,241 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var rulesets_exports = {};
+__export(rulesets_exports, {
+  Rulesets: () => Rulesets
+});
+module.exports = __toCommonJS(rulesets_exports);
+const Rulesets = {
+  // WIP
+  movelegality: {
+    effectType: "ValidatorRule",
+    name: "Move Legality",
+    desc: "Move validator for STABmons, Sketchmons and Convergence.",
+    ruleset: ["OM Unobtainable Moves"],
+    checkCanLearn(move, species, setSources, set) {
+      const STABList = ["Arboliva", "Porygon2", "Terrakion"];
+      const SketchList = ["Garchomp", "Registeel"];
+      const ConvList = ["Greninja", "Ogerpon", "Zarude"];
+      const nonstandard = move.isNonstandard === "Past" && !this.ruleTable.has("standardnatdex");
+      if (!nonstandard && !move.isZ && !move.isMax && !this.ruleTable.isRestricted(`move:${move.id}`) && STABList.includes(species.name)) {
+        const speciesTypes = [];
+        const moveTypes = [];
+        const minObtainableSpeciesGen = this.dex.currentMod === "gen8bdsp" || this.dex.gen === 9 && !this.ruleTable.has("standardnatdex") ? this.dex.gen : species.gen;
+        for (let i = this.dex.gen; i >= minObtainableSpeciesGen && i >= move.gen; i--) {
+          const dex = this.dex.forGen(i);
+          moveTypes.push(dex.moves.get(move.name).type);
+          const pokemon = dex.species.get(species.name);
+          if (pokemon.forme || pokemon.otherFormes) {
+            const baseSpecies = dex.species.get(pokemon.baseSpecies);
+            const originalForme = dex.species.get(pokemon.changesFrom || pokemon.name);
+            speciesTypes.push(...originalForme.types);
+            if (baseSpecies.otherFormes) {
+              for (const formeName of baseSpecies.otherFormes) {
+                if (baseSpecies.prevo) {
+                  const prevo2 = dex.species.get(baseSpecies.prevo);
+                  if (prevo2.evos.includes(formeName))
+                    continue;
+                }
+                const forme = dex.species.get(formeName);
+                if (forme.changesFrom === originalForme.name && !forme.battleOnly) {
+                  speciesTypes.push(...forme.types);
+                }
+              }
+            }
+          } else {
+            speciesTypes.push(...pokemon.types);
+          }
+          let prevo = pokemon.prevo;
+          while (prevo) {
+            const prevoSpecies = dex.species.get(prevo);
+            speciesTypes.push(...prevoSpecies.types);
+            prevo = prevoSpecies.prevo;
+          }
+        }
+        if (moveTypes.some((m) => speciesTypes.includes(m)))
+          return null;
+      }
+      const matchingSpecies = this.dex.species.all().filter((s) => (!s.isNonstandard || this.ruleTable.has(`+pokemontag:${this.toID(s.isNonstandard)}`)) && s.types.every((type) => species.types.includes(type)) && s.types.length === species.types.length && !this.ruleTable.isBannedSpecies(s));
+      const someCanLearn = matchingSpecies.some((s) => this.checkCanLearn(move, s, setSources, set) === null);
+      if (someCanLearn && ConvList.includes(species.name))
+        return null;
+      const problem = this.checkCanLearn(move, species, setSources, set);
+      if (!problem)
+        return null;
+      if (move.isZ || move.isMax || this.ruleTable.isRestricted(`move:${move.id}`))
+        return problem;
+      if (!SketchList.includes(species.name))
+        return problem;
+      const sketchMove = set.sketchMove;
+      if (sketchMove && sketchMove !== move.name) {
+        return ` already has ${sketchMove} as a sketched move.
+(${species.name} doesn't learn ${move.name}.)`;
+      }
+      set.sketchMove = move.name;
+      return null;
+    },
+    onValidateTeam(team) {
+      const sketches = new this.dex.Multiset();
+      for (const set of team) {
+        if (set.sketchMove) {
+          sketches.add(set.sketchMove);
+        }
+      }
+      const overSketched = [...sketches.entries()].filter(([moveName, count]) => count > 1);
+      if (overSketched.length) {
+        return overSketched.map(([moveName, count]) => `You are limited to 1 of ${moveName} by Sketch Clause.
+(You have sketched ${moveName} ${count} times.)`);
+      }
+    },
+    onValidateSet(set, format) {
+      const curSpecies = this.dex.species.get(set.species);
+      const obtainableAbilityPool = /* @__PURE__ */ new Set();
+      const matchingSpecies = this.dex.species.all().filter((species) => (!species.isNonstandard || this.ruleTable.has(`+pokemontag:${this.toID(species.isNonstandard)}`)) && species.types.every((type) => curSpecies.types.includes(type)) && species.types.length === curSpecies.types.length && !this.ruleTable.isBannedSpecies(species));
+      for (const species of matchingSpecies) {
+        for (const abilityName of Object.values(species.abilities)) {
+          const abilityid = this.toID(abilityName);
+          obtainableAbilityPool.add(abilityid);
+        }
+      }
+      if (!obtainableAbilityPool.has(this.toID(set.ability))) {
+        return [`${curSpecies.name} doesn't have access to ${this.dex.abilities.get(set.ability).name}.`];
+      }
+    }
+  },
+  revelationmonsmod: {
+    effectType: "Rule",
+    name: "Revelationmons Mod",
+    desc: `The moves in the first slot(s) of a Pok&eacute;mon's set have their types changed to match the Pok&eacute;mon's type(s).`,
+    onBegin() {
+      this.add("rule", "Revelationmons Mod: The first moveslots have their types changed to match the Pok\xE9mon's types");
+    },
+    onValidateSet(set) {
+      const species = this.dex.species.get(set.species);
+      const revelationmons = ["Tyranitar"];
+      const slotIndex = species.types.length - 1;
+      const problems = [];
+      if (!revelationmons.includes(species.name))
+        return problems;
+      for (const [i, moveid] of set.moves.entries()) {
+        const move = this.dex.moves.get(moveid);
+        if (!this.ruleTable.isRestricted(`move:${move.id}`))
+          continue;
+        if (i <= slotIndex) {
+          problems.push(`${move.name} can't be in moveslot ${i + 1} because it's restricted from being in the first ${slotIndex + 1 > 1 ? `${slotIndex + 1} slots` : "slot"}.`);
+        }
+      }
+      return problems;
+    },
+    onModifyMove(move, pokemon, target) {
+      const revelationmons = [
+        "Tyranitar"
+      ];
+      if (!revelationmons.includes(pokemon))
+        return;
+      const types = pokemon.getTypes(true);
+      const noModifyType = [
+        "judgment",
+        "multiattack",
+        "naturalgift",
+        "revelationdance",
+        "technoblast",
+        "terrainpulse",
+        "weatherball"
+      ];
+      if (noModifyType.includes(move.id))
+        return;
+      for (const [i, type] of types.entries()) {
+        if (!this.dex.types.isName(type))
+          continue;
+        if (pokemon.moveSlots[i] && move.id === pokemon.moveSlots[i].id)
+          move.type = type;
+      }
+    }
+  },
+  franticfusionsmod: {
+    effectType: "Rule",
+    name: "Frantic Fusions Mod",
+    desc: `Pok&eacute;mon nicknamed after another Pok&eacute;mon get their stats buffed by 1/4 of that Pok&eacute;mon's stats, barring HP, and access to their abilities.`,
+    onBegin() {
+      this.add("rule", "Frantic Fusions Mod: Pok\xE9mon nicknamed after another Pok\xE9mon get buffed stats and more abilities.");
+    },
+    onValidateSet(set) {
+      const species = this.dex.species.get(set.species);
+      const fusion = this.dex.species.get(set.name);
+      const abilityPool = new Set(Object.values(species.abilities));
+      if (fusion.exists) {
+        for (const ability2 of Object.values(fusion.abilities)) {
+          abilityPool.add(ability2);
+        }
+      }
+      const ability = this.dex.abilities.get(set.ability);
+      if (!abilityPool.has(ability.name)) {
+        return [`${species.name} only has access to the following abilities: ${Array.from(abilityPool).join(", ")}.`];
+      }
+    },
+    onValidateTeam(team, format) {
+      const donors = new this.dex.Multiset();
+      for (const set of team) {
+        const species = this.dex.species.get(set.species);
+        const fusion = this.dex.species.get(set.name);
+        if (fusion.exists) {
+          set.name = fusion.name;
+        } else {
+          set.name = species.baseSpecies;
+          if (species.baseSpecies === "Unown")
+            set.species = "Unown";
+        }
+        if (fusion.name === species.name)
+          continue;
+        donors.add(fusion.name);
+      }
+      for (const [fusionName, number] of donors) {
+        if (number > 1) {
+          return [`You can only fuse with any Pok\xE9 once.`, `(You have ${number} Pok\xE9mon fused with ${fusionName}.)`];
+        }
+        const fusion = this.dex.species.get(fusionName);
+        if (this.ruleTable.isBannedSpecies(fusion) || fusion.battleOnly) {
+          return [`Pok\xE9mon can't fuse with banned Pok\xE9mon.`, `(${fusionName} is banned.)`];
+        }
+        if (fusion.isNonstandard && !(this.ruleTable.has(`+pokemontag:${this.toID(fusion.isNonstandard)}`) || this.ruleTable.has(`+pokemon:${fusion.id}`) || this.ruleTable.has(`+basepokemon:${this.toID(fusion.baseSpecies)}`))) {
+          return [`${fusion.name} is marked as ${fusion.isNonstandard}, which is banned.`];
+        }
+      }
+    },
+    onModifySpecies(species, target, source, effect) {
+      if (!target)
+        return;
+      const newSpecies = this.dex.deepClone(species);
+      const fusionName = target.set.name;
+      if (!fusionName || fusionName === newSpecies.name)
+        return;
+      const fusionSpecies = this.dex.deepClone(this.dex.species.get(fusionName));
+      newSpecies.bst = newSpecies.baseStats.hp;
+      for (const stat in newSpecies.baseStats) {
+        if (stat === "hp")
+          continue;
+        const addition = Math.floor(fusionSpecies.baseStats[stat] / 4);
+        newSpecies.baseStats[stat] = this.clampIntRange(newSpecies.baseStats[stat] + addition, 1, 255);
+        newSpecies.bst += newSpecies.baseStats[stat];
+      }
+      return newSpecies;
+    }
+  }
+};
+//# sourceMappingURL=rulesets.js.map

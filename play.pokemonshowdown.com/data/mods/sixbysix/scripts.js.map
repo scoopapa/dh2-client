@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/sixbysix/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: ['King', 'Queen', 'Bishop', 'Knight', 'Rook', 'Pawn'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,QAAQ,SAAS,UAAU,UAAU,QAAQ,MAAM;AAAA,EAClE;AACD;",
+  "names": []
+}

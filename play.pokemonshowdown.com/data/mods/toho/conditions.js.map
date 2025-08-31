@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/toho/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[id: string]: ModdedConditionData} = {\n\traindance: {\n\t\tinherit: true,\n\t\tonWeatherModifyDamage(damage, attacker, defender, move) {\n\t\t\tif (defender.hasItem('utilityumbrella')) return;\n\t\t\tif (move.type === 'Water') {\n\t\t\t\tthis.debug('rain water boost');\n\t\t\t\treturn this.chainModify(1.5);\n\t\t\t}\n\t\t\tif (move.type === 'Fire' && !attacker.hasAbility('hakkero')) {\n\t\t\t\tthis.debug('rain fire suppress');\n\t\t\t\treturn this.chainModify(0.5);\n\t\t\t}\n\t\t},\n\t},\n\tdynamax: {\n\t\tinherit: true,\n\t\tonResidual(pokemon) {\n\t\t\tpokemon.removeVolatile('dynamax');\n\t\t\tpokemon.hasDynamaxed = true;\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAAkD;AAAA,EAC9D,WAAW;AAAA,IACV,SAAS;AAAA,IACT,sBAAsB,QAAQ,UAAU,UAAU,MAAM;AACvD,UAAI,SAAS,QAAQ,iBAAiB;AAAG;AACzC,UAAI,KAAK,SAAS,SAAS;AAC1B,aAAK,MAAM,kBAAkB;AAC7B,eAAO,KAAK,YAAY,GAAG;AAAA,MAC5B;AACA,UAAI,KAAK,SAAS,UAAU,CAAC,SAAS,WAAW,SAAS,GAAG;AAC5D,aAAK,MAAM,oBAAoB;AAC/B,eAAO,KAAK,YAAY,GAAG;AAAA,MAC5B;AAAA,IACD;AAAA,EACD;AAAA,EACA,SAAS;AAAA,IACR,SAAS;AAAA,IACT,WAAW,SAAS;AACnB,cAAQ,eAAe,SAAS;AAChC,cAAQ,eAAe;AAAA,IACxB;AAAA,EACD;AACD;",
+  "names": []
+}

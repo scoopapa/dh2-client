@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/doubletrouble/items.ts"],
+  "sourcesContent": ["export const Items: { [itemid: string]: ItemData } = {\n\tmaisarite: {\n\t\tname: \"Maisarite\",\n\t\tnum: -1000,\n\t\tdesc: \"Allows Maisart to Mega Evolve.\",\n\t\tspritenum: 624,\n\t\tmegaStone: \"Maisart-Mega\",\n\t\tmegaEvolves: \"Maisart\",\n\t\titemUser: [\"Maisart\"],\n\t\tonTakeItem(item, source) {\n\t\t\tif (item.megaEvolves === source.baseSpecies.baseSpecies) return false;\n\t\t\treturn true;\n\t\t},\n\t\tgen: 9,\n\t},\n\t\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAwC;AAAA,EACpD,WAAW;AAAA,IACV,MAAM;AAAA,IACN,KAAK;AAAA,IACL,MAAM;AAAA,IACN,WAAW;AAAA,IACX,WAAW;AAAA,IACX,aAAa;AAAA,IACb,UAAU,CAAC,SAAS;AAAA,IACpB,WAAW,MAAM,QAAQ;AACxB,UAAI,KAAK,gBAAgB,OAAO,YAAY;AAAa,eAAO;AAChE,aAAO;AAAA,IACR;AAAA,IACA,KAAK;AAAA,EACN;AAED;",
+  "names": []
+}

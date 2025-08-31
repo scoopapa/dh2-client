@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/forgottenmons/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tmegastoneclause: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Mega Stone Clause',\n\t\tdesc: \"Bans Pok&eacute;mon from holding Mega Stones\",\n\t\tonValidateSet(set) {\n\t\t\tconst item = this.dex.items.get(set.item);\n\t\t\tif (item.megaEvolves) return [`${set.name || set.species}'s item ${item.name} is banned by Mega Stone Clause.`];\n\t\t},\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Mega Stone Clause: Mega Stones are banned');\n\t\t\tfor (const pokemon of this.getAllPokemon()) {\n\t\t\t\tif (pokemon.species.id === 'rayquaza') {\n\t\t\t\t\tpokemon.canMegaEvo = null;\n\t\t\t\t\t// ability to terastal was determined before the clause activated, causing incorrect behavior\n\t\t\t\t\tpokemon.canTerastallize = this.actions.canTerastallize(pokemon);\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,iBAAiB;AAAA,IAChB,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,cAAc,KAAK;AAClB,YAAM,OAAO,KAAK,IAAI,MAAM,IAAI,IAAI,IAAI;AACxC,UAAI,KAAK;AAAa,eAAO,CAAC,GAAG,IAAI,QAAQ,IAAI,kBAAkB,KAAK,sCAAsC;AAAA,IAC/G;AAAA,IACA,UAAU;AACT,WAAK,IAAI,QAAQ,2CAA2C;AAC5D,iBAAW,WAAW,KAAK,cAAc,GAAG;AAC3C,YAAI,QAAQ,QAAQ,OAAO,YAAY;AACtC,kBAAQ,aAAa;AAErB,kBAAQ,kBAAkB,KAAK,QAAQ,gBAAgB,OAAO;AAAA,QAC/D;AAAA,MACD;AAAA,IACD;AAAA,EACD;AACD;",
+  "names": []
+}

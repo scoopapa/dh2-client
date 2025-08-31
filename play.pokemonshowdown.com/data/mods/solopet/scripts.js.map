@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/solopet/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tinherit: 'gen9',\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: ['Birds', 'Cats', 'Dogs', 'Farm', 'Fish', 'Fox', 'Frog', 'Lizard', 'Rock', 'Rodent', 'Turtle'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,SAAS;AAAA,EACT,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,SAAS,QAAQ,QAAQ,QAAQ,QAAQ,OAAO,QAAQ,UAAU,QAAQ,UAAU,QAAQ;AAAA,EAC3G;AACD;",
+  "names": []
+}

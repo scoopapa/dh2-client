@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen1jumpstarted/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n \t\n\tinherit: 'gen1',\n\tgen: 1,\n\tinit() {\n\t\tthis.modData('Learnsets', 'poliwrath').learnset.brickbreak = ['1L1'];\n\t},\n\n\tteambuilderConfig: {\n\t\trbyTradebacks: true,\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAE/C,SAAS;AAAA,EACT,KAAK;AAAA,EACL,OAAO;AACN,SAAK,QAAQ,aAAa,WAAW,EAAE,SAAS,aAAa,CAAC,KAAK;AAAA,EACpE;AAAA,EAEA,mBAAmB;AAAA,IAClB,eAAe;AAAA,EAChB;AACD;",
+  "names": []
+}

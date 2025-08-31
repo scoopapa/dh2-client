@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen9ubermons/conditions.ts"],
+  "sourcesContent": ["export const Conditions: import('../../../sim/dex-moves').ModdedConditionDataTable = {};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAAwE,CAAC;",
+  "names": []
+}

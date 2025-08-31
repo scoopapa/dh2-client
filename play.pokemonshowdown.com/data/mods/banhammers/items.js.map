@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/banhammers/items.ts"],
+  "sourcesContent": ["export const Items: {[itemid: string]: ModdedItemData} = {\n\tboosterenergy: {\n\t\tinherit: true,\n\t\tisNonstandard: \"Past\",\n\t},\n\tlightclay: {\n\t\tinherit: true,\n\t\tisNonstandard: \"Past\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAA4C;AAAA,EACxD,eAAe;AAAA,IACd,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,WAAW;AAAA,IACV,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AACD;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/branchedpotential/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tteampreview: {\n\t\teffectType: 'Rule',\n\t\tname: 'Team Preview',\n\t\tdesc: \"Allows each player to see the Pok&eacute;mon on their opponent's team before they choose their lead Pok&eacute;mon\",\n\t\tonBegin() {\n\t\t\tthis.add('clearpoke');\n\t\t\tfor (const pokemon of this.getAllPokemon()) {\n\t\t\t\tconst details = pokemon.details.replace(', shiny', '')\n\t\t\t\t\t.replace(/(Arceus|Gourgeist|Pumpkaboo|Silvally|Urshifu|Chrienmor)(-[a-zA-Z?-]+)?/g, '$1-*');\n\t\t\t\tthis.add('poke', pokemon.side.id, details, '');\n\t\t\t}\n\t\t},\n\t\tonTeamPreview() {\n\t\t\tthis.makeRequest('teampreview');\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,aAAa;AAAA,IACZ,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,UAAU;AACT,WAAK,IAAI,WAAW;AACpB,iBAAW,WAAW,KAAK,cAAc,GAAG;AAC3C,cAAM,UAAU,QAAQ,QAAQ,QAAQ,WAAW,EAAE,EACnD,QAAQ,2EAA2E,MAAM;AAC3F,aAAK,IAAI,QAAQ,QAAQ,KAAK,IAAI,SAAS,EAAE;AAAA,MAC9C;AAAA,IACD;AAAA,IACA,gBAAgB;AACf,WAAK,YAAY,aAAa;AAAA,IAC/B;AAAA,EACD;AACD;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/blankcanvas/moves.ts"],
+  "sourcesContent": ["export const Moves: {[k: string]: ModdedMoveData} = {\n\tmeditate: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tboneclub: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tpowershift: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tblazingtorque: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,UAAU;AAAA,IACT,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,UAAU;AAAA,IACT,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,YAAY;AAAA,IACX,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,eAAe;AAAA,IACd,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AACD;",
+  "names": []
+}
