@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/communityused2/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: [\"CU2 OU\", \"CU2 NFE\"],\n\t},\n\n\tinit() {\n\t\t//removing acid armor from milcery\n\t\tdelete this.modData('Learnsets', 'milcery').learnset.acidarmor;\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,UAAU,SAAS;AAAA,EAClC;AAAA,EAEA,OAAO;AAEN,WAAO,KAAK,QAAQ,aAAa,SAAS,EAAE,SAAS;AAAA,EACtD;AACD;",
+  "names": []
+}

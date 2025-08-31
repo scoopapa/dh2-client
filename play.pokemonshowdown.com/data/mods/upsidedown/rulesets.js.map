@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/upsidedown/rulesets.ts"],
+  "sourcesContent": ["\texport const Rulesets: {[k: string]: ModdedFormatsData} = {\n\n\tstandard: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Standard',\n\t\tdesc: \"The standard ruleset for all offical Smogon singles tiers (Ubers, OU, etc.)\",\n\t\t\t  ruleset: [\n\t\t\t    'Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod', 'Terastal Clause', '!Team Preview'\n\t\t],\n\t},\n\tbatonpassmod: {\n\t\teffectType: 'Rule',\n\t\tname: 'Baton Pass Mod',\n\t\tdesc: \"Positive stat boosts are reset upon using Baton Pass.\",\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Baton Pass Mod: Positive stat boosts are reset upon using Baton Pass');\n\t\t},\n\t\tonHit(source, target, move) {\n\t\t\tif (source.positiveBoosts() && move.id === 'batonpass') {\n\t\t\t\tthis.add('-clearpositiveboost', source);\n\t\t\t\tthis.hint(\"Baton Pass Mod activated: Stat Boosts cannot be passed\");\n\t\t\t}\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAQ,MAAM,WAA6C;AAAA,EAE1D,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACH,SAAS;AAAA,MACP;AAAA,MAAmB;AAAA,MAAe;AAAA,MAAkB;AAAA,MAAkB;AAAA,MAAoB;AAAA,MAAmB;AAAA,IAClH;AAAA,EACD;AAAA,EACA,cAAc;AAAA,IACb,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,UAAU;AACT,WAAK,IAAI,QAAQ,sEAAsE;AAAA,IACxF;AAAA,IACA,MAAM,QAAQ,QAAQ,MAAM;AAC3B,UAAI,OAAO,eAAe,KAAK,KAAK,OAAO,aAAa;AACvD,aAAK,IAAI,uBAAuB,MAAM;AACtC,aAAK,KAAK,wDAAwD;AAAA,MACnE;AAAA,IACD;AAAA,EACD;AACD;",
+  "names": []
+}

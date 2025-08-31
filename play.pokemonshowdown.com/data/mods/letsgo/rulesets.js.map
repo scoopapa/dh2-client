@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/letsgo/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatsData} = {\n\tallowavs: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Allow AVs',\n\t\tdesc: \"Tells formats with the 'letsgo' mod to take Awakening Values into consideration when calculating stats\",\n\t\t// implemented in TeamValidator#validateStats\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA6C;AAAA,EACzD,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA;AAAA,EAEP;AACD;",
+  "names": []
+}

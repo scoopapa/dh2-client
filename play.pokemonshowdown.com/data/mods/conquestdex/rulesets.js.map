@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/conquestdex/rulesets.ts"],
+  "sourcesContent": ["import {Utils} from \"../lib\";\nimport {Pokemon} from \"../sim/pokemon\";\n\n// The list of formats is stored in config/formats.js\nexport const Rulesets: {[k: string]: FormatData} = {\n\tmegastoneclause: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Mega Stone Clause',\n\t\tdesc: \"Bans Pokemon from holding mega stones\",\n\t\tonValidateSet(set) {\n\t\t\tconst item = this.dex.items.get(set.item);\n\t\t\tif (item.megaStone) return [`${set.name || set.species}'s item ${item.name} is banned by Mega Stone Clause.`];\n\t\t},\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Mega Stone Clause: Mega stones are banned');\n\t\t},\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIO,MAAM,WAAsC;AAAA,EAClD,iBAAiB;AAAA,IAChB,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,cAAc,KAAK;AAClB,YAAM,OAAO,KAAK,IAAI,MAAM,IAAI,IAAI,IAAI;AACxC,UAAI,KAAK;AAAW,eAAO,CAAC,GAAG,IAAI,QAAQ,IAAI,kBAAkB,KAAK,sCAAsC;AAAA,IAC7G;AAAA,IACA,UAAU;AACT,WAAK,IAAI,QAAQ,2CAA2C;AAAA,IAC7D;AAAA,EACD;AACD;",
+  "names": []
+}

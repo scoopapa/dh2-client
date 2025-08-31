@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/signaturemons/learnsets.ts"],
+  "sourcesContent": ["export const Learnsets: {[speciesid: string]: ModdedLearnsetData} = {\n\t/*dugtrio: {\n\t\tlearnset: {\n\t\t\tinherit: true,\n\t\t\ttripledig: [\"9L1\"],\n\t\t},\n\t},*/\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAAuD;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAOpE;",
+  "names": []
+}

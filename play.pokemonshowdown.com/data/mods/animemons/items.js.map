@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/animemons/items.ts"],
+  "sourcesContent": ["export const Items: {[itemid: string]: ModdedItemData} = {\n        shakujo: {\n\t\tname: \"Shakujo\",\n\t\tfling: {\n\t\t\tbasePower: 40,\n\t\t\tstatus: 'par',\n\t\t},\n\t\tonModifySpAPriority: 1,\n\t\tonModifySpA(spa, pokemon) {\n\t\t\tif (pokemon.baseSpecies.baseSpecies === 'Pikachu') {\n\t\t\t\treturn this.chainModify(2);\n\t\t\t}\n\t\t},\n\t\titemUser: [\"Miroku\"],\n\t\tnum: -1,\n\t\tgen: 9,\n\t},\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAA4C;AAAA,EACjD,SAAS;AAAA,IACf,MAAM;AAAA,IACN,OAAO;AAAA,MACN,WAAW;AAAA,MACX,QAAQ;AAAA,IACT;AAAA,IACA,qBAAqB;AAAA,IACrB,YAAY,KAAK,SAAS;AACzB,UAAI,QAAQ,YAAY,gBAAgB,WAAW;AAClD,eAAO,KAAK,YAAY,CAAC;AAAA,MAC1B;AAAA,IACD;AAAA,IACA,UAAU,CAAC,QAAQ;AAAA,IACnB,KAAK;AAAA,IACL,KAAK;AAAA,EACN;AACD;",
+  "names": []
+}

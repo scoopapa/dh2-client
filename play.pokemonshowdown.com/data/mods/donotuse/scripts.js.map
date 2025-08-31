@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/donotuse/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: [\"DoNU\", \"DoNU UUBL\", \"DoNU UU\", \"DoNU RUBL\", \"DoNU RU\", \"DoNU Uber\"/*, \"Restricted\", \"DDoNU\"*/],\n\t\tcustomDoublesTiers: [\"Restricted\", \"DDoNU\"],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa;AAAA,MAAC;AAAA,MAAQ;AAAA,MAAa;AAAA,MAAW;AAAA,MAAa;AAAA,MAAW;AAAA;AAAA,IAAsC;AAAA,IAC5G,oBAAoB,CAAC,cAAc,OAAO;AAAA,EAC3C;AACD;",
+  "names": []
+}

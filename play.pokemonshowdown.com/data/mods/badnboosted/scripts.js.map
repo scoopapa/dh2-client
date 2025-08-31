@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/badnboosted/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tinherit: 'gen9',\n\tinit() {\n\t\tfor (const id in this.data.Pokedex) {\n\t\t\tlet statsData = this.data.Pokedex[id].baseStats;\n\t\t\tif (statsData.hp <= 70) this.data.Pokedex[id].baseStats.hp *= 2;\n\t\t\tif (statsData.atk <= 70) this.data.Pokedex[id].baseStats.atk *= 2;\n\t\t\tif (statsData.def <= 70) this.data.Pokedex[id].baseStats.def *= 2;\n\t\t\tif (statsData.spa <= 70) this.data.Pokedex[id].baseStats.spa *= 2;\n\t\t\tif (statsData.spd <= 70) this.data.Pokedex[id].baseStats.spd *= 2;\n\t\t\tif (statsData.spe <= 70) this.data.Pokedex[id].baseStats.spe *= 2;\n\t\t}\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,SAAS;AAAA,EACT,OAAO;AACN,eAAW,MAAM,KAAK,KAAK,SAAS;AACnC,UAAI,YAAY,KAAK,KAAK,QAAQ,EAAE,EAAE;AACtC,UAAI,UAAU,MAAM;AAAI,aAAK,KAAK,QAAQ,EAAE,EAAE,UAAU,MAAM;AAC9D,UAAI,UAAU,OAAO;AAAI,aAAK,KAAK,QAAQ,EAAE,EAAE,UAAU,OAAO;AAChE,UAAI,UAAU,OAAO;AAAI,aAAK,KAAK,QAAQ,EAAE,EAAE,UAAU,OAAO;AAChE,UAAI,UAAU,OAAO;AAAI,aAAK,KAAK,QAAQ,EAAE,EAAE,UAAU,OAAO;AAChE,UAAI,UAAU,OAAO;AAAI,aAAK,KAAK,QAAQ,EAAE,EAAE,UAAU,OAAO;AAChE,UAAI,UAAU,OAAO;AAAI,aAAK,KAAK,QAAQ,EAAE,EAAE,UAAU,OAAO;AAAA,IACjE;AAAA,EACD;AACD;",
+  "names": []
+}

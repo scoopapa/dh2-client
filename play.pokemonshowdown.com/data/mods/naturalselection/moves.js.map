@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/naturalselection/moves.ts"],
+  "sourcesContent": ["export const Moves: {[k: string]: ModdedMoveData} = {\n\trockwrecker: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\theadcharge: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n\tcleaveweave: {\n\t\t\tnum: -1,\n\t\t\taccuracy: 100,\n\t\t\tbasePower: 80,\n\t\t\tcategory: \"Special\",\n\t\t\toverrideDefensiveStat: 'def',\n\t\t\tname: \"Cleave Weave\",\n\t\t\tshortDesc: \"Damages target based on Defense, not Sp. Def.\",\n\t\t\tpp: 10,\n\t\t\tpriority: 0,\n\t\t\tflags: {protect: 1, mirror: 1, metronome: 1},\n\t\t\tsecondary: null,\n\t\t\ttarget: \"normal\",\n\t\t\ttype: \"Dark\",\n\t\t\tcontestType: \"Beautiful\",\n\t\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA,EACnD,aAAa;AAAA,IACZ,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,YAAY;AAAA,IACX,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AAAA,EACA,aAAa;AAAA,IACX,KAAK;AAAA,IACL,UAAU;AAAA,IACV,WAAW;AAAA,IACX,UAAU;AAAA,IACV,uBAAuB;AAAA,IACvB,MAAM;AAAA,IACN,WAAW;AAAA,IACX,IAAI;AAAA,IACJ,UAAU;AAAA,IACV,OAAO,EAAC,SAAS,GAAG,QAAQ,GAAG,WAAW,EAAC;AAAA,IAC3C,WAAW;AAAA,IACX,QAAQ;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AACF;",
+  "names": []
+}

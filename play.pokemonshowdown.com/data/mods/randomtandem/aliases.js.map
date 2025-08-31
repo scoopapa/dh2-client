@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/randomtandem/aliases.ts"],
+  "sourcesContent": ["export const Aliases: {[alias: string]: string} = {\n\t\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAqC,CAElD;",
+  "names": []
+}

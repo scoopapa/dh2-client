@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen2expansionpack/items.ts"],
+  "sourcesContent": ["export const Items: {[k: string]: ModdedItemData} = {\n\t//TODO\n\tthickclub: {\n\t\tinherit: true,\n\t\titemUser: [\"Marowak\", \"Marowak-Alola\", \"Marowak-Alola-Totem\", \"Cubone\", \"Guardia\"],\n\t},\n\tmetalpowder: {\n\t\tinherit: true,\n\t\titemUser: [\"Ditto\", \"Mimmeo\"],\n\t},\n\tstick: {\n\t\tinherit: true,\n\t\titemUser: [\"Farfetch\\u2019d\", \"Farfetch\\u2019d-Galar\", \"Sirfetch\\u2019d\", \"Luxwan\"],\n\t\tonModifyCritRatio(critRatio, user) {\n\t\t\tif (['farfetchd', 'farfetchdgalar', 'sirfetchd', 'luxwan'].includes(user.species.id)) {\n\t\t\t\treturn 3;\n\t\t\t}\n\t\t},\n\t}\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC;AAAA;AAAA,EAEnD,WAAW;AAAA,IACV,SAAS;AAAA,IACT,UAAU,CAAC,WAAW,iBAAiB,uBAAuB,UAAU,SAAS;AAAA,EAClF;AAAA,EACA,aAAa;AAAA,IACZ,SAAS;AAAA,IACT,UAAU,CAAC,SAAS,QAAQ;AAAA,EAC7B;AAAA,EACA,OAAO;AAAA,IACN,SAAS;AAAA,IACT,UAAU,CAAC,mBAAmB,yBAAyB,mBAAmB,QAAQ;AAAA,IAClF,kBAAkB,WAAW,MAAM;AAClC,UAAI,CAAC,aAAa,kBAAkB,aAAa,QAAQ,EAAE,SAAS,KAAK,QAAQ,EAAE,GAAG;AACrF,eAAO;AAAA,MACR;AAAA,IACD;AAAA,EACD;AACD;",
+  "names": []
+}

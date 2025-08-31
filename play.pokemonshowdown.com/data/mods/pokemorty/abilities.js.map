@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/pokemorty/abilities.ts"],
+  "sourcesContent": ["export const Abilities: {[k: string]: ModdedAbilityData} = {\n\tnoability: {\n\t\tinherit: true,\n\t\tisNonstandard: null,\n\t},\n}"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAA8C;AAAA,EAC1D,WAAW;AAAA,IACV,SAAS;AAAA,IACT,eAAe;AAAA,EAChB;AACD;",
+  "names": []
+}

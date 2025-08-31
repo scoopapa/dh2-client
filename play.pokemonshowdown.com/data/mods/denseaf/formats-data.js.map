@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/denseaf/formats-data.ts"],
+  "sourcesContent": ["export const FormatsData: {[k: string]: ModdedSpeciesFormatsData} = {\n\tdefaultdance: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tstrikester: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tbeamster: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tjetpet: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tphyster: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tspecter: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tmeanbean: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n\tmatchupfish: {\n\t\ttier: \"DAF\",\n\t\tdoublesTier: \"DAF\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,cAAuD;AAAA,EACnE,cAAc;AAAA,IACb,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,YAAY;AAAA,IACX,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,QAAQ;AAAA,IACP,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,aAAa;AAAA,IACZ,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AACD;",
+  "names": []
+}

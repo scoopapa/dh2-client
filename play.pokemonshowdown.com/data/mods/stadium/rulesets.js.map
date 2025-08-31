@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/stadium/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatsData} = {\n\tstandard: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Standard',\n\t\truleset: ['Obtainable', 'Sleep Clause Mod', 'Freeze Clause Mod', 'Species Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Exact HP Mod', 'Cancel Mod'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA6C;AAAA,EACzD,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,SAAS,CAAC,cAAc,oBAAoB,qBAAqB,kBAAkB,eAAe,wBAAwB,gBAAgB,YAAY;AAAA,EACvJ;AACD;",
+  "names": []
+}

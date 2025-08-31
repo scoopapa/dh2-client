@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/genxdesvega/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: FormatData} = {\n\tevasionabilitiesclause: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Evasion Abilities Clause',\n\t\tdesc: \"Bans abilities that boost Evasion under certain weather and terrain conditions\",\n\t\tbanlist: ['Sand Veil', 'Snow Cloak', 'Grassy Cloak'],\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Evasion Abilities Clause: Evasion abilities are banned');\n\t\t},\n\t},\n}"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAAsC;AAAA,EAClD,wBAAwB;AAAA,IACvB,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,SAAS,CAAC,aAAa,cAAc,cAAc;AAAA,IACnD,UAAU;AACT,WAAK,IAAI,QAAQ,wDAAwD;AAAA,IAC1E;AAAA,EACD;AACD;",
+  "names": []
+}

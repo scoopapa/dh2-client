@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/m4av6/formats-data.ts"],
+  "sourcesContent": ["export const FormatsData: {[k: string]: ModdedSpeciesFormatsData} = {\n\t// think we learned this was necessary as a bugfix\n\tdarmanitanzen: {},\n\tmimikyubusted: {},\n\tcramorantgulping: {},\n\tcramorantgorging: {},\n\tsinisteaantique: {},\n\tpolteageistantique: {},\n\teiscuenoice: {},\n\tmorpekohangry: {},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,cAAuD;AAAA;AAAA,EAEnE,eAAe,CAAC;AAAA,EAChB,eAAe,CAAC;AAAA,EAChB,kBAAkB,CAAC;AAAA,EACnB,kBAAkB,CAAC;AAAA,EACnB,iBAAiB,CAAC;AAAA,EAClB,oBAAoB,CAAC;AAAA,EACrB,aAAa,CAAC;AAAA,EACd,eAAe,CAAC;AACjB;",
+  "names": []
+}

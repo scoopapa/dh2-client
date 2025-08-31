@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/mmm3/learnsets.ts"],
+  "sourcesContent": ["export const Learnsets: {[speciesid: string]: LearnsetData} = {\n\t\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAAiD,CAE9D;",
+  "names": []
+}

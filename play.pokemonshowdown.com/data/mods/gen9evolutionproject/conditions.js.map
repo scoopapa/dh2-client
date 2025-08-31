@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen9evolutionproject/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[k: string]: ConditionData} = {\n\tslp: {\n\t\tinherit: true,\n\t\tonBeforeMove(pokemon, target, move) {\n\t\t\tif (pokemon.hasAbility('earlybird')) {\n\t\t\t\tpokemon.statusState.time--;\n\t\t\t}\n\t\t\tpokemon.statusState.time--;\n\t\t\tif (pokemon.statusState.time <= 0) {\n\t\t\t\tpokemon.cureStatus();\n\t\t\t\tthis.runEvent('Update', pokemon); // modded for Hibearlax\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tthis.add('cant', pokemon, 'slp');\n\t\t\tif (move.sleepUsable) {\n\t\t\t\treturn;\n\t\t\t}\n\t\t\treturn false;\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAA2C;AAAA,EACvD,KAAK;AAAA,IACJ,SAAS;AAAA,IACT,aAAa,SAAS,QAAQ,MAAM;AACnC,UAAI,QAAQ,WAAW,WAAW,GAAG;AACpC,gBAAQ,YAAY;AAAA,MACrB;AACA,cAAQ,YAAY;AACpB,UAAI,QAAQ,YAAY,QAAQ,GAAG;AAClC,gBAAQ,WAAW;AACnB,aAAK,SAAS,UAAU,OAAO;AAC/B;AAAA,MACD;AACA,WAAK,IAAI,QAAQ,SAAS,KAAK;AAC/B,UAAI,KAAK,aAAa;AACrB;AAAA,MACD;AACA,aAAO;AAAA,IACR;AAAA,EACD;AACD;",
+  "names": []
+}

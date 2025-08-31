@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/outheorymons/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\texcludeStandardTiers: true,\n\t\tcustomTiers: ['Theorymons', 'OU', 'UU', 'RU', 'NU', 'PU', '(PU)'],\n\t},\n   init() {\n      this.modData('Learnsets', 'tyranitar').learnset.knockoff = ['9L1'];\n      this.modData('Learnsets', 'salamence').learnset.defog = ['9L1'];\n      this.modData('Learnsets', 'delphox').learnset.moonblast = ['9L1'];\n      this.modData('Learnsets', 'slitherwing').learnset.spikes = ['9L1'];\n      this.modData('Learnsets', 'taurospaldeacombat').learnset.playrough = ['9L1'];\n      this.modData('Learnsets', 'cloyster').learnset.bonerush = ['9L1'];\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,KAAK;AAAA,EACL,mBAAmB;AAAA,IAClB,sBAAsB;AAAA,IACtB,aAAa,CAAC,cAAc,MAAM,MAAM,MAAM,MAAM,MAAM,MAAM;AAAA,EACjE;AAAA,EACE,OAAO;AACJ,SAAK,QAAQ,aAAa,WAAW,EAAE,SAAS,WAAW,CAAC,KAAK;AACjE,SAAK,QAAQ,aAAa,WAAW,EAAE,SAAS,QAAQ,CAAC,KAAK;AAC9D,SAAK,QAAQ,aAAa,SAAS,EAAE,SAAS,YAAY,CAAC,KAAK;AAChE,SAAK,QAAQ,aAAa,aAAa,EAAE,SAAS,SAAS,CAAC,KAAK;AACjE,SAAK,QAAQ,aAAa,oBAAoB,EAAE,SAAS,YAAY,CAAC,KAAK;AAC3E,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,WAAW,CAAC,KAAK;AAAA,EACrE;AACD;",
+  "names": []
+}

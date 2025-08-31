@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/strb-gen1ou/scripts.ts"],
+  "sourcesContent": ["import {Dex} from '@pkmn/dex';\nimport {Sets} from '@pkmn/sets';\n\nexport const Scripts: ModdedBattleScriptsData = {\n\tinherit: 'gen1',\n\tgen: 1,\n\tinit() {\n\t\tfor (const i in this.data.Pokedex) {\n\t\t\t(this.data.Pokedex[i] as any).gender = 'N';\n\t\t\t(this.data.Pokedex[i] as any).eggGroups = null;\n\t\t}\n\t\tconst teamsFile = require(\"fs\").readFileSync(\"random-teams.txt\").toString('utf-8');\n\t\tconst teams = Sets.importTeams(teamsFile, Dex.forGen(1));\n\t},\n}\n\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAClB,kBAAmB;AAEZ,MAAM,UAAmC;AAAA,EAC/C,SAAS;AAAA,EACT,KAAK;AAAA,EACL,OAAO;AACN,eAAW,KAAK,KAAK,KAAK,SAAS;AAClC,MAAC,KAAK,KAAK,QAAQ,CAAC,EAAU,SAAS;AACvC,MAAC,KAAK,KAAK,QAAQ,CAAC,EAAU,YAAY;AAAA,IAC3C;AACA,UAAM,YAAY,QAAQ,IAAI,EAAE,aAAa,kBAAkB,EAAE,SAAS,OAAO;AACjF,UAAM,QAAQ,iBAAK,YAAY,WAAW,eAAI,OAAO,CAAC,CAAC;AAAA,EACxD;AACD;",
+  "names": []
+}

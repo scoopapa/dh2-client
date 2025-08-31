@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen1moonside/scripts.ts"],
+  "sourcesContent": ["/**\n * Gen 1 mechanics are fairly different to those we know on current gen.\n * Therefor we need to make a lot of changes to the battle engine for this game simulation.\n * This generation inherits all the changes from older generations, that must be taken into account when editing code.\n */\n\nexport const Scripts: ModdedBattleScriptsData = {\n\tinherit: 'gen1',\n\tgen: 1,\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAMO,MAAM,UAAmC;AAAA,EAC/C,SAAS;AAAA,EACT,KAAK;AACN;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen1expansionpack/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tstandard: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Standard',\n\t\truleset: ['Obtainable', 'Desync Clause Mod', 'Sleep Clause Mod', 'Freeze Clause Mod', 'Species Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],\n\t\tbanlist: ['Dig', 'Fly'],\n\t},\n\n\twelcomemessage: {\n\t\teffectType: 'Rule',\n\t\tname: 'Welcome Message',\n\t\tdesc: 'https://www.youtube.com/channel/UCvVihnVokWwZ4NpeMsBk48A',\n\t\tonBegin() {\n\t\t\tthis.add('-message', \"Welcome to RBY Expansion Pack!\");\n\t\t\tthis.add('-message', \"This is a Solomod that adds things like scrapped content and crossgen evos to RBY OU.\");\n\t\t\tthis.add('-message', \"For more information, please check this spreadsheet - \");\n\t\t\tthis.add('-message', \"https://docs.google.com/spreadsheets/d/1AVXdy6hSW_TtPr0HSGW9JT4m0bstLlPXnH3ccl-rQ20/edit?usp=sharing\");\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,SAAS,CAAC,cAAc,qBAAqB,oBAAoB,qBAAqB,kBAAkB,eAAe,wBAAwB,yBAAyB,qBAAqB,YAAY;AAAA,IACzM,SAAS,CAAC,OAAO,KAAK;AAAA,EACvB;AAAA,EAEA,gBAAgB;AAAA,IACf,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,UAAU;AACT,WAAK,IAAI,YAAY,gCAAgC;AACrD,WAAK,IAAI,YAAY,uFAAuF;AAC5G,WAAK,IAAI,YAAY,wDAAwD;AAC7E,WAAK,IAAI,YAAY,sGAAsG;AAAA,IAC5H;AAAA,EACD;AACD;",
+  "names": []
+}

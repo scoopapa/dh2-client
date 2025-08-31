@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen8haxmeters/typechart.ts"],
+  "sourcesContent": ["export const TypeChart: import('../sim/dex-data').TypeDataTable = {\n\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAAqD,CAElE;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/animemons/aliases.ts"],
+  "sourcesContent": ["export const Aliases: {[alias: string]: string} = {\n\tmello: \"Mihael Keehl\",\n    near: \"Nate Rivers\",\n    kira: \"Light Yagami\",\n    xkira: \"Teru Mikami\",\n    keater: \"Ken Kaneki\",\n    suswatari: \"Soot Sprite\",\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAqC;AAAA,EACjD,OAAO;AAAA,EACJ,MAAM;AAAA,EACN,MAAM;AAAA,EACN,OAAO;AAAA,EACP,QAAQ;AAAA,EACR,WAAW;AACf;",
+  "names": []
+}

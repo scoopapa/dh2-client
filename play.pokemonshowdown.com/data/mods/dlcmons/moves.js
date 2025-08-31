@@ -1,0 +1,328 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var moves_exports = {};
+__export(moves_exports, {
+  Moves: () => Moves
+});
+module.exports = __toCommonJS(moves_exports);
+const Moves = {
+  vocalstrain: {
+    num: -1,
+    accuracy: 100,
+    basePower: 130,
+    category: "Special",
+    name: "Vocal Strain",
+    pp: 5,
+    priority: 0,
+    flags: { protect: 1, mirror: 1, metronome: 1, sound: 1 },
+    onPrepareHit: function(target, source) {
+      this.attrLastMove("[still]");
+      this.add("-anim", source, "Hyper Voice", target);
+    },
+    onHit(target, source) {
+      source.addVolatile("vocalstrain");
+    },
+    condition: {
+      duration: 2,
+      onTryHit(target, source, move) {
+        if (move.flags["sound"])
+          return null;
+      }
+    },
+    secondary: null,
+    target: "allAdjacentFoes",
+    type: "Normal",
+    shortDesc: "Hits all adjacent foes. Prevents the user from using sound-based moves for 2 turns."
+  },
+  abadapple: {
+    num: -2,
+    accuracy: 100,
+    basePower: 70,
+    category: "Physical",
+    name: "A Bad Apple",
+    pp: 15,
+    priority: 0,
+    flags: { protect: 1, mirror: 1, metronome: 1 },
+    onPrepareHit: function(target, source) {
+      this.attrLastMove("[still]");
+      this.add("-anim", source, "Grav Apple", target);
+    },
+    onEffectiveness(typeMod, target, type) {
+      if (type === "Fairy")
+        return 1;
+    },
+    secondary: {
+      chance: 20,
+      status: "psn"
+    },
+    target: "normal",
+    type: "Grass",
+    contestType: "Beautiful",
+    desc: "Has a 20% chance to poison the target. This move's type effectiveness against Fairy is changed to be super effective no matter what this move's type is.",
+    shortDesc: "20% chance to poison. Super effective on Fairy."
+  },
+  kindle: {
+    num: -3,
+    accuracy: 100,
+    basePower: 55,
+    onPrepareHit: function(target, source) {
+      this.attrLastMove("[still]");
+      this.add("-anim", source, "Inferno", target);
+    },
+    basePowerCallback(pokemon, target, move) {
+      if (target.status === "brn")
+        return move.basePower * 2;
+      return move.basePower;
+    },
+    category: "Special",
+    name: "Kindle",
+    pp: 10,
+    priority: 0,
+    flags: { protect: 1, mirror: 1, metronome: 1 },
+    secondary: null,
+    target: "normal",
+    type: "Fire",
+    desc: "Power doubles if the target suffers from Burn.",
+    shortDesc: "Power doubles if the target is burnt."
+  },
+  cleansingwave: {
+    num: -4,
+    accuracy: 100,
+    basePower: 40,
+    category: "Special",
+    name: "Cleansing Wave",
+    pp: 40,
+    priority: 0,
+    flags: { contact: 1, protect: 1, mirror: 1, metronome: 1 },
+    onPrepareHit: function(target, source) {
+      this.attrLastMove("[still]");
+      this.add("-anim", source, "Wave Crash", target);
+    },
+    onAfterHit(target, pokemon, move) {
+      if (!move.hasSheerForce) {
+        if (pokemon.hp && pokemon.removeVolatile("leechseed")) {
+          this.add("-end", pokemon, "Leech Seed", "[from] move: Cleansing Wave", "[of] " + pokemon);
+        }
+        if (target.hp && target.removeVolatile("leechseed")) {
+          this.add("-end", target, "Leech Seed", "[from] move: Cleansing Wave", "[of] " + pokemon);
+        }
+        const sideConditions = ["spikes", "toxicspikes", "stealthrock", "stickyweb", "gmaxsteelsurge"];
+        for (const condition of sideConditions) {
+          if (pokemon.hp && pokemon.side.removeSideCondition(condition)) {
+            this.add("-sideend", pokemon.side, this.dex.conditions.get(condition).name, "[from] move: Cleansing Wave", "[of] " + pokemon);
+          }
+          if (target.hp && target.side.removeSideCondition(condition)) {
+            this.add("-sideend", target.side, this.dex.conditions.get(condition).name, "[from] move: Cleansing Wave", "[of] " + pokemon);
+          }
+        }
+      }
+    },
+    onAfterSubDamage(damage, target, pokemon, move) {
+      if (!move.hasSheerForce) {
+        if (pokemon.hp && pokemon.removeVolatile("leechseed")) {
+          this.add("-end", pokemon, "Leech Seed", "[from] move: Cleansing Wave", "[of] " + pokemon);
+        }
+        if (target.hp && target.removeVolatile("leechseed")) {
+          this.add("-end", target, "Leech Seed", "[from] move: Cleansing Wave", "[of] " + pokemon);
+        }
+        const sideConditions = ["spikes", "toxicspikes", "stealthrock", "stickyweb", "gmaxsteelsurge"];
+        for (const condition of sideConditions) {
+          if (pokemon.hp && pokemon.side.removeSideCondition(condition)) {
+            this.add("-sideend", pokemon.side, this.dex.conditions.get(condition).name, "[from] move: Cleansing Wave", "[of] " + pokemon);
+          }
+          if (target.hp && target.side.removeSideCondition(condition)) {
+            this.add("-sideend", target.side, this.dex.conditions.get(condition).name, "[from] move: Cleansing Wave", "[of] " + pokemon);
+          }
+        }
+      }
+    },
+    secondary: {
+      chance: 100,
+      boosts: {
+        spe: -1
+      }
+    },
+    target: "allAdjacentFoes",
+    type: "Water",
+    contestType: "Cool",
+    desc: "Removes Leech Seed and entry hazards of both side, and decreases the targets' Speed by 1 stage. Hit all adjacent foes.",
+    shortDesc: "Removes hazards and Leech Seed from both sides. Decreases the targets' Speed by 1 stage. Hit all adjacent foes."
+  },
+  mantisfist: {
+    num: -5,
+    accuracy: true,
+    basePower: 40,
+    category: "Physical",
+    name: "Mantis Fist",
+    pp: 15,
+    priority: 0,
+    flags: { contact: 1, protect: 1, mirror: 1, metronome: 1, punch: 1 },
+    multihit: 2,
+    secondary: null,
+    target: "normal",
+    type: "Bug",
+    onPrepareHit: function(target, source) {
+      this.attrLastMove("[still]");
+      this.add("-anim", source, "X-Scissor", target);
+    },
+    zMove: { basePower: 140 },
+    maxMove: { basePower: 120 },
+    contestType: "Cool",
+    shortDesc: "Hit twice in one turn. Bypass accuracy check. Fist-based and contact-based, but ignores contact-delibtating mechanics like Iron Barbs."
+  },
+  magmachamber: {
+    num: -6,
+    accuracy: 100,
+    basePower: 100,
+    category: "Special",
+    name: "Magma Chamber",
+    pp: 5,
+    priority: 0,
+    flags: { protect: 1, mirror: 1, metronome: 1 },
+    onHit(target) {
+      if (!target.hasType("Fire"))
+        return;
+      target.setType(target.getTypes(true).map((type) => type === "Fire" ? "???" : type));
+      this.add("-start", target, "typechange", target.getTypes().join("/"), "[from] move: Magma Chamber");
+    },
+    onPrepareHit: function(target, source) {
+      this.attrLastMove("[still]");
+      this.add("-anim", source, "Magma Storm", target);
+    },
+    secondary: null,
+    target: "normal",
+    type: "Rock",
+    contestType: "Clever",
+    shortDesc: "Removes the target's Fire-type on hit."
+  },
+  // Swift Retreat
+  bounce: {
+    inherit: true,
+    onTryMove(attacker, defender, move) {
+      if (attacker.removeVolatile(move.id)) {
+        if (attacker.hasAbility("swiftretreat")) {
+          attacker.switchFlag = true;
+          return null;
+        }
+        return;
+      }
+      this.add("-prepare", attacker, move.name);
+      if (!this.runEvent("ChargeMove", attacker, defender, move)) {
+        return;
+      }
+      attacker.addVolatile("twoturnmove", defender);
+      return null;
+    }
+  },
+  dig: {
+    inherit: true,
+    onTryMove(attacker, defender, move) {
+      if (attacker.removeVolatile(move.id)) {
+        if (attacker.hasAbility("swiftretreat")) {
+          attacker.switchFlag = true;
+          return null;
+        }
+        return;
+      }
+      this.add("-prepare", attacker, move.name);
+      if (!this.runEvent("ChargeMove", attacker, defender, move)) {
+        return;
+      }
+      attacker.addVolatile("twoturnmove", defender);
+      return null;
+    }
+  },
+  dive: {
+    inherit: true,
+    onTryMove(attacker, defender, move) {
+      if (attacker.removeVolatile(move.id)) {
+        if (attacker.hasAbility("swiftretreat")) {
+          attacker.switchFlag = true;
+          return null;
+        }
+        return;
+      }
+      if (attacker.hasAbility("gulpmissile") && attacker.species.name === "Cramorant" && !attacker.transformed) {
+        const forme = attacker.hp <= attacker.maxhp / 2 ? "cramorantgorging" : "cramorantgulping";
+        attacker.formeChange(forme, move);
+      }
+      this.add("-prepare", attacker, move.name);
+      if (!this.runEvent("ChargeMove", attacker, defender, move)) {
+        return;
+      }
+      attacker.addVolatile("twoturnmove", defender);
+      return null;
+    }
+  },
+  fly: {
+    inherit: true,
+    onTryMove(attacker, defender, move) {
+      if (attacker.removeVolatile(move.id)) {
+        if (attacker.hasAbility("swiftretreat")) {
+          attacker.switchFlag = true;
+          return null;
+        }
+        return;
+      }
+      this.add("-prepare", attacker, move.name);
+      if (!this.runEvent("ChargeMove", attacker, defender, move)) {
+        return;
+      }
+      attacker.addVolatile("twoturnmove", defender);
+      return null;
+    }
+  },
+  phantomforce: {
+    inherit: true,
+    onTryMove(attacker, defender, move) {
+      if (attacker.removeVolatile(move.id)) {
+        if (attacker.hasAbility("swiftretreat")) {
+          attacker.switchFlag = true;
+          return null;
+        }
+        return;
+      }
+      this.add("-prepare", attacker, move.name);
+      if (!this.runEvent("ChargeMove", attacker, defender, move)) {
+        return;
+      }
+      attacker.addVolatile("twoturnmove", defender);
+      return null;
+    }
+  },
+  shadowforce: {
+    inherit: true,
+    onTryMove(attacker, defender, move) {
+      if (attacker.removeVolatile(move.id)) {
+        if (attacker.hasAbility("swiftretreat")) {
+          attacker.switchFlag = true;
+          return null;
+        }
+        return;
+      }
+      this.add("-prepare", attacker, move.name);
+      if (!this.runEvent("ChargeMove", attacker, defender, move)) {
+        return;
+      }
+      attacker.addVolatile("twoturnmove", defender);
+      return null;
+    }
+  }
+};
+//# sourceMappingURL=moves.js.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/supersmashoms/scripts.ts"],
+  "sourcesContent": ["import {Dex} from '../../../sim/dex';\nexport const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\t// for micrometas to only show custom tiers\n\t\texcludeStandardTiers: true,\n\t\t// only to specify the order of custom tiers\n\t\tcustomTiers: ['Flipped', 'Tier Shift', 'Convergence', 'Mix and Mega', 'STABmons', 'Inheritance', 'Re-Evolution', 'Pokebilities', 'Sketchmons', 'Cross Evolution', 'Almost Any Ability', '350 Cup', 'Frantic Fusions', 'Bonus Type', 'Revelationmons', 'Nature Swap','Formemons'],\n\t},\t\n\t\n\tinit() {\n\t\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACO,MAAM,UAAkD;AAAA,EAC9D,KAAK;AAAA,EACL,mBAAmB;AAAA;AAAA,IAElB,sBAAsB;AAAA;AAAA,IAEtB,aAAa,CAAC,WAAW,cAAc,eAAe,gBAAgB,YAAY,eAAe,gBAAgB,gBAAgB,cAAc,mBAAmB,sBAAsB,WAAW,mBAAmB,cAAc,kBAAkB,eAAc,WAAW;AAAA,EAChR;AAAA,EAEA,OAAO;AAAA,EAEP;AACD;",
+  "names": []
+}

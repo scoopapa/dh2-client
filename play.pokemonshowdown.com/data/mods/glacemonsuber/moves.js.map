@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/glacemonsuber/moves.ts"],
+  "sourcesContent": ["export const Moves: { [moveid: string]: ModdedMoveData; } = {\n\taeroblast: {\n\t\tinherit: true,\n\t\twillCrit: true,\n\t\tdesc: \"This move is always a critical hit unless the target is under the effect of Lucky Chant or has the Battle Armor or Shell Armor Abilities.\",\n\t\tshortDesc: \"Always results in a critical hit.\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAA+C;AAAA,EAC3D,WAAW;AAAA,IACV,SAAS;AAAA,IACT,UAAU;AAAA,IACV,MAAM;AAAA,IACN,WAAW;AAAA,EACZ;AACD;",
+  "names": []
+}

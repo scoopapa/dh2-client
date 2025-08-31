@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/upsidedown/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tgen: 9,\n\n\tteambuilderConfig: {\n\t\t// for micrometas to only show custom tiers\n\t\texcludeStandardTiers: true,\n\t\t// only to specify the order of custom tiers\n\t\tcustomTiers: ['Upside Down OU', 'Upside Down NFE', 'Upside Down LC', 'Upside Down Uber'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,KAAK;AAAA,EAEL,mBAAmB;AAAA;AAAA,IAElB,sBAAsB;AAAA;AAAA,IAEtB,aAAa,CAAC,kBAAkB,mBAAmB,kBAAkB,kBAAkB;AAAA,EACxF;AACD;",
+  "names": []
+}

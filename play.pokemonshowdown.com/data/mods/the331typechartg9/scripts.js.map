@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/the331typechartg9/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tinit() {\n\t\tthis.modData(\"Learnsets\", \"aurorus\").learnset.powergem = [\"9L1\"];\n\t\tthis.modData(\"Learnsets\", \"quagsire\").learnset.scald = [\"9L1\"];\n\t\tthis.modData(\"Learnsets\", \"silvally\").learnset.extremespeed = [\"9L1\"];\n\t\tthis.modData(\"Learnsets\", \"silvally\").learnset.earthquake = [\"9L1\"];\n\t\tthis.modData(\"Learnsets\", \"silvally\").learnset.nastyplot = [\"9L1\"];\n\t\tthis.modData(\"Learnsets\", \"silvally\").learnset.recover = [\"9L1\"];\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,OAAO;AACN,SAAK,QAAQ,aAAa,SAAS,EAAE,SAAS,WAAW,CAAC,KAAK;AAC/D,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,QAAQ,CAAC,KAAK;AAC7D,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,eAAe,CAAC,KAAK;AACpE,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,aAAa,CAAC,KAAK;AAClE,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,YAAY,CAAC,KAAK;AACjE,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,UAAU,CAAC,KAAK;AAAA,EAChE;AACD;",
+  "names": []
+}

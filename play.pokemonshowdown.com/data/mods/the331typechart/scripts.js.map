@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/the331typechart/scripts.ts"],
+  "sourcesContent": ["export const Scripts: {[k: string]: ModdedBattleScriptsData} = {\n\tinit: function () {\n/*\n\t\tfor (const id in this.dataCache.Pokedex) {\n\t\t\tconst poke = this.dataCache.Pokedex[id];\n\t\t\tif (poke.restrictedLearnset) {\n\t\t\t\tconsole.log(this.toID(poke.name));\n\t\t\t\tconst thisPoke = this.toID(poke.name);\n\t\t\t\tconst learnset = this.dataCache.Learnsets[this.toID(poke.name)].learnset;\n\t\t\t\tfor (const move in learnset) {\n\t\t\t\t\tconsole.log(thisPoke + \" has \" + move);\n\t\t\t\t\tconst moveid = this.dataCache.Moves[move];\n\t\t\t\t\tif (moveid.isNonstandard) {\n\t\t\t\t\t\tconsole.log(moveid.isNonstandard);\n\t\t\t\t\t\tdelete this.modData('Learnsets', thisPoke).learnset.moveid;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n*/\nthis.modData('Learnsets', 'aurorus').learnset.powergem = ['8L1'];\nthis.modData('Learnsets', 'silvally').learnset.extremespeed = ['8L1'];\nthis.modData('Learnsets', 'silvally').learnset.earthquake = ['8L1'];\nthis.modData('Learnsets', 'silvally').learnset.nastyplot = ['8L1'];\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAkD;AAAA,EAC9D,MAAM,WAAY;AAmBnB,SAAK,QAAQ,aAAa,SAAS,EAAE,SAAS,WAAW,CAAC,KAAK;AAC/D,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,eAAe,CAAC,KAAK;AACpE,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,aAAa,CAAC,KAAK;AAClE,SAAK,QAAQ,aAAa,UAAU,EAAE,SAAS,YAAY,CAAC,KAAK;AAAA,EAChE;AACD;",
+  "names": []
+}

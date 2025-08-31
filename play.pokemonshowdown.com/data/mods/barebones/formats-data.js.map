@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/barebones/formats-data.ts"],
+  "sourcesContent": ["export const FormatsData: {[k: string]: ModdedSpeciesFormatsData} = {\n\tbasedon: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tophysive: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tospecive: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tinphysid: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tinspecid: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tnimphys: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tnimspec: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tgamphyst: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tgamspect: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n\tstitial: {\n\t\ttier: \"bbones\",\n\t\tdoublesTier: \"bbones\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,cAAuD;AAAA,EACnE,SAAS;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AACD;",
+  "names": []
+}

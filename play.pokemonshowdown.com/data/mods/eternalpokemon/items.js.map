@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/eternalpokemon/items.ts"],
+  "sourcesContent": ["export const Items: {[k: string]: ModdedItemData} = {};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAAuC,CAAC;",
+  "names": []
+}

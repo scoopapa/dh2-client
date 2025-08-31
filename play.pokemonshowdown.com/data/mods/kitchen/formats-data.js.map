@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/kitchen/formats-data.ts"],
+  "sourcesContent": ["export const FormatsData: {[k: string]: SpeciesFormatsData} = {\n\t\n\tathleetah: {\n\t\ttier: \"OU\",\n\t\tdoublesTier: \"OU\",\n\t},\n\tblunderbuzz: {\n\t\ttier: \"OU\",\n\t\tdoublesTier: \"OU\",\n\t},\n\tfortifether: {\n\t\ttier: \"OU\",\n\t\tdoublesTier: \"OU\",\n\t},\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,cAAiD;AAAA,EAE7D,WAAW;AAAA,IACV,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,aAAa;AAAA,IACZ,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AAAA,EACA,aAAa;AAAA,IACZ,MAAM;AAAA,IACN,aAAa;AAAA,EACd;AACD;",
+  "names": []
+}

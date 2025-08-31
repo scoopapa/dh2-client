@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen2crystalseviiislands/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[k: string]: ModdedConditionData} = {\n\n\t// Black Hole needs to hit the user's side of the field\n\tfuturemove: {\n\t\t// this is a slot condition\n\t\tname: 'futuremove',\n\t\tduration: 3,\n\t\tonResidualOrder: 3,\n\t\tonEnd(target) {\n\t\t\tconst data = this.effectState;\n\t\t\t// time's up; time to hit! :D\n\t\t\tconst move = this.dex.moves.get(data.move);\n\t\t\tif (target.fainted) {\n\t\t\t\tthis.hint(`${move.name} did not hit because the target is ${(data.fainted ? 'fainted' : 'the user')}.`);\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tthis.add('-end', target, 'move: ' + move.name);\n\t\t\ttarget.removeVolatile('Protect');\n\t\t\ttarget.removeVolatile('Endure');\n\n\t\t\tconst hitMove = new this.dex.Move(data.moveData) as ActiveMove;\n\n\t\t\tthis.actions.trySpreadMoveHit([target], data.source, hitMove);\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAAiD;AAAA;AAAA,EAG7D,YAAY;AAAA;AAAA,IAEX,MAAM;AAAA,IACN,UAAU;AAAA,IACV,iBAAiB;AAAA,IACjB,MAAM,QAAQ;AACb,YAAM,OAAO,KAAK;AAElB,YAAM,OAAO,KAAK,IAAI,MAAM,IAAI,KAAK,IAAI;AACzC,UAAI,OAAO,SAAS;AACnB,aAAK,KAAK,GAAG,KAAK,0CAA2C,KAAK,UAAU,YAAY,aAAc;AACtG;AAAA,MACD;AAEA,WAAK,IAAI,QAAQ,QAAQ,WAAW,KAAK,IAAI;AAC7C,aAAO,eAAe,SAAS;AAC/B,aAAO,eAAe,QAAQ;AAE9B,YAAM,UAAU,IAAI,KAAK,IAAI,KAAK,KAAK,QAAQ;AAE/C,WAAK,QAAQ,iBAAiB,CAAC,MAAM,GAAG,KAAK,QAAQ,OAAO;AAAA,IAC7D;AAAA,EACD;AACD;",
+  "names": []
+}

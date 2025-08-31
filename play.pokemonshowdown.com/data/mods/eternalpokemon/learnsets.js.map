@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/eternalpokemon/learnsets.ts"],
+  "sourcesContent": ["export const Learnsets = {};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAAY,CAAC;",
+  "names": []
+}

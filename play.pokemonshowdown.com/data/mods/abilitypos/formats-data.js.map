@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/abilitypos/formats-data.ts"],
+  "sourcesContent": ["export const FormatsData: {[k: string]: ModdedSpeciesFormatsData} = {\n\tsceptile: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tcharizard: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tinteleon: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tlanturn: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tlarvesta: {\n\t\ttier: \"Abilitypos\",\n\t},\n\taggron: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tsableye: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tcarbink: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tentei: {\n\t\ttier: \"Abilitypos\",\n\t},\n\thatterene: {\n\t\ttier: \"Abilitypos\",\n\t},\n\traticatealola: {\n\t\ttier: \"Abilitypos\",\n\t},\n\tlapras: {\n\t\ttier: \"Abilitypos\",\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,cAAuD;AAAA,EACnE,UAAU;AAAA,IACT,MAAM;AAAA,EACP;AAAA,EACA,WAAW;AAAA,IACV,MAAM;AAAA,EACP;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,EACP;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,EACP;AAAA,EACA,UAAU;AAAA,IACT,MAAM;AAAA,EACP;AAAA,EACA,QAAQ;AAAA,IACP,MAAM;AAAA,EACP;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,EACP;AAAA,EACA,SAAS;AAAA,IACR,MAAM;AAAA,EACP;AAAA,EACA,OAAO;AAAA,IACN,MAAM;AAAA,EACP;AAAA,EACA,WAAW;AAAA,IACV,MAAM;AAAA,EACP;AAAA,EACA,eAAe;AAAA,IACd,MAAM;AAAA,EACP;AAAA,EACA,QAAQ;AAAA,IACP,MAAM;AAAA,EACP;AACD;",
+  "names": []
+}

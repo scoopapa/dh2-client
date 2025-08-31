@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/pokemonorthsoutheastwest/scripts.ts"],
+  "sourcesContent": ["export const Scripts: ModdedBattleScriptsData = {\n\tgen: 9,\n\tteambuilderConfig: {\n\t\t// for micrometas to only show custom tiers\n\t\texcludeStandardTiers: true,\n\t\t// only to specify the order of custom tiers\n\t\tcustomTiers: ['NSEW', 'NSEW2', 'NSEW3', 'NSEW4', 'NSEW5', 'NSEW6', 'NSEW7', 'NSEW8', 'NSEW9', 'NSEW10', 'NSEW11', 'NSEW12', 'NSEW13', 'NSEW14', 'NSEW15', 'Pok\u00E9mon North, South, East, and West DOU'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAmC;AAAA,EAC/C,KAAK;AAAA,EACL,mBAAmB;AAAA;AAAA,IAElB,sBAAsB;AAAA;AAAA,IAEtB,aAAa,CAAC,QAAQ,SAAS,SAAS,SAAS,SAAS,SAAS,SAAS,SAAS,SAAS,UAAU,UAAU,UAAU,UAAU,UAAU,UAAU,6CAA0C;AAAA,EACrM;AACD;",
+  "names": []
+}

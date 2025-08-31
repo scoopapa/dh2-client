@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/dondozo/conditions.ts"],
+  "sourcesContent": ["export const Conditions: {[k: string]: ConditionData} = {\n\tgyeahvictim: {\n\t\tname: \"gyeah-victim\",\n\t\tnoCopy: true,\n\t\tonStart(pokemon) {\n\t\t\tthis.boost({atk: -2, spa: -2, spe: -2, def: -2, spd: -2}, pokemon);\n\t\t},\n\t},\n\t// Tatsugiri\n\tgyeahperpetrator: {\n\t\tname: \"gyeah-perpetrator\",\n\t\tnoCopy: true,\n\t\t// Override No Guard\n\t\tonInvulnerabilityPriority: 2,\n\t\tonInvulnerability(target, source, move) {\n\t\t\treturn false;\n\t\t},\n\t\tonBeforeTurn(pokemon) {\n\t\t\tthis.queue.cancelAction(pokemon);\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,aAA2C;AAAA,EACvD,aAAa;AAAA,IACZ,MAAM;AAAA,IACN,QAAQ;AAAA,IACR,QAAQ,SAAS;AAChB,WAAK,MAAM,EAAC,KAAK,IAAI,KAAK,IAAI,KAAK,IAAI,KAAK,IAAI,KAAK,GAAE,GAAG,OAAO;AAAA,IAClE;AAAA,EACD;AAAA;AAAA,EAEA,kBAAkB;AAAA,IACjB,MAAM;AAAA,IACN,QAAQ;AAAA;AAAA,IAER,2BAA2B;AAAA,IAC3B,kBAAkB,QAAQ,QAAQ,MAAM;AACvC,aAAO;AAAA,IACR;AAAA,IACA,aAAa,SAAS;AACrB,WAAK,MAAM,aAAa,OAAO;AAAA,IAChC;AAAA,EACD;AACD;",
+  "names": []
+}

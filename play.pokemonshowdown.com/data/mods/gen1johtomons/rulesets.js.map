@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen1johtomons/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatsData} = {\n\tstandard: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Standard',\n\t\truleset: ['Obtainable', 'Desync Clause Mod', 'Sleep Clause Mod', 'Freeze Clause Mod', 'Species Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],\n\t\tbanlist: ['Dig', 'Fly'],\n\t},\n\tstandardwithdigandfly: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Standard With Dig and Fly',\n\t\truleset: ['Obtainable', 'Desync Clause Mod', 'Stadium Sleep Clause', 'Freeze Clause Mod', 'Species Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA6C;AAAA,EACzD,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,SAAS,CAAC,cAAc,qBAAqB,oBAAoB,qBAAqB,kBAAkB,eAAe,wBAAwB,yBAAyB,qBAAqB,YAAY;AAAA,IACzM,SAAS,CAAC,OAAO,KAAK;AAAA,EACvB;AAAA,EACA,uBAAuB;AAAA,IACtB,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,SAAS,CAAC,cAAc,qBAAqB,wBAAwB,qBAAqB,kBAAkB,eAAe,wBAAwB,yBAAyB,qBAAqB,YAAY;AAAA,EAC9M;AACD;",
+  "names": []
+}

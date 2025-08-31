@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen1violetversion/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tstandard: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Standard',\n\t\truleset: ['Obtainable', 'Sleep Clause Mod', 'Freeze Clause Mod', 'Species Clause', 'OHKO Clause', 'Evasion Moves Clause', 'HP Percentage Mod', 'Cancel Mod', 'Team Preview'],\n\t\tbanlist: ['Uber', 'OU', 'UUBL', 'UU', 'NUBL', 'NU', 'NFE', 'LC'],\n\t\tunbanlist: ['Aerodactyl', 'Alakazam', 'Arbok', 'Articuno', 'Beedrill', 'Blastoise', 'Butterfree', 'Chansey', 'Charizard', 'Cloyster', 'Dragonite', 'Dugtrio', 'Electabuzz', 'Electrode', 'Exeggutor', 'Flareon', 'Gengar', 'Golbat', 'Golduck', 'Golem', 'Gyarados', 'Hypno', 'Jynx', 'Kabutops', 'Machamp', 'Magmar', 'Magneton', 'Mew', 'Moltres', 'Muk', 'Nidoqueen', 'Ninetales', 'Parasect', 'Pidgeot', 'Pinsir', 'Poliwrath', 'Porygon', 'Slowbro', 'Snorlax', 'Starmie', 'Tangela', 'Tauros', 'Vileplume', 'Zapdos'],\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,UAAU;AAAA,IACT,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,SAAS,CAAC,cAAc,oBAAoB,qBAAqB,kBAAkB,eAAe,wBAAwB,qBAAqB,cAAc,cAAc;AAAA,IAC3K,SAAS,CAAC,QAAQ,MAAM,QAAQ,MAAM,QAAQ,MAAM,OAAO,IAAI;AAAA,IAC/D,WAAW,CAAC,cAAc,YAAY,SAAS,YAAY,YAAY,aAAa,cAAc,WAAW,aAAa,YAAY,aAAa,WAAW,cAAc,aAAa,aAAa,WAAW,UAAU,UAAU,WAAW,SAAS,YAAY,SAAS,QAAQ,YAAY,WAAW,UAAU,YAAY,OAAO,WAAW,OAAO,aAAa,aAAa,YAAY,WAAW,UAAU,aAAa,WAAW,WAAW,WAAW,WAAW,WAAW,UAAU,aAAa,QAAQ;AAAA,EAC3f;AACD;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen9strong/rulesets.ts"],
+  "sourcesContent": ["export const Rulesets: {[k: string]: ModdedFormatData} = {\n\tparamovesclause: {\n\t\teffectType: 'ValidatorRule',\n\t\tname: 'Para Moves Clause',\n\t\tdesc: \"Bans all moves that induce paralysis, such as Thunder Wave\",\n\t\tbanlist: ['Nuzzle', 'Zap Cannon'],\n\t\tonBegin() {\n\t\t\tthis.add('rule', 'Para Moves Clause: Paralysis-inducing moves are banned');\n\t\t},\n\t\tonValidateSet(set) {\n\t\t\tconst problems = [];\n\t\t\tif (set.moves) {\n\t\t\t\tfor (const id of set.moves) {\n\t\t\t\t\tconst move = this.dex.moves.get(id);\n\t\t\t\t\tif (move.status === 'par') problems.push(move.name + ' is banned by Para Moves Clause.');\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn problems;\n\t\t},\n\t},\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,WAA4C;AAAA,EACxD,iBAAiB;AAAA,IAChB,YAAY;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,IACN,SAAS,CAAC,UAAU,YAAY;AAAA,IAChC,UAAU;AACT,WAAK,IAAI,QAAQ,wDAAwD;AAAA,IAC1E;AAAA,IACA,cAAc,KAAK;AAClB,YAAM,WAAW,CAAC;AAClB,UAAI,IAAI,OAAO;AACd,mBAAW,MAAM,IAAI,OAAO;AAC3B,gBAAM,OAAO,KAAK,IAAI,MAAM,IAAI,EAAE;AAClC,cAAI,KAAK,WAAW;AAAO,qBAAS,KAAK,KAAK,OAAO,kCAAkC;AAAA,QACxF;AAAA,MACD;AACA,aAAO;AAAA,IACR;AAAA,EACD;AACD;",
+  "names": []
+}

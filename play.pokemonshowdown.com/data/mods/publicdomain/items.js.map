@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/publicdomain/items.ts"],
+  "sourcesContent": ["export const Items: {[itemid: string]: ModdedItemData} = {\r\n\tsligmaball: {\r\n\t\tname: \"Sligma Ball\",\r\n\t\tspritenum: 585,\r\n\t\tmegaStone: \"Sligma-Mega\",\r\n\t\tmegaEvolves: \"Sligma\",\r\n\t\titemUser: [\"Sligma\"],\r\n\t\tonTakeItem(item, source) {\r\n\t\t\tif (item.megaEvolves === source.baseSpecies.baseSpecies) return false;\r\n\t\t\treturn true;\r\n\t\t},\r\n\t\tnum: -1,\r\n\t\tgen: 9,\r\n\t\tdesc: \"If held by Sligma, this item allows it to Mega Evolve in battle.\",\r\n\t},\r\n\tstarsweet: {\r\n\t\tinherit: true,\r\n\t\tshortDesc: \"Holder's use of Meteor Shower lasts 8 turns instead of 5.\",\r\n\t\trating: 2,\r\n\t},\r\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,QAA4C;AAAA,EACxD,YAAY;AAAA,IACX,MAAM;AAAA,IACN,WAAW;AAAA,IACX,WAAW;AAAA,IACX,aAAa;AAAA,IACb,UAAU,CAAC,QAAQ;AAAA,IACnB,WAAW,MAAM,QAAQ;AACxB,UAAI,KAAK,gBAAgB,OAAO,YAAY;AAAa,eAAO;AAChE,aAAO;AAAA,IACR;AAAA,IACA,KAAK;AAAA,IACL,KAAK;AAAA,IACL,MAAM;AAAA,EACP;AAAA,EACA,WAAW;AAAA,IACV,SAAS;AAAA,IACT,WAAW;AAAA,IACX,QAAQ;AAAA,EACT;AACD;",
+  "names": []
+}

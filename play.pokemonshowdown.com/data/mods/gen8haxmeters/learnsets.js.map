@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/gen8haxmeters/learnsets.ts"],
+  "sourcesContent": ["export const Learnsets: {[speciesid: string]: ModdedLearnsetData} = {\n\n};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,YAAuD,CAEpE;",
+  "names": []
+}

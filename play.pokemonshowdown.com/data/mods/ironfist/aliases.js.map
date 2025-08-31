@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../data/mods/ironfist/aliases.ts"],
+  "sourcesContent": ["export const Aliases: {[alias: string]: string} = {\n\tcuddle: null,\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,UAAqC;AAAA,EACjD,QAAQ;AACT;",
+  "names": []
+}
