@@ -756,14 +756,23 @@ function toId() {
 
 			var self = this;
 			var constructSocket = function () {
+				console.log("---Scoopapa log messages---");
+				console.log("host");
+				console.log(location.host);
 				if (location.host === 'localhost.psim.us' || /[0-9]+.[0-9]+.[0-9]+.[0-9]+\.psim\.us/.test(location.host)) {
 					// normally we assume HTTPS means HTTPS, but make an exception for
 					// localhost and IPs which generally can't have a signed cert anyway.
 					Config.server.port = 8000;
 					Config.server.https = false;
 				}
+				console.log("port");
+				console.log(Config.server.port);
 				var protocol = (Config.server.port === 443 || Config.server.https) ? 'https' : 'http';
+				console.log("config host");
+				console.log(Config.server.host);
 				Config.server.host = $.trim(Config.server.host);
+				console.log("config host trimmed");
+				console.log(Config.server.host);
 				try {
 					if (Config.server.host === 'localhost') {
 						// connecting to localhost from psim.us is now banned as of Chrome 94
@@ -783,6 +792,7 @@ function toId() {
 						return new WebSocket(url);
 					}
 					return new SockJS(
+						console.log("return new SockJS");
 						protocol + '://' + Config.server.host + ':' + Config.server.port + Config.sockjsprefix,
 						[], {timeout: 5 * 60 * 1000}
 					);
@@ -790,6 +800,8 @@ function toId() {
 					// The most common case this happens is if an HTTPS connection fails,
 					// and we fall back to HTTP, which throws a SecurityError if the URL
 					// is HTTPS
+					console.log("error");
+					console.log(err);
 					self.trigger('init:connectionerror');
 					return null;
 				}
