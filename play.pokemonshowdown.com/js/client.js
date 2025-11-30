@@ -796,6 +796,7 @@ function toId() {
 						[], {timeout: 5 * 60 * 1000}
 					);
 					console.log("returned new SockJS");
+					console.log(protocol + '://' + Config.server.host + ':' + Config.server.port + Config.sockjsprefix);
 				} catch (err) {
 					// The most common case this happens is if an HTTPS connection fails,
 					// and we fall back to HTTP, which throws a SecurityError if the URL
