@@ -757,21 +757,24 @@ function toId() {
 			var self = this;
 			var constructSocket = function () {
 				console.log("---Scoopapa log messages---");
-				console.log("host");
+				console.log("host:");
 				console.log(location.host);
+				console.log("port before local check:");
+				console.log(Config.server.port);
 				if (location.host === 'localhost.psim.us' || /[0-9]+.[0-9]+.[0-9]+.[0-9]+\.psim\.us/.test(location.host)) {
 					// normally we assume HTTPS means HTTPS, but make an exception for
 					// localhost and IPs which generally can't have a signed cert anyway.
 					Config.server.port = 8000;
 					Config.server.https = false;
+					console.log("local host: setting port to 8000 and https to false");
 				}
-				console.log("port");
+				console.log("port after local check:");
 				console.log(Config.server.port);
 				var protocol = (Config.server.port === 443 || Config.server.https) ? 'https' : 'http';
-				console.log("config host");
+				console.log("config host:");
 				console.log(Config.server.host);
 				Config.server.host = $.trim(Config.server.host);
-				console.log("config host trimmed");
+				console.log("config host trimmed:");
 				console.log(Config.server.host);
 				try {
 					if (Config.server.host === 'localhost') {
