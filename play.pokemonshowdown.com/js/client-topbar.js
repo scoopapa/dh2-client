@@ -56,7 +56,7 @@
 			e.preventDefault();
 			e.stopPropagation();
 			var name = $(e.currentTarget).data('name');
-			app.addPopup(UserPopup, {name: name, sourceEl: e.currentTarget});
+			app.addPopup(UserPopup, { name: name, sourceEl: e.currentTarget });
 		},
 		toggleMute: function () {
 			var muted = !Dex.prefs('mute');
@@ -86,6 +86,8 @@
 				return buf + '><i class="fa fa-pencil-square-o"></i> <span>Teambuilder</span></a><button class="closebutton" name="closeRoom" value="' + 'teambuilder" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'ladder':
 				return buf + '><i class="fa fa-list-ol"></i> <span>Ladder</span></a><button class="closebutton" name="closeRoom" value="' + 'ladder" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
+			case 'resources':
+				return buf + '><i class="fa fa-question-circle"></i> <span>Resources</span></a><button class="closebutton" name="closeRoom" value="' + 'resources" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'battles':
 				return buf + '><i class="fa fa-caret-square-o-right"></i> <span>Battles</span></a><button class="closebutton" name="closeRoom" value="' + 'battles" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'rooms':
@@ -119,7 +121,7 @@
 				if (room.title && room.title.charAt(0) === '[') {
 					var closeBracketIndex = room.title.indexOf(']');
 					if (closeBracketIndex > 0) {
-						return buf + ' draggable="true"><i class="text">' + BattleLog.escapeFormat(room.title.slice(1, closeBracketIndex)) + '</i><span>' + BattleLog.escapeHTML(room.title.slice(closeBracketIndex + 1)) + '</span></a><button class="closebutton" name="closeRoom" value="' + id + '" aria-label="Close"><i class="fa fa-times-circle"></i></a></li>';
+						return buf + ' draggable="true"><i class="text">' + BattleLog.escapeHTML(room.title.slice(1, closeBracketIndex)) + '</i><span>' + BattleLog.escapeHTML(room.title.slice(closeBracketIndex + 1)) + '</span></a><button class="closebutton" name="closeRoom" value="' + id + '" aria-label="Close"><i class="fa fa-times-circle"></i></a></li>';
 					}
 				}
 				return buf + ' draggable="true"><i class="fa fa-file-text-o"></i> <span>' + (BattleLog.escapeHTML(room.title) || id) + '</span></a><button class="closebutton" name="closeRoom" value="' + id + '" aria-label="Close"><i class="fa fa-times-circle"></i></a></li>';
@@ -130,7 +132,12 @@
 			this.$('.logo').show();
 			this.$('.maintabbar').removeClass('minitabbar');
 
-			var buf = '<ul>' + this.renderRoomTab(app.rooms['']) + this.renderRoomTab(app.rooms['teambuilder']) + this.renderRoomTab(app.rooms['ladder']) + '</ul>';
+			var buf = '<ul>' + (
+				this.renderRoomTab(app.rooms['']) +
+				this.renderRoomTab(app.rooms['teambuilder']) +
+				this.renderRoomTab(app.rooms['ladder']) +
+				this.renderRoomTab(app.rooms['resources'])
+			) + '</ul>';
 			var sideBuf = '';
 
 			var notificationCount = app.rooms[''].notifications ? 1 : 0;
@@ -224,7 +231,7 @@
 			e.preventDefault();
 			var $target = $(e.currentTarget);
 			if ($target.hasClass('minilogo')) {
-				app.addPopup(TabListPopup, {sourceEl: e.currentTarget});
+				app.addPopup(TabListPopup, { sourceEl: e.currentTarget });
 				return;
 			}
 			var id = $target.attr('href');
@@ -543,7 +550,7 @@
 				"हिंदी": 'hindi',
 				"日本語": 'japanese',
 				"简体中文": 'simplifiedchinese',
-				"中文": 'traditionalchinese',
+				"中文": 'traditionalchinese'
 			};
 			buf += '<p><label class="optlabel">Language: <select name="language" class="button">';
 			for (var name in possibleLanguages) {
@@ -877,7 +884,7 @@
 				popup.$('.cur').removeClass('cur');
 				Storage.bg.set(e.target.result, 'custom');
 			} else {
-				app.addPopup(ConfirmBackgroundPopup, {bgUrl: e.target.result});
+				app.addPopup(ConfirmBackgroundPopup, { bgUrl: e.target.result });
 			}
 		};
 		reader.readAsDataURL(file);
@@ -1099,7 +1106,8 @@
 			buf += '<p>If this is your account:</p>';
 			buf += '<p><label class="label">Username: <strong><input type="text" name="username" value="' + BattleLog.escapeHTML(data.username) + '" style="color:inherit;background:transparent;border:0;font:inherit;font-size:inherit;display:block" readonly autocomplete="username" /></strong></label></p>';
 			if (data.special === '@gmail') {
-				buf += '<div id="gapi-custom-signin" style="width:240px;margin:0 auto">[loading Google log-in button]</div>';
+				buf += '<div id="g_id_onload" data-client_id="912270888098-jjnre816lsuhc5clj3vbcn4o2q7p4qvk.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="gapiCallback" data-auto_prompt="false"></div>';
+				buf += '<div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="continue_with" data-size="large" data-logo_alignment="left" data-auto_select="true" data-itp_support="true" style="width:fit-content;margin:0 auto">[loading Google log-in button]</div>';
 				buf += '<p class="buttonbar"><button name="close" class="button">Cancel</button></p>';
 			} else {
 				buf += '<p><label class="label">Password: <input class="textbox autofocus" type="password" name="password" autocomplete="current-password" style="width:173px"><button type="button" name="showPassword" aria-label="Show password" style="float:right;margin:-21px 0 10px;padding: 2px 6px" class="button"><i class="fa fa-eye"></i></button></label></p>';
@@ -1115,50 +1123,14 @@
 
 			if (data.special === '@gmail') {
 				var self = this;
-				window.gapiRenderButton = function () {
-					if (!window.gapiAuthenticated) {
-						gapi.load('auth2', function () { // eslint-disable-line no-undef
-							window.gapiAuthenticated = gapi.auth2.init({ // eslint-disable-line no-undef
-								client_id: '912270888098-jjnre816lsuhc5clj3vbcn4o2q7p4qvk.apps.googleusercontent.com',
-							});
-							window.gapiAuthenticated.then(function () {
-								window.gapiAuthenticated = true;
-								window.gapiRenderButton();
-							});
-						});
-						return;
-					}
-					// they're trying again in a new popup, set a new .then so it still works
-					if (window.gapiAuthenticated.then) {
-						window.gapiAuthenticated.then(function () {
-							window.gapiAuthenticated = true;
-							window.gapiRenderButton();
-						});
-						return;
-					}
-					gapi.signin2.render('gapi-custom-signin', { // eslint-disable-line no-undef
-						'scope': 'profile email',
-						'width': 240,
-						'height': 50,
-						'longtitle': true,
-						'theme': 'dark',
-						'onsuccess': function (googleUser) {
-							// var profile = googleUser.getBasicProfile();
-							var id_token = googleUser.getAuthResponse().id_token;
-							self.close();
-							app.user.passwordRename(data.username, id_token, data.special);
-						},
-						'onfailure': function (googleUser) {
-							alert('sign-in failed');
-						}
-					});
+				window.gapiCallback = function (response) {
+					app.user.passwordRename(data.username, response.credential, data.special);
+					self.close();
 				};
-				if (window.gapiLoaded) return setTimeout(window.gapiRenderButton, 100);
-				window.gapiLoaded = true;
 
 				var script = document.createElement('script');
 				script.async = true;
-				script.src = 'https://apis.google.com/js/platform.js?onload=gapiRenderButton';
+				script.src = 'https://accounts.google.com/gsi/client';
 				document.getElementsByTagName('head')[0].appendChild(script);
 			}
 		},
