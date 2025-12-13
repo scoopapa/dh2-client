@@ -23,11 +23,11 @@ Object.assign(globalThis, {
 	toID: str => ("" + str).toLowerCase().replace(/[^a-z0-9]/ig, ''),
 });
 
-const { Chat } = require('../caches/pokemon-showdown/dist/server/chat');
+const { Chat } = require('../caches/DH2/dist/server/chat');
 
 // yes, these have to be done separately, yes it sucks
 Object.assign(globalThis, {
-	Tournaments: require('../caches/pokemon-showdown/dist/server/tournaments'),
+	Tournaments: require('../caches/DH2/dist/server/tournaments'),
 	Chat,
 	Dex: { includeData: noop },
 });

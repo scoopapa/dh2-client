@@ -36,11 +36,12 @@ Config.customcolors = {
 Config.version = "0.11.2";
 
 Config.routes = {
-	root: '191.101.232.116',
-	client: 'localhost',
+	root: 'api.petmodsdh.com',
+	client: 'petmodsdh.com',
 	dex: 'dex.pokemonshowdown.com',
 	replays: 'replay.pokemonshowdown.com',
 	users: 'pokemonshowdown.com/users',
+	teams: 'teams.pokemonshowdown.com',
 	psmain: 'pokemonshowdown.com',
 };
 /*** End automatically generated configuration ***/

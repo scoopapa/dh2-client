@@ -102,14 +102,14 @@ function buildSearchIndex() {
 	index = index.concat(Object.keys(Dex.data.Moves).map(x => x + ' move'));
 	index = index.concat(Object.keys(Dex.data.Items).map(x => x + ' item'));
 	index = index.concat(Object.keys(Dex.data.Abilities).map(x => x + ' ability'));
-	index = index.concat(Object.keys(Dex.data.TypeChart).map(x => toID(x) + ' type'));
-	index = index.concat(['physical', 'special', 'status'].map(x => toID(x) + ' category'));
+	index = index.concat(Object.keys(Dex.data.TypeChart).map(x => Dex.toID(x) + ' type'));
+	index = index.concat(['physical', 'special', 'status'].map(x => Dex.toID(x) + ' category'));
 	index = index.concat([
 		'monster', 'water1', 'bug', 'flying', 'field', 'fairy', 'grass', 'humanlike', 'water3', 'mineral', 'amorphous', 'water2', 'ditto', 'dragon', 'undiscovered',
-	].map(x => toID(x) + ' egggroup'));
+	].map(x => Dex.toID(x) + ' egggroup'));
 	index = index.concat([
 		'ou', 'uu', 'ru', 'nu', 'pu', 'zu', 'lc', 'nfe', 'uber', 'uubl', 'rubl', 'nubl', 'publ', 'zubl', 'cap', 'caplc', 'capnfe',
-	].map(x => toID(x) + ' tier'));
+	].map(x => Dex.toID(x) + ' tier'));
 
 	const BattleArticleTitles = {};
 
@@ -133,14 +133,14 @@ function buildSearchIndex() {
 	index.push('pokemon article');
 	index.push('moves article');
 
-	const compoundTable = new Map(CompoundWordNames.map(word => [toID(word), word]));
+	const compoundTable = new Map(CompoundWordNames.map(word => [Dex.toID(word), word]));
 	// generate aliases
 	const usedIDs = [];
 	function generateAlias(id, name, type) {
 		name = compoundTable.get(id) || name;
 		if (type === 'pokemon' && !compoundTable.has(id)) {
 			const species = Dex.species.get(id);
-			const baseid = toID(species.baseSpecies);
+			const baseid = Dex.toID(species.baseSpecies);
 			if (baseid !== id) {
 				name = (compoundTable.get(baseid) || species.baseSpecies) + ' ' + species.forme;
 			}
@@ -149,20 +149,20 @@ function buildSearchIndex() {
 		let i = name.lastIndexOf(' ');
 		if (i < 0) i = name.lastIndexOf('-');
 		if (name.endsWith('-Mega-X') || name.endsWith('-Mega-Y')) {
-			index.push('mega' + toID(name.slice(0, -7) + name.slice(-1)) + ' ' + type + ' ' + id + ' 0');
-			index.push('m' + toID(name.slice(0, -7) + name.slice(-1)) + ' ' + type + ' ' + id + ' 0');
-			index.push('mega' + toID(name.slice(-1)) + ' ' + type + ' ' + id + ' ' + toID(name.slice(0, -7)).length);
+			index.push('mega' + Dex.toID(name.slice(0, -7) + name.slice(-1)) + ' ' + type + ' ' + id + ' 0');
+			index.push('m' + Dex.toID(name.slice(0, -7) + name.slice(-1)) + ' ' + type + ' ' + id + ' 0');
+			index.push('mega' + Dex.toID(name.slice(-1)) + ' ' + type + ' ' + id + ' ' + Dex.toID(name.slice(0, -7)).length);
 		} else if (name.endsWith(' Mega')) {
-			index.push('mega' + toID(name.slice(0, -5)) + ' ' + type + ' ' + id + ' 0');
-			index.push('m' + toID(name.slice(0, -5)) + ' ' + type + ' ' + id + ' 0');
+			index.push('mega' + Dex.toID(name.slice(0, -5)) + ' ' + type + ' ' + id + ' 0');
+			index.push('m' + Dex.toID(name.slice(0, -5)) + ' ' + type + ' ' + id + ' 0');
 		} else if (name.endsWith(' Alola')) {
-			index.push('alolan' + toID(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
+			index.push('alolan' + Dex.toID(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
 		} else if (name.endsWith(' Galar')) {
-			index.push('galarian' + toID(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
+			index.push('galarian' + Dex.toID(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
 		} else if (name.endsWith(' Hisui')) {
-			index.push('hisuian' + toID(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
+			index.push('hisuian' + Dex.toID(name.slice(0, -6)) + ' ' + type + ' ' + id + ' 0');
 		}
-		const fullSplit = name.split(/ |-/).map(toID);
+		const fullSplit = name.split(/ |-/).map(Dex.toID);
 		if (fullSplit.length < 2) return;
 		const fullAcronym = fullSplit.map(x => x.charAt(0)).join('') + fullSplit.at(-1).slice(1);
 		index.push('' + fullAcronym + ' ' + type + ' ' + id + ' 0');
@@ -170,7 +170,7 @@ function buildSearchIndex() {
 			index.push('' + fullSplit.slice(i).join('') + ' ' + type + ' ' + id + ' ' + fullSplit.slice(0, i).join('').length);
 		}
 
-		const spaceSplit = name.split(' ').map(toID);
+		const spaceSplit = name.split(' ').map(Dex.toID);
 		if (spaceSplit.length !== fullSplit.length) {
 			const spaceAcronym = spaceSplit.map(x => x.charAt(0)).join('') + spaceSplit.at(-1).slice(1);
 			if (spaceAcronym !== fullAcronym) {
@@ -214,6 +214,7 @@ function buildSearchIndex() {
 		index.push(`${ubCode} pokemon ${id} 0`);
 	}
 
+	const infoTable = { Pokedex: 'pokemon', Moves: 'move', Items: 'item', Abilities: 'ability', TypeChart: 'type' };
 	for (const modid in ModConfig) {
 		for (const key in infoTable) {
 			try {
@@ -221,9 +222,9 @@ function buildSearchIndex() {
 				if (!modDex || !modDex.data || !modDex.data[key]) continue;
 				for (let id in modDex.data[key]) {
 					if (!modDex.data[key][id]) continue;
-					if (!usedIDs.includes(toID(id)) && id in Dex.data.TypeChart === false) {
-						index.push(toID(id) + ' ' + infoTable[key]);
-						usedIDs.push(toID(id));
+					if (!usedIDs.includes(Dex.toID(id)) && id in Dex.data.TypeChart === false) {
+						index.push(Dex.toID(id) + ' ' + infoTable[key]);
+						usedIDs.push(Dex.toID(id));
 						const name = modDex.data[key][id].name;
 						if (name) generateAlias(id, name, infoTable[key]);
 					}
@@ -1480,12 +1481,12 @@ function buildTeambuilderTables() {
 			let hasDoublesFormats = false;
 			for (const i in Dex.formats.formatsListCache) {
 				// const format = Dex.formats.get(i);
-				// const formatMod = toID(format.mod);
-				const formatCacheMod = toID(Dex.formats.formatsListCache[i].mod);
-				const formatCacheName = toID(Dex.formats.formatsListCache[i].name);
+				// const formatMod = Dex.toID(format.mod);
+				const formatCacheMod = Dex.toID(Dex.formats.formatsListCache[i].mod);
+				const formatCacheName = Dex.toID(Dex.formats.formatsListCache[i].name);
 				if (formatCacheMod !== modConfigId) continue;
 				// petModFormats[formatCacheMod] = Formats.find(m => m.mod === modConfigId);
-				petModFormats[formatCacheName] = Formats.find(m => toID(m.name) === formatCacheName);
+				petModFormats[formatCacheName] = Formats.find(m => Dex.toID(m.name) === formatCacheName);
 				const format = petModFormats[formatCacheName];
 				let maxGen =
 				formatCacheName.substr(0, 3) === 'gen' && parseInt(formatCacheMod.substr(3, 1)) < 10 ? parseInt(formatCacheMod.substr(3, 1)) : 9;
@@ -1499,13 +1500,13 @@ function buildTeambuilderTables() {
 				format.unbans = [];
 				if (!!format.banlist) {
 					for (const name of format.banlist) {
-						let id = toID(name);
+						let id = Dex.toID(name);
 						if(name.endsWith('-Base')) id = id.substr(0, id.length - 4);
 						if (id in Dex.data.Pokedex || id in modData.Pokedex) format.bans.push(id);
 						const formes = modData.Pokedex[id]?.otherFormes;
-						if(formes && toID(name) === id){ //id wasn't modified for base forme ban, therefore all formes are banned
+						if(formes && Dex.toID(name) === id){ //id wasn't modified for base forme ban, therefore all formes are banned
 							for(const forme of formes){
-								const formeid = toID(forme);
+								const formeid = Dex.toID(forme);
 								if (formeid in Dex.data.Pokedex || formeid in modData.Pokedex) format.bans.push(formeid);
 							}
 						}
@@ -1513,13 +1514,13 @@ function buildTeambuilderTables() {
 					if (!!format.banlist && format.banlist.includes("All Pokemon")) {
 						format.bans.push('All Pokemon');
 						for (const name of format.unbanlist) {
-							let id = toID(name);
+							let id = Dex.toID(name);
 							if(name.endsWith('-Base')) id = id.substr(0, id.length - 4);
 							if (id in Dex.data.Pokedex || id in modData.Pokedex) format.unbans.push(id);
 							const formes = modData.Pokedex[id]?.otherFormes;
-							if(formes && toID(name) === id){ //id wasn't modified for base forme ban, therefore all formes are banned
+							if(formes && Dex.toID(name) === id){ //id wasn't modified for base forme ban, therefore all formes are banned
 								for(const forme of formes){
-									const formeid = toID(forme);
+									const formeid = Dex.toID(forme);
 									if (formeid in Dex.data.Pokedex || formeid in modData.Pokedex) format.unbans.push(formeid);
 								}
 							}
@@ -1543,11 +1544,11 @@ function buildTeambuilderTables() {
 				const tier = modData.FormatsData[speciesid].tier;
 				const doublesTier = modData.FormatsData[speciesid].doublesTier;
 				if (tier === undefined && doublesTier === undefined) continue;
-				if (!standardTiers.includes(toID(tier)) &&
+				if (!standardTiers.includes(Dex.toID(tier)) &&
 					!ModConfig[modConfigId].customTiers.includes(tier)) {
 					ModConfig[modConfigId].customTiers.push(tier);
 				}
-				if (!standardTiers.includes(toID(doublesTier)) &&
+				if (!standardTiers.includes(Dex.toID(doublesTier)) &&
 					!ModConfig[modConfigId].customDoublesTiers.includes(doublesTier)) {
 					ModConfig[modConfigId].customDoublesTiers.push(doublesTier);
 				}
@@ -1591,7 +1592,7 @@ function buildTeambuilderTables() {
 			for (const tier in tierTable) {
 				for (const formatid in petModFormats) {
 					const banlist = petModFormats[formatid].banlist;
-					if (!!banlist.includes(tier) || !!banlist.includes(toID(tier))) {
+					if (!!banlist.includes(tier) || !!banlist.includes(Dex.toID(tier))) {
 						for (const i in tierTable[tier]) {
 							const speciesid = tierTable[tier][i];
 							if (!petModFormats[formatid].banlist.includes(speciesid)) petModFormats[formatid].bans.push(speciesid);
@@ -2071,7 +2072,7 @@ function buildModSprites() {
 			for (const sprI in spriteDir) {
 				let id = spriteDir[sprI];
 				const ext = id.split(".")[1];
-				id = toID(id.slice(0, id.length - 4));
+				id = Dex.toID(id.slice(0, id.length - 4));
 				modSprites[id] ||= {};
 				modSprites[id][modName] ||= [];
 				modSprites[id][modName].push(subF);
