@@ -27,6 +27,7 @@ const toID = Dex.toID;
 const ModConfigData = require('../config/mod-config').ModConfigData;
 const ModConfig = ModConfigData.ClientMods;
 var Formats = require('../caches/DH2/dist/config/formats.js').Formats;
+var OfficialFormats = require('../caches/DH2/dist/config/official-formats.js').Formats;
 
 for (const modid in Dex.dexes) {
 	try {
@@ -1192,7 +1193,8 @@ function buildTeambuilderTables() {
 				const formatCacheName = toID(Dex.formats.formatsListCache[i].name);
 				if (formatCacheMod !== modConfigId) continue;
 				// petModFormats[formatCacheMod] = Formats.find(m => m.mod === modConfigId);
-				petModFormats[formatCacheName] = Formats.find(m => toID(m.name) === formatCacheName);
+				if (modConfigId === 'badnboosted' || modConfigId === 'gen3colosseum') petModFormats[formatCacheName] = OfficialFormats.find(m => toID(m.name) === formatCacheName);
+				else petModFormats[formatCacheName] = Formats.find(m => toID(m.name) === formatCacheName);
 				const format = petModFormats[formatCacheName];
 				let maxGen = 
 				formatCacheName.substr(0, 3) === 'gen' && parseInt(formatCacheMod.substr(3, 1)) < 10 ? parseInt(formatCacheMod.substr(3, 1)) : 9;
@@ -1733,7 +1735,8 @@ function buildFormatsData() {
 
 function buildFormats() {
 	Formats = requireNoCache('../caches/DH2/dist/config/formats.js').Formats;
-	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
+	OfficialFormats = requireNoCache('../caches/DH2/dist/config/official-formats.js').Formats;
+	const buf = 'exports.Formats = ' + es3stringify(Formats) + es3stringify(OfficialFormats) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/formats.js', buf);
 }
 
