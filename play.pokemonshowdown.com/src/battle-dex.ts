@@ -1064,6 +1064,7 @@ class ModdedDex {
 
 	species = {
 		get: (name: string, hasData = true, debug = ""): Species => {
+			let initialName = name;
 			if (name.id) name = name.id; 
 			let id = toID(name);
 			let formid = id;
@@ -1071,8 +1072,11 @@ class ModdedDex {
 				name = BattleAliases[id];
 				id = toID(name);
 			}
-			
-			if (name.includes('-')) this.species.get(name.split('-')[0]);
+			//This is likely meant to put the potential base form in the cache too, but I'll need confirmation as to whether that was the purpose
+			if (name.includes('-')) {
+				const potentialBase = name.split('-')[0];
+				if (initialName !== potentialBase) this.species.get(potentialBase);
+			}
 			const table = window.BattleTeambuilderTable[this.modid];
 			if (!table.BattlePokedexAltForms) table.BattlePokedexAltForms = {};
 			if (formid in table.BattlePokedexAltForms) {
