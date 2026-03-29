@@ -3584,8 +3584,8 @@
 			var baseid = toID(species.baseSpecies);
 			var forms = [baseid].concat(species.cosmeticFormes.map(toID));
 
-			let modSprite = Dex.getSpriteMod(mod, baseid, 'front', species.exists !== false)
-				|| Dex.getSpriteMod(mod, species.id, 'front', species.exists !== false);
+			let modSprite = Dex.getSpriteMod(mod, baseid, 'front', species.exists !== false).mod
+				|| Dex.getSpriteMod(mod, species.id, 'front', species.exists !== false).mod;
 			let resourcePrefix;
 			let d;
 			if (modSprite) {
